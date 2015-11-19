@@ -29,12 +29,12 @@ To install the Backdrop integration for Drush, clone or download this project
 into any location that supports Drush commands. The most common location for
 custom Drush commands such as this is in your user's home directory.
 
-- `cd ~/.drush` (This directory should already exist if you've used Drush before.)
-- `mkdir commands` (This may already exist, if so continue.)
+- `mkdir ~/.drush/commands` (This may already exist, if so continue.)
+- `cd ~/.drush/commands`
 - `wget https://github.com/quicksketch/backdrop-drush/archive/master.zip`
 - `unzip master.zip -d backdrop`
 
-Now switch to a Backdrop site and try a command! `drush cron` works well.
+Now switch to a Backdrop site's directory and try a command! `drush cron` works well.
 
 Usage
 -----
