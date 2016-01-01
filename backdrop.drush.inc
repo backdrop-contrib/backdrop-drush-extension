@@ -99,8 +99,7 @@ function backdrop_drush_command() {
     'description' => 'Download Backdrop CMS contrib modules.',
     'hidden' => TRUE,
     'arguments' => array(
-      'module-name' => 'The name of the module you would like to download.',
-      'backdrop-root' => 'Root of the Backdrop installation.'
+      'module-name' => array('The name of the module you would like to download.'),
     ),
     'required-arguments' => TRUE,
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
@@ -260,63 +259,67 @@ function drush_backdrop_updatedb_status() {
 
 /**
  * Command callback. Download a Backdrop CMS contrib module.
+ * @param $projects
+ *  Array of Backdrop CMS contrib projects to download.
  */
- function drush_backdrop_download($project) {
-   if ($project != 'backdrop') {
-    $html = get_content_from_github(
-      "https://github.com/backdrop-contrib/$project/releases/latest"
-    );
+ function drush_backdrop_download() {
+   $projects = func_get_args();
+   foreach ($projects as $project) {
+     if ($project != 'backdrop') {
+      $html = get_content_from_github(
+        "https://github.com/backdrop-contrib/$project/releases/latest"
+      );
 
-    $html = explode("\"", $html);
-    $url = $html[1];
-    $latest = explode('/', $url);
-    $latest = array_reverse($latest);
-    if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
-      $module_path = BACKDROP_ROOT . '/modules/contrib';
+      $html = explode("\"", $html);
+      $url = $html[1];
+      $latest = explode('/', $url);
+      $latest = array_reverse($latest);
+      if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
+        $module_path = BACKDROP_ROOT . '/modules/contrib';
+      }
+      else {
+        $module_path = BACKDROP_ROOT . '/modules';
+      }
+
+      exec(
+        "wget --directory-prefix $module_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
+      );
+      // extract the zip file
+      exec(
+        "unzip $module_path/$project.zip -d $module_path"
+      );
+      // remove the zip file
+      exec(
+        "rm $module_path/$project.zip"
+    );
     }
-    else {
-      $module_path = BACKDROP_ROOT . '/modules';
+    // Downloading backdrop itself is a special case.
+    elseif ($project == 'backdrop') {
+      $html = get_content_from_github(
+        "https://github.com/backdrop/backdrop/releases/latest"
+      );
+
+      $html = explode("\"", $html);
+      print_r($html);
+      $url = $html[1];
+      $latest = explode('/', $url);
+      $latest = array_reverse($latest);
+
+      // get the module
+      exec(
+        "wget https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
+      );
+      // extract the zip file
+      exec(
+        "unzip backdrop.zip"
+      );
+      // remove the zip file
+      exec(
+        "rm backdrop.zip"
+      );
     }
-
-    exec(
-      "wget --directory-prefix $module_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
-    );
-    // extract the zip file
-    exec(
-      "unzip $module_path/$project.zip -d $module_path"
-    );
-    // remove the zip file
-    exec(
-      "rm $module_path/$project.zip"
-  );
-  }
-  // Downloading backdrop itself is a special case.
-  elseif ($project == 'backdrop') {
-    $html = get_content_from_github(
-      "https://github.com/backdrop/backdrop/releases/latest"
-    );
-
-    $html = explode("\"", $html);
-    print_r($html);
-    $url = $html[1];
-    $latest = explode('/', $url);
-    $latest = array_reverse($latest);
-
-    // get the module
-    exec(
-      "wget https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
-    );
-    // extract the zip file
-    exec(
-      "unzip backdrop.zip"
-    );
-    // remove the zip file
-    exec(
-      "rm backdrop.zip"
-    );
-  }
-
-  print "Successfully downloaded.\n";
+    print "Successfully downloaded.\n";
+   }
  }
 
 /**
