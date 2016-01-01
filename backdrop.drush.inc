@@ -104,6 +104,7 @@ function backdrop_drush_command() {
     ),
     'required-arguments' => TRUE,
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
+    'aliases' => array('dl'),
   );
 
   $items['backdrop-unsupported'] = array(
