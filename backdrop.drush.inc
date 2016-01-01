@@ -95,6 +95,17 @@ function backdrop_drush_command() {
     ),
   );
 
+  $items['backdrop-download'] = array(
+    'description' => 'Download Backdrop CMS contrib modules.',
+    'hidden' => TRUE,
+    'arguments' => array(
+      'module-name' => 'The name of the module you would like to download.',
+      'backdrop-root' => 'Root of the Backdrop installation.'
+    ),
+    'required-arguments' => TRUE,
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
+  );
+
   $items['backdrop-unsupported'] = array(
     'description' => 'Fallback command if the provided command is not supported in Backdrop.',
     'hidden' => TRUE,
@@ -129,6 +140,9 @@ function backdrop_drush_command_alter(&$command) {
       break;
     case 'updatedb-status':
       $backdrop_command = 'backdrop-updatedb-status';
+      break;
+    case 'pm-download':
+      $backdrop_command = 'backdrop-download';
       break;
   }
 
@@ -244,6 +258,67 @@ function drush_backdrop_updatedb_status() {
 }
 
 /**
+ * Command callback. Download a Backdrop CMS contrib module.
+ */
+ function drush_backdrop_download($project) {
+   if ($project != 'backdrop') {
+    $html = get_content_from_github(
+      "https://github.com/backdrop-contrib/$project/releases/latest"
+    );
+
+    $html = explode("\"", $html);
+    $url = $html[1];
+    $latest = explode('/', $url);
+    $latest = array_reverse($latest);
+    if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
+      $module_path = BACKDROP_ROOT . '/modules/contrib';
+    }
+    else {
+      $module_path = BACKDROP_ROOT . '/modules';
+    }
+
+    exec(
+      "wget --directory-prefix $module_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
+    );
+    // extract the zip file
+    exec(
+      "unzip $module_path/$project.zip -d $module_path"
+    );
+    // remove the zip file
+    exec(
+      "rm $module_path/$project.zip"
+  );
+  }
+  // Downloading backdrop itself is a special case.
+  elseif ($project == 'backdrop') {
+    $html = get_content_from_github(
+      "https://github.com/backdrop/backdrop/releases/latest"
+    );
+
+    $html = explode("\"", $html);
+    print_r($html);
+    $url = $html[1];
+    $latest = explode('/', $url);
+    $latest = array_reverse($latest);
+
+    // get the module
+    exec(
+      "wget https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
+    );
+    // extract the zip file
+    exec(
+      "unzip backdrop.zip"
+    );
+    // remove the zip file
+    exec(
+      "rm backdrop.zip"
+    );
+  }
+
+  print "Successfully downloaded.\n";
+ }
+
+/**
  * Command callback. Informs the user that the given command is not supported.
  */
 function drush_backdrop_unsupported() {
@@ -251,3 +326,16 @@ function drush_backdrop_unsupported() {
   return FALSE;
 }
 
+/**
+ * Helper function for backdrop_download()
+ * gets the url for the github repo of the contrib module.
+ */
+function get_content_from_github($url) {
+  $ch = curl_init();
+  curl_setopt($ch,CURLOPT_URL,$url);
+  curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
+  curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,1);
+  $content = curl_exec($ch);
+  curl_close($ch);
+  return $content;
+}
