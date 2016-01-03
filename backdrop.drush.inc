@@ -280,7 +280,11 @@ function drush_backdrop_updatedb_status() {
       else {
         $module_path = BACKDROP_ROOT . '/modules';
       }
-
+      $module_install_location = $module_path . '/' . $project;
+      if (is_dir($module_install_location)) {
+        drush_print_r("Module is already installed ... exiting without re-writing module.");
+        continue;
+      }
       exec(
         "wget --directory-prefix $module_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
       );
