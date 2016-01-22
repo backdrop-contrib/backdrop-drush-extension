@@ -51,6 +51,7 @@ complete text.
 Maintainers
 -----------
 
+- Geoff St. Pierre (https://github.com/serundeputy)
 - Nate Haug (https://github.com/quicksketch)
 
 Credits

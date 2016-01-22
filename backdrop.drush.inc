@@ -20,101 +20,6 @@ function backdrop_bootstrap_candidates() {
 }
 
 /**
- * Implementation of hook_drush_help().
- *
- * This function is called whenever a drush user calls
- * 'drush help <name-of-your-command>'
- *
- * @param
- *   A string with the help section (prepend with 'drush:')
- *
- * @return
- *   A string with the help text for your command.
- */
-function backdrop_drush_help($section) {
-  switch ($section) {
-    case 'meta:backdrop:title':
-      return dt('Backdrop CMS commands');
-    case 'meta:backdrop:summary':
-      return dt('Commands that work specifically with Backdrop CMS.');
-  }
-}
-
-/**
- * Implementation of hook_drush_command().
- *
- * In this hook, you specify which commands your
- * drush module makes available, what it does and
- * description.
- *
- * Notice how this structure closely resembles how
- * you define menu hooks.
- *
- * @return
- *   An associative array describing your command(s).
- */
-function backdrop_drush_command() {
-  $items = array();
-
-  $items['backdrop-cron'] = array(
-    'description' => 'Run all cron hooks in all active modules for specified site.',
-    'hidden' => TRUE,
-  );
-
-  $items['backdrop-updatedb'] = array(
-    'description' => 'Apply any database updates required (as with running update.php).',
-    'hidden' => TRUE,
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
-    'global-options' => array(
-      'cache-clear',
-    ),
-    'options' => array(
-      'entity-updates' => 'Run automatic entity schema updates at the end of any update hooks. Defaults to --no-entity-updates.',
-    ),
-  );
-
-  $items['backdrop-updatedb-batch-process'] = array(
-    'description' => 'Perform update functions',
-    'hidden' => TRUE,
-    'arguments' => array(
-      'batch-id' => 'The batch ID that will be processed',
-    ),
-    'required-arguments' => TRUE,
-    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_CONFIGURATION,
-  );
-
-  $items['backdrop-updatedb-status'] = array(
-    'description' => 'List any pending database updates.',
-    'hidden' => TRUE,
-    'outputformat' => array(
-      'default' => 'table',
-      'pipe-format' => 'csv',
-      'field-labels' => array('module' => 'Module', 'update_id' => 'Update ID', 'description' => 'Description'),
-      'fields-default' => array('module', 'update_id', 'description'),
-      'output-data-type' => 'format-table',
-    ),
-  );
-
-  $items['backdrop-download'] = array(
-    'description' => 'Download Backdrop CMS contrib modules.',
-    'hidden' => TRUE,
-    'arguments' => array(
-      'module-name' => array('The name of the module you would like to download.'),
-    ),
-    'required-arguments' => TRUE,
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_SITE,
-    'aliases' => array('dl'),
-  );
-
-  $items['backdrop-unsupported'] = array(
-    'description' => 'Fallback command if the provided command is not supported in Backdrop.',
-    'hidden' => TRUE,
-  );
-
-  return $items;
-}
-
-/**
  * Adjust the contents of any command structure prior to dispatch.
  *
  * @see core_drush_command_alter()
@@ -128,6 +33,7 @@ function backdrop_drush_command_alter(&$command) {
   $backdrop_command = NULL;
 
   // Commands that need replacements with Backdrop versions.
+  // @todo: Automate this based on the contents of the commands directory.
   switch ($command['command']) {
     case 'core-cron':
       $backdrop_command = 'backdrop-cron';
@@ -142,7 +48,7 @@ function backdrop_drush_command_alter(&$command) {
       $backdrop_command = 'backdrop-updatedb-status';
       break;
     case 'pm-download':
-      $backdrop_command = 'backdrop-download';
+      $backdrop_command = 'backdrop-pm-download';
       break;
   }
 
@@ -152,6 +58,7 @@ function backdrop_drush_command_alter(&$command) {
     'cache-set',
     'core-exec',
     'help',
+    'topic',
     'php-eval',
     'php-script',
     'sql-cli',
@@ -200,150 +107,4 @@ function backdrop_drush_command_alter(&$command) {
 
   // Add command-specific options, if applicable.
   drush_command_default_options($command);
-}
-
-/**
- * Command callback. Runs all cron hooks.
- */
-function drush_backdrop_cron() {
-  $result = backdrop_cron_run();
-
-  if ($result) {
-    drush_log(dt('Cron run successful.'), 'success');
-  }
-  else {
-    return drush_set_error('DRUSH_CRON_FAILED', dt('Cron run failed.'));
-  }
-}
-
-/**
- * Command handler. Execute update.php code from drush.
- */
-function drush_backdrop_updatedb() {
-  if (drush_get_context('DRUSH_SIMULATE')) {
-    drush_log(dt('updatedb command does not support --simulate option.'), 'ok');
-    return TRUE;
-  }
-
-  include_once __DIR__ . '/includes/update.inc';
-  if (update_main() === FALSE) {
-    return FALSE;
-  }
-
-  drush_log(dt('Finished performing updates.'), 'ok');
-}
-
-
-/**
- * Command handler. Run a single update via the batch API.
- */
-function drush_backdrop_updatedb_batch_process($id) {
-  include_once __DIR__ . '/includes/update.inc';
-  _update_batch_command($id);
-}
-
-/**
- * Command handler. List pending DB updates.
- */
-function drush_backdrop_updatedb_status() {
-  require_once DRUSH_BACKDROP_CORE . '/includes/install.inc';
-  backdrop_load_updates();
-
-  include_once __DIR__ . '/includes/update.inc';
-  list($pending, $start) = updatedb_status();
-  if (empty($pending)) {
-    drush_log(dt("No database updates required"), 'ok');
-  }
-  return $pending;
-}
-
-/**
- * Command callback. Download a Backdrop CMS contrib module.
- * @param $projects
- *  Array of Backdrop CMS contrib projects to download.
- */
- function drush_backdrop_download() {
-   $projects = func_get_args();
-   foreach ($projects as $project) {
-     if ($project != 'backdrop') {
-      $html = get_content_from_github(
-        "https://github.com/backdrop-contrib/$project/releases/latest"
-      );
-
-      $html = explode("\"", $html);
-      $url = $html[1];
-      $latest = explode('/', $url);
-      $latest = array_reverse($latest);
-      if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
-        $module_path = BACKDROP_ROOT . '/modules/contrib';
-      }
-      else {
-        $module_path = BACKDROP_ROOT . '/modules';
-      }
-      $module_install_location = $module_path . '/' . $project;
-      if (is_dir($module_install_location)) {
-        drush_print_r("Module is already installed ... exiting without re-writing module.");
-        continue;
-      }
-      exec(
-        "wget --directory-prefix $module_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
-      );
-      // extract the zip file
-      exec(
-        "unzip $module_path/$project.zip -d $module_path"
-      );
-      // remove the zip file
-      exec(
-        "rm $module_path/$project.zip"
-    );
-    }
-    // Downloading backdrop itself is a special case.
-    elseif ($project == 'backdrop') {
-      $html = get_content_from_github(
-        "https://github.com/backdrop/backdrop/releases/latest"
-      );
-
-      $html = explode("\"", $html);
-      print_r($html);
-      $url = $html[1];
-      $latest = explode('/', $url);
-      $latest = array_reverse($latest);
-
-      // get the module
-      exec(
-        "wget https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
-      );
-      // extract the zip file
-      exec(
-        "unzip backdrop.zip"
-      );
-      // remove the zip file
-      exec(
-        "rm backdrop.zip"
-      );
-    }
-    print "Successfully downloaded.\n";
-   }
- }
-
-/**
- * Command callback. Informs the user that the given command is not supported.
- */
-function drush_backdrop_unsupported() {
-  drush_log(dt('This command is not supported yet by Backdrop.'), 'failed');
-  return FALSE;
-}
-
-/**
- * Helper function for backdrop_download()
- * gets the url for the github repo of the contrib module.
- */
-function get_content_from_github($url) {
-  $ch = curl_init();
-  curl_setopt($ch,CURLOPT_URL,$url);
-  curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-  curl_setopt($ch,CURLOPT_CONNECTTIMEOUT,1);
-  $content = curl_exec($ch);
-  curl_close($ch);
-  return $content;
 }

@@ -89,6 +89,16 @@ class BackdropBoot extends BaseBoot {
     return FALSE;
   }
 
+  function get_version($root) {
+    $path = $root . '/core/includes/bootstrap.inc';
+    if (is_file($path)) {
+      require_once $path;
+      if (defined('BACKDROP_VERSION')) {
+        return BACKDROP_VERSION;
+      }
+    }
+  }
+
   function get_profile() {
     return backdrop_get_profile();
   }
