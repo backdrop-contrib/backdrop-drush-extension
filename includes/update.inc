@@ -338,5 +338,11 @@ function updatedb_status() {
       }
     }
   }
+
+  // Remove System if it has no updates.
+  if (empty($start['system'])) {
+    unset($start['system']);
+  }
+
   return array($return, $start);
 }
