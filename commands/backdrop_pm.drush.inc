@@ -47,10 +47,13 @@ function drush_backdrop_pm_download() {
   if (!empty($options)) {
     drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \n");
     // get available releases.
-    $tags = drush_backdrop_get_tags("https://api.github.com/repos/backdrop-contrib/$projects[0]/tags");
+    $tags = drush_backdrop_get_tags(
+      "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
+    );
 
-    for($i = 0; $i < count($tags); $i++) {
-      drush_print_r("\t\t [$i] \t:\t " . $tags[$i]->name);
+    for($i = 0; $i < count($tags->releases->release); $i++) {
+      $version = (string) $tags->releases->release[$i]->version;
+      drush_print_r("\t\t [$i] \t:\t " . $version);
     }
     // get users's menu selection
     $handle = fopen ("php://stdin","r");
@@ -58,11 +61,13 @@ function drush_backdrop_pm_download() {
     print("\033[0m");
     $selection = fgets($handle);
     $selection = trim($selection);
+    // default to latest release if user just hits enter.
     if (empty($selection)) {
       $selection = 0;
     }
-    $ver = $tags[$selection]->name;
-    $sel_url = "https://github.com/backdrop-contrib/$projects[0]/releases/download/$ver/$projects[0].zip";
+
+    $sel_url = $tags->releases->release[(int) $selection]->download_link;
+
     // download verssion of the project user selected.
     exec(
       "wget --quiet --show-progress --directory-prefix $module_path $sel_url"
@@ -155,24 +160,6 @@ function drush_backdrop_get_from_github($url) {
  * Gets the tags for a project.
  */
 function drush_backdrop_get_tags($url) {
-  $ch = curl_init();
-  $useragent='Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)';
-  $access_token = 'token bc52fb8c1cf19eb995c63f7a39568ec4a93f861e';
-
-  // set URL and other appropriate options
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-     "Authorization: $access_token",
-     'Accept: application/json',
-    )
-  );
-  //curl_setopt($ch, CURLOPT_HEADER, 0);
-  curl_setopt($ch, CURLOPT_USERAGENT, $useragent); //set our user agent
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-  $output = curl_exec($ch);
-  $output = json_decode($output);
-
-  // close curl resource, and free up system resources
-  curl_close($ch);
-  return $output;
+  $xml = simplexml_load_file($url);
+  return $xml;
 }
