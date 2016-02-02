@@ -36,20 +36,14 @@ function drush_backdrop_pm_download() {
   $projects = func_get_args();
   $options = drush_get_option('select', '');
 
-  // get location for moudules.
-  if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
-    $module_path = BACKDROP_ROOT . '/modules/contrib';
-  }
-  else {
-    $module_path = BACKDROP_ROOT . '/modules';
-  }
-
   if (!empty($options)) {
     drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \n");
     // get available releases.
     $tags = drush_backdrop_get_tags(
       "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
     );
+
+    $project_path = drush_backdrop_get_path($tags);
 
     for($i = 0; $i < count($tags->releases->release); $i++) {
       $version = (string) $tags->releases->release[$i]->version;
@@ -70,17 +64,16 @@ function drush_backdrop_pm_download() {
 
     // download verssion of the project user selected.
     exec(
-      "wget --quiet --show-progress --directory-prefix $module_path $sel_url"
+      "wget --quiet --show-progress --directory-prefix $project_path $sel_url"
     );
     // Extract the zip file.
     exec(
-      "unzip $module_path/$projects[0].zip -d $module_path"
+      "unzip $project_path/$projects[0].zip -d $project_path"
     );
     // Remove the zip file.
     exec(
-      "rm $module_path/$projects[0].zip"
+      "rm $project_path/$projects[0].zip"
     );
-    return;
   }
   else {
     foreach ($projects as $project) {
@@ -89,26 +82,32 @@ function drush_backdrop_pm_download() {
           "https://github.com/backdrop-contrib/$project/releases/latest"
         );
 
+        // Get the release info from backdropcms.org.
+        $tags = drush_backdrop_get_tags(
+          "https://updates.backdropcms.org/release-history/$project/1.x"
+        );
+
+        $project_path = drush_backdrop_get_path($tags);
         $html = explode("\"", $html);
         $url = $html[1];
         $latest = explode('/', $url);
         $latest = array_reverse($latest);
-        $module_install_location = $module_path . '/' . $project;
+        $module_install_location = $project_path . '/' . $project;
 
         if (is_dir($module_install_location)) {
           drush_log(dt('Module is already installed ... exiting without re-writing module.'), 'error');
           continue;
         }
         exec(
-          "wget --quiet --show-progress --directory-prefix $module_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
+          "wget --quiet --show-progress --directory-prefix $project_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
         );
         // Extract the zip file.
         exec(
-          "unzip $module_path/$project.zip -d $module_path"
+          "unzip $project_path/$project.zip -d $project_path"
         );
         // Remove the zip file.
         exec(
-          "rm $module_path/$project.zip"
+          "rm $project_path/$project.zip"
         );
       }
       // Downloading backdrop itself is a special case.
@@ -162,4 +161,29 @@ function drush_backdrop_get_from_github($url) {
 function drush_backdrop_get_tags($url) {
   $xml = simplexml_load_file($url);
   return $xml;
+}
+
+/**
+ * Get the path to where to store the module, theme, or layout
+ * determine project_type from the $tags xml object.
+ * @param $tags
+ *   xml object.
+ */
+function drush_backdrop_get_path($tags) {
+  $type = (string)$tags->type;
+  if ($type == 'project_module') {
+    if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
+      $project_path = BACKDROP_ROOT . '/modules/contrib';
+    }
+    else {
+      $project_path = BACKDROP_ROOT . '/modules';
+    }
+  }
+  elseif ($type == 'project_theme') {
+    $project_path = BACKDROP_ROOT . '/themes';
+  }
+  elseif ($type == 'project_layout') {
+    $project_path = BACKDROP_ROOT . '/layouts';
+  }
+  return $project_path;
 }
