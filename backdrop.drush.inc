@@ -50,6 +50,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'pm-download':
       $backdrop_command = 'backdrop-pm-download';
       break;
+    case 'user-login':
+      $backdrop_command = 'backdrop-user-login';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.
