@@ -64,7 +64,7 @@ function drush_backdrop_pm_download() {
 
     // download verssion of the project user selected.
     exec(
-      "wget --quiet --show-progress --directory-prefix $project_path $sel_url"
+      "wget --quiet --directory-prefix $project_path $sel_url"
     );
     // Extract the zip file.
     exec(
@@ -99,7 +99,7 @@ function drush_backdrop_pm_download() {
           continue;
         }
         exec(
-          "wget --quiet --show-progress --directory-prefix $project_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
+          "wget --quiet --directory-prefix $project_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
         );
         // Extract the zip file.
         exec(
@@ -123,7 +123,7 @@ function drush_backdrop_pm_download() {
 
         // Get the core zip file.
         exec(
-          "wget --quiet --show-progress https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
+          "wget --quiet https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
         );
         // Extract the zip file.
         exec(
