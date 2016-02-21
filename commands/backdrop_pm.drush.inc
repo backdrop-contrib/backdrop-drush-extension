@@ -139,8 +139,8 @@ function drush_backdrop_pm_download() {
         exec(
           "rm backdrop.zip"
         );
+        drush_dl_outcome('.', 'Backdrop CMS');
       }
-      drush_dl_outcome('.', 'Backdrop CMS');
     }
   }
 }
