@@ -74,6 +74,7 @@ function drush_backdrop_pm_download() {
     exec(
       "rm $project_path/$projects[0].zip"
     );
+    drush_dl_outcome($project_path, $projects[0]);
   }
   else {
     foreach ($projects as $project) {
@@ -109,8 +110,13 @@ function drush_backdrop_pm_download() {
         exec(
           "rm $project_path/$project.zip"
         );
+        drush_dl_outcome($module_install_location, $project);
       }
       // Downloading backdrop itself is a special case.
+      // TODO: Downloading backdrop itself does not currently work since
+      //   the backdrop drush command hooks are only picked up once a valid
+      //   backdrop installation is detected, so we have a chicken and the egg
+      //   problem here.
       elseif ($project == 'backdrop') {
         $html = drush_backdrop_get_from_github(
           "https://github.com/backdrop/backdrop/releases/latest"
@@ -134,7 +140,7 @@ function drush_backdrop_pm_download() {
           "rm backdrop.zip"
         );
       }
-      drush_log(dt('Successfully downloaded.'));
+      drush_dl_outcome('.', 'Backdrop CMS');
     }
   }
 }
@@ -186,4 +192,22 @@ function drush_backdrop_get_path($tags) {
     $project_path = BACKDROP_ROOT . '/layouts';
   }
   return $project_path;
+}
+
+/**
+ * Determine success or failure of drush dl command and give the user some
+ * relevent feedback.
+ * @param string $module_install_location
+ *  String directory path where module should end up.
+ *
+ * @param string $project
+ *  Project name.
+ */
+function drush_dl_outcome($module_install_location, $project) {
+  if (file_exists($module_install_location)) {
+    print "\n\t\033[32m Success: \033[0m Project $project downloaded to $module_install_location.\n\n";
+  }
+  else {
+    print "\n\t\033[31m Error: \033[0m Project $project could not be found.\n\n";
+  }
 }
