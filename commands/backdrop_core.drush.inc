@@ -4,6 +4,8 @@
  * Core commands for Backdrop's Drush integration.
  */
 
+use Drush\BackdropBoot;
+
 /**
  * Implements hook_drush_command().
  */
@@ -51,6 +53,43 @@ function backdrop_core_drush_command() {
       'fields-default' => array('module', 'update_id', 'description'),
       'output-data-type' => 'format-table',
     ),
+  );
+
+  $items['backdrop-core-status'] = array(
+    'description' => 'Provides a birds-eye view of the current Backdrop installation, if any.',
+    'callback' => 'drush_backdrop_core_status',
+    'bootstrap' => DRUSH_BOOTSTRAP_MAX,
+    'aliases' => array('status', 'st'),
+    'examples' => array(
+      'drush core-status version' => 'Show all status lines that contain version information.',
+      'drush core-status --pipe' => 'A list key=value items separated by line breaks.',
+      'drush core-status drush-version --pipe' => 'Emit just the drush version with no label.',
+      'drush core-status config-sync --pipe' => 'Emit just the sync Config directory with no label.',
+    ),
+    'arguments' => array(
+      'item' => 'Optional.  The status item line(s) to display.',
+    ),
+    'options' => array(
+      'show-passwords' => 'Show database password.  Defaults to --no-show-passwords.',
+      'full' => 'Show all file paths and drush aliases in the report, even if there are a lot.',
+      'project' => array(
+        'description' => 'One or more projects that should be added to the path list',
+        'example-value' => 'foo,bar',
+      ),
+    ),
+    'outputformat' => array(
+      'default' => 'key-value',
+      'pipe-format' => 'json',
+      'field-labels' => array('backdrop-version' => 'Backdrop version', 'uri' => 'Site URI', 'db-driver' => 'Database driver', 'db-hostname' => 'Database hostname', 'db-port' => 'Database port', 'db-username' => 'Database username', 'db-password' => 'Database password', 'db-name' => 'Database name', 'db-status' => 'Database', 'bootstrap' => 'Drupal bootstrap', 'user' => 'Drupal user', 'theme' => 'Default theme', 'admin-theme' => 'Administration theme', 'php-bin' => 'PHP executable', 'php-conf' => 'PHP configuration', 'php-os' => 'PHP OS', 'drush-script' => 'Drush script', 'drush-version' => 'Drush version', 'drush-temp' => 'Drush temp directory', 'drush-conf' => 'Drush configuration', 'drush-alias-files' => 'Drush alias files', 'install-profile' => 'Install profile', 'root' => 'Drupal root', 'drupal-settings-file' => 'Drupal Settings File', 'site-path' => 'Site path', 'root' => 'Drupal root', 'site' => 'Site path', 'themes' => 'Themes path', 'modules' => 'Modules path', 'files' => 'File directory path', 'private' => 'Private file directory path', 'temp' => 'Temporary file directory path', 'config-sync' => 'Sync config path', 'files-path' => 'File directory path', 'temp-path' => 'Temporary file directory path', '%paths' => 'Other paths'),
+      'formatted-filter' => '_drush_backdrop_core_status_format_table_data',
+      'private-fields' => 'db-password',
+      'simplify-single' => TRUE,
+      'table-metadata' => array(
+        'list-separator' => ' ',
+      ),
+      'output-data-type' => 'format-list',
+    ),
+    'topics' => array('docs-readme'),
   );
 
   $items['backdrop-unsupported'] = array(
@@ -118,6 +157,155 @@ function drush_backdrop_updatedb_status() {
     drush_log(dt('No database updates required'), 'ok');
   }
   return $pending;
+}
+
+/**
+ * Helper function for _backdrop_core_site_status_table().
+ */
+function _drush_backdrop_core_is_named_in_array($key, $the_array) {
+  $is_named = FALSE;
+
+  $simplified_key = str_replace(array(' ', '_', '-'), array('', '', ''), $key);
+
+  foreach ($the_array as $name) {
+    if (stristr($simplified_key, str_replace(array(' ', '_', '-'), array('', '', ''), $name))) {
+      $is_named = TRUE;
+    }
+  }
+
+  return $is_named;
+}
+
+// Adjust the status output for any non-pipe output format
+function _drush_backdrop_core_status_format_table_data($output, $metadata) {
+  if (drush_get_option('full', FALSE) == FALSE) {
+    // Hide any key that begins with a %
+    foreach ($output as $key => $value) {
+      if ($key[0] == '%') {
+        unset($output[$key]);
+      }
+    }
+    // Hide 'Modules path' and 'Themes path' as well
+    unset($output['modules']);
+    unset($output['themes']);
+    // Shorten the list of alias files if there are too many
+    if (isset($output['drush-alias-files']) && count($output['drush-alias-files']) > 24) {
+      $msg = dt("\nThere are !count more alias files. Run with --full to see the full list.", array('!count' => count($output['drush-alias-files']) - 1));
+      $output['drush-alias-files'] = array($output['drush-alias-files'][0] , $msg);
+    }
+    if (isset($output['drupal-settings-file']) && empty($output['drupal-settings-file'])) {
+      $output['drupal-settings-file'] = dt('MISSING');
+    }
+  }
+  return $output;
+}
+
+/**
+ * Helper function for backdrop_core_status()
+ */
+function _backdrop_core_site_status_table($project = '') {
+  $phase = drush_get_context('DRUSH_BOOTSTRAP_PHASE');
+  if ($backdrop_root = drush_get_context('DRUSH_BACKDROP_ROOT')) {
+
+    $boot_object = drush_get_bootstrap_object();
+    $status_table['backdrop-version'] = $boot_object->get_version($backdrop_root);
+    $conf_dir = $boot_object->conf_path();
+    $settings_file = "$conf_dir/settings.php";
+    $status_table['drupal-settings-file'] = file_exists($settings_file) ? $settings_file : '';
+    if ($site_root = drush_get_context('DRUSH_BACKDROP_SITE_ROOT')) {
+      $status_table['uri'] = drush_get_context('DRUSH_URI');
+      try {
+        $sql = drush_sql_get_class();
+        $db_spec = $sql->db_spec();
+        $status_table['db-driver'] = $db_spec['driver'];
+        if (!empty($db_spec['unix_socket'])) {
+          $status_table['db-socket'] = $db_spec['unix_socket'];
+        }
+        elseif (isset($db_spec['host'])) {
+          $status_table['db-hostname'] = $db_spec['host'];
+        }
+        $status_table['db-username'] = isset($db_spec['username']) ? $db_spec['username'] : NULL;
+        $status_table['db-password'] = isset($db_spec['password']) ? $db_spec['password'] : NULL;
+        $status_table['db-name'] = isset($db_spec['database']) ? $db_spec['database'] : NULL;
+        $status_table['db-port'] = isset($db_spec['port']) ? $db_spec['port'] : NULL;
+        // TODO: what is going on here gff.
+        // if ($phase > DRUSH_BOOTSTRAP_BACKDROP_CONFIGURATION) {
+        //   $status_table['install-profile'] = $boot_object->get_profile();
+        //   if ($phase > DRUSH_BOOTSTRAP_BACKDROP_FULL) {
+        //     $status_table['bootstrap'] = dt('Successful');
+        //     if ($phase == DRUSH_BOOTSTRAP_BACKDROP_LOGIN) {
+        //       $status_table['user'] = drush_user_get_class()->getCurrentUserAsSingle()->getUsername();
+        //     }
+        //   }
+        // }
+      }
+      catch (Exception $e) {
+        // Don't worry be happy.
+      }
+    }
+    // TODO: what is going on here gff.
+    // if (drush_has_boostrapped(DRUSH_BOOTSTRAP_BACKDROP_FULL)) {
+    //   $status_table['theme'] = drush_theme_get_default();
+    //   $status_table['admin-theme'] = drush_theme_get_admin();
+    // }
+  }
+  if ($php_bin = drush_get_option('php')) {
+    $status_table['php-bin'] = $php_bin;
+  }
+  $status_table['php-os'] = PHP_OS;
+  if ($php_ini_files = _drush_core_config_php_ini_files()) {
+    $status_table['php-conf'] = $php_ini_files;
+  }
+  $status_table['drush-script'] = DRUSH_COMMAND;
+  $status_table['drush-version'] = DRUSH_VERSION;
+  $status_table['drush-temp'] = drush_find_tmp();
+  $status_table['drush-conf'] = drush_flatten_array(drush_get_context_options('context-path', ''));
+  $alias_files = _drush_sitealias_find_alias_files();
+  $status_table['drush-alias-files'] = $alias_files;
+
+  $paths = _core_path_aliases($project);
+  if (!empty($paths)) {
+    foreach ($paths as $target => $one_path) {
+      $name = $target;
+      if (substr($name,0,1) == '%') {
+        $name = substr($name,1);
+      }
+      $status_table[$name] = $one_path;
+    }
+  }
+
+  // Store the paths into the '%paths' index; this will be
+  // used by other code, but will not be included in the output
+  // of the drush status command.
+  $status_table['%paths'] = $paths;
+
+  return $status_table;
+}
+
+/**
+ * Command callback. Provides a birds-eye view of the current Backdrop
+ * installation.
+ */
+function drush_backdrop_core_status() {
+  $status_table = _backdrop_core_site_status_table(drush_get_option('project',''));
+  // If args are specified, filter out any entry that is not named
+  // (in other words, only show lines named by one of the arg values)
+  $args = func_get_args();
+  if (!empty($args)) {
+    $field_list = $args;
+    $metadata = drush_get_command_format_metadata('backdrop-core-status');
+    foreach ($metadata['field-labels'] as $field_key => $field_label) {
+      if (_drush_backdrop_core_is_named_in_array($field_label, $args)) {
+        $field_list[] = $field_key;
+      }
+    }
+    foreach ($status_table as $key => $value) {
+      if (!_drush_backdrop_core_is_named_in_array($key, $field_list)) {
+        unset($status_table[$key]);
+      }
+    }
+  }
+  return $status_table;
 }
 
 /**
