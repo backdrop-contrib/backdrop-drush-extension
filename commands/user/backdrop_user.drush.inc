@@ -12,8 +12,8 @@ function backdrop_user_drush_command() {
   $items['backdrop-user-login'] = array(
     'description' => 'Display a one time login link for the given user account (defaults to uid 1).',
     'aliases' => array('uli'),
-    'callback' => 'drush_backdrop_user_login',
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'callback' => 'backdrop_command_user_login',
+    'bootstrap' => DRUSH_BOOTSTRAP_NONE,
     'handle-remote-commands' => TRUE,
     'arguments' => array(
       'user' => 'An optional uid, user name, or email address for the user to log in as. Default is to log in as uid 1. The uid/name/mail options take priority if specified.',
@@ -43,7 +43,7 @@ function backdrop_user_drush_command() {
  * @param string $path
  *  Optional $path redirects user to $path once logged in.
  */
-function drush_backdrop_user_login($user = NULL, $path = NULL) {
+function backdrop_command_user_login($user = NULL, $path = NULL) {
   // Fix up arguments based on our assumptions.
   $user_object = $uid = FALSE;
   $args = func_get_args();
