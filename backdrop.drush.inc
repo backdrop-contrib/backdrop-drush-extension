@@ -38,9 +38,6 @@ function backdrop_drush_command_alter(&$command) {
     case 'core-cron':
       $backdrop_command = 'backdrop-cron';
       break;
-    case 'cache-clear':
-      $backdrop_command = 'backdrop-cache-clear';
-      break;
     case 'updatedb':
       $backdrop_command = 'backdrop-updatedb';
       break;
@@ -77,6 +74,10 @@ function backdrop_drush_command_alter(&$command) {
     'sql-sanitize',
   );
 
+  $compatible_commands = array(
+    'cache-clear',
+  );
+
   // Commands native to Backdrop.
   if (strpos($command['command'], 'backdrop') !== FALSE) {
     return;
@@ -84,6 +85,12 @@ function backdrop_drush_command_alter(&$command) {
   // Commands that work as-is.
   if (in_array($command['command'], $safe_commands)) {
     return;
+  }
+  // Commands that are fine to be run through the compatibility layer.
+  if (in_array($command['command'], $compatible_commands)) {
+    require_once BACKDROP_ROOT . '/core/includes/drupal.inc';
+    $GLOBALS['settings']['backdrop_drupal_compatibility'] = TRUE;
+    $backdrop_command = $command['command'];
   }
 
   // And finally commands that are not supported (yet) use the fallback command.
