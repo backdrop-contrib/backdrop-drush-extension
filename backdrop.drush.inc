@@ -38,6 +38,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'core-cron':
       $backdrop_command = 'backdrop-cron';
       break;
+    case 'cache-clear':
+      $backdrop_command = 'backdrop-cache-clear';
+      break;
     case 'updatedb':
       $backdrop_command = 'backdrop-updatedb';
       break;
@@ -74,10 +77,6 @@ function backdrop_drush_command_alter(&$command) {
     'sql-sanitize',
   );
 
-  $compatible_commands = array(
-    'cache-clear',
-  );
-
   // Commands native to Backdrop.
   if (strpos($command['command'], 'backdrop') !== FALSE) {
     return;
@@ -85,12 +84,6 @@ function backdrop_drush_command_alter(&$command) {
   // Commands that work as-is.
   if (in_array($command['command'], $safe_commands)) {
     return;
-  }
-  // Commands that are fine to be run through the compatibility layer.
-  if (in_array($command['command'], $compatible_commands)) {
-    require_once BACKDROP_ROOT . '/core/includes/drupal.inc';
-    $GLOBALS['settings']['backdrop_drupal_compatibility'] = TRUE;
-    $backdrop_command = $command['command'];
   }
 
   // And finally commands that are not supported (yet) use the fallback command.
@@ -110,4 +103,17 @@ function backdrop_drush_command_alter(&$command) {
 
   // Add command-specific options, if applicable.
   drush_command_default_options($command);
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * This is a hack to remove core Drush's implementation of hook_watchdog() from
+ * the hook registry. See system_watchdog() in Drush core.
+ */
+function system_module_implements_alter(&$implementations, $hook) {
+  // Remove system_watchdog() from being called.
+  if ($hook === 'watchdog') {
+    $implementations = array_diff_key($implementations, array('system' => NULL));
+  }
 }

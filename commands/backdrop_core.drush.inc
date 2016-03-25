@@ -16,6 +16,16 @@ function backdrop_core_drush_command() {
     'hidden' => TRUE,
   );
 
+  $items['backdrop-cache-clear'] = array(
+    'bootstrap' => DRUSH_BOOTSTRAP_MAX,
+    'description' => 'Clear a specific cache, or all drupal caches.',
+    'arguments' => array(
+      'type' => 'The particular cache to clear. Omit this argument to choose from available caches.',
+    ),
+    'callback' => 'drush_cache_command_clear',
+    'hidden' => TRUE,
+  );
+
   $items['backdrop-updatedb'] = array(
     'description' => 'Apply any database updates required (as with running update.php).',
     'callback' => 'drush_backdrop_updatedb',
@@ -66,6 +76,22 @@ function backdrop_core_drush_command() {
  * Command callback. Runs all cron hooks.
  */
 function drush_backdrop_cron() {
+  $result = backdrop_cron_run();
+
+  if ($result) {
+    drush_log(dt('Cron run successful.'), 'success');
+  }
+  else {
+    return drush_set_error('DRUSH_CRON_FAILED', dt('Cron run failed.'));
+  }
+
+  return TRUE;
+}
+
+/**
+ * Command callback. Runs all cron hooks.
+ */
+function drush_backdrop_cache_clear() {
   $result = backdrop_cron_run();
 
   if ($result) {
