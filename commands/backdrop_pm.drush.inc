@@ -11,7 +11,7 @@ function backdrop_pm_drush_command() {
 
   $items['backdrop-pm-download'] = array(
     'description' => 'Download Backdrop CMS contrib modules.',
-    'callback' => 'drush_backdrop_pm_download',
+    'callback' => 'backdrop_command_pm_download',
     'hidden' => TRUE,
     'arguments' => array(
       'module-name' => array('The name of the module(s) you would like to download.'),
@@ -32,18 +32,18 @@ function backdrop_pm_drush_command() {
  * @param $projects
  *  Array of Backdrop CMS contrib projects to download.
  */
-function drush_backdrop_pm_download() {
+function backdrop_command_pm_download() {
   $projects = func_get_args();
   $options = drush_get_option('select', '');
 
   if (!empty($options)) {
     drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \n");
     // get available releases.
-    $tags = drush_backdrop_get_tags(
+    $tags = backdrop_command_get_tags(
       "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
     );
 
-    $project_path = drush_backdrop_get_path($tags);
+    $project_path = backdrop_pm_get_path($tags);
 
     for($i = 0; $i < count($tags->releases->release); $i++) {
       $version = (string) $tags->releases->release[$i]->version;
@@ -74,21 +74,21 @@ function drush_backdrop_pm_download() {
     exec(
       "rm $project_path/$projects[0].zip"
     );
-    drush_dl_outcome($project_path, $projects[0]);
+    backdrop_pm_dl_outcome($project_path, $projects[0]);
   }
   else {
     foreach ($projects as $project) {
       if ($project != 'backdrop') {
-        $html = drush_backdrop_get_from_github(
+        $html = backdrop_pm_get_from_github(
           "https://github.com/backdrop-contrib/$project/releases/latest"
         );
 
         // Get the release info from backdropcms.org.
-        $tags = drush_backdrop_get_tags(
+        $tags = backdrop_pm_get_tags(
           "https://updates.backdropcms.org/release-history/$project/1.x"
         );
 
-        $project_path = drush_backdrop_get_path($tags);
+        $project_path = backdrop_pm_get_path($tags);
         $html = explode("\"", $html);
         $url = $html[1];
         $latest = explode('/', $url);
@@ -110,7 +110,7 @@ function drush_backdrop_pm_download() {
         exec(
           "rm $project_path/$project.zip"
         );
-        drush_dl_outcome($module_install_location, $project);
+        backdrop_pm_dl_outcome($module_install_location, $project);
       }
       // Downloading backdrop itself is a special case.
       // TODO: Downloading backdrop itself does not currently work since
@@ -118,7 +118,7 @@ function drush_backdrop_pm_download() {
       //   backdrop installation is detected, so we have a chicken and the egg
       //   problem here.
       elseif ($project == 'backdrop') {
-        $html = drush_backdrop_get_from_github(
+        $html = backdrop_pm_get_from_github(
           "https://github.com/backdrop/backdrop/releases/latest"
         );
 
@@ -139,18 +139,18 @@ function drush_backdrop_pm_download() {
         exec(
           "rm backdrop.zip"
         );
-        drush_dl_outcome('.', 'Backdrop CMS');
+        backdrop_pm_dl_outcome('.', 'Backdrop CMS');
       }
     }
   }
 }
 
 /**
- * Helper function for drush_backdrop_pm_download().
+ * Helper function for backdrop_command_pm_download().
  *
  * Gets the url for the github repo of the contrib module.
  */
-function drush_backdrop_get_from_github($url) {
+function backdrop_pm_get_from_github($url) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -164,7 +164,7 @@ function drush_backdrop_get_from_github($url) {
  * Helper function for --select option for download command.
  * Gets the tags for a project.
  */
-function drush_backdrop_get_tags($url) {
+function backdrop_pm_get_tags($url) {
   $xml = simplexml_load_file($url);
   return $xml;
 }
@@ -175,7 +175,7 @@ function drush_backdrop_get_tags($url) {
  * @param $tags
  *   xml object.
  */
-function drush_backdrop_get_path($tags) {
+function backdrop_pm_get_path($tags) {
   $type = (string)$tags->type;
   if ($type == 'project_module') {
     if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
@@ -203,7 +203,7 @@ function drush_backdrop_get_path($tags) {
  * @param string $project
  *  Project name.
  */
-function drush_dl_outcome($module_install_location, $project) {
+function backdrop_pm_dl_outcome($module_install_location, $project) {
   if (file_exists($module_install_location)) {
     print "\n\t\033[32m Success: \033[0m Project $project downloaded to $module_install_location.\n\n";
   }

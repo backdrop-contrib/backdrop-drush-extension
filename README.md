@@ -5,14 +5,16 @@ This project allows you to use [Drush](https://github.com/drush-ops/drush) with
 [Backdrop CMS](https://backdropcms.org). Drush is a command-line tool for
 manipulating content management systems.
 
-This project *requires Drush 8* (currently the "master" version). Due to the
-recent expansion of Drush capabilities, be sure that you use the very latest
-development version with this project.
+This project *requires Drush 8* (the "8.x"
+branch)[https://github.com/drush-ops/drush/tree/8.x]. Due to the recent
+expansion of Drush capabilities, be sure that you use the very latest version of
+Drush 8 with this project.
 
 This integration is currently capable of executing the following commands:
 
-- `drush updb`: Run database updates through the Backdrop update.php script.
 - `drush cc`: Clear individual or all caches in Backdrop.
+- `drush dl`: Download and unpack contrib modules, themes, and layouts.
+- `drush updb`: Run database updates through the Backdrop update.php script.
 - `drush sql-*`: MySQL connection commands, such as `sql-cli` or `sql-conf`.
 - `drush cron`: Run the regular interval commands in hook_cron().
 - `drush scr`: Execute scripts with the Backdrop API.
@@ -39,8 +41,7 @@ Now switch to a Backdrop site's directory and try a command! `drush cron` works 
 Usage
 -----
 
-Use Drush as you would normally with a Drupal website. Commands such as
-`drush cc all` work directly with Backdrop.
+Use Drush as you would normally with a Drupal website.
 
 License
 -------
@@ -57,6 +58,9 @@ Maintainers
 Credits
 -------
 
-Thanks to all the Drush maintainers for their project. In particular
-@greg-1-anderson and @weitzman for their help in making Drush for Backdrop
-possible.
+Thanks to all the Drush maintainers for their project, in particular:
+
+- [Greg Anderson](https://github.com/greg-1-anderson)
+- [Moshe Weitzman](https://github.com/weitzman)
+
+for their help in making Drush for Backdrop possible.

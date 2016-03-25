@@ -111,3 +111,16 @@ function backdrop_drush_command_alter(&$command) {
   // Add command-specific options, if applicable.
   drush_command_default_options($command);
 }
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * This is a hack to remove core Drush's implementation of hook_watchdog() from
+ * the hook registry. See system_watchdog() in Drush core.
+ */
+function system_module_implements_alter(&$implementations, $hook) {
+  // Remove system_watchdog() from being called.
+  if ($hook === 'watchdog') {
+    $implementations = array_diff_key($implementations, array('system' => NULL));
+  }
+}
