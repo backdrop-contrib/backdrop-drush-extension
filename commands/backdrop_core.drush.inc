@@ -227,16 +227,16 @@ function _backdrop_core_site_status_table($project = '') {
         $status_table['db-password'] = isset($db_spec['password']) ? $db_spec['password'] : NULL;
         $status_table['db-name'] = isset($db_spec['database']) ? $db_spec['database'] : NULL;
         $status_table['db-port'] = isset($db_spec['port']) ? $db_spec['port'] : NULL;
-        // TODO: what is going on here gff.
-        // if ($phase > DRUSH_BOOTSTRAP_BACKDROP_CONFIGURATION) {
-        //   $status_table['install-profile'] = $boot_object->get_profile();
-        //   if ($phase > DRUSH_BOOTSTRAP_BACKDROP_FULL) {
-        //     $status_table['bootstrap'] = dt('Successful');
-        //     if ($phase == DRUSH_BOOTSTRAP_BACKDROP_LOGIN) {
-        //       $status_table['user'] = drush_user_get_class()->getCurrentUserAsSingle()->getUsername();
-        //     }
-        //   }
-        // }
+        
+        if ($phase > DRUSH_BOOTSTRAP_BACKDROP_CONFIGURATION) {
+          $status_table['install-profile'] = $boot_object->get_profile();
+          if ($phase > DRUSH_BOOTSTRAP_BACKDROP_FULL) {
+            $status_table['bootstrap'] = dt('Successful');
+            if ($phase == DRUSH_BOOTSTRAP_BACKDROP_LOGIN) {
+              $status_table['user'] = drush_user_get_class()->getCurrentUserAsSingle()->getUsername();
+            }
+          }
+        }
       }
       catch (Exception $e) {
         // Don't worry be happy.
