@@ -5,8 +5,6 @@
  */
 use \Drush\Boot\BackdropBoot;
 
-use Drush\BackdropBoot;
-
 /**
  * Implements hook_drush_command().
  */

@@ -53,6 +53,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'user-login':
       $backdrop_command = 'backdrop-user-login';
       break;
+    case 'core-status':
+      $backdrop_command = 'backdrop-core-status';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.
