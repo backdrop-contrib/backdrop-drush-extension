@@ -56,7 +56,7 @@ function backdrop_core_drush_command() {
 
   $items['backdrop-core-status'] = array(
     'description' => 'Provides a birds-eye view of the current Backdrop installation, if any.',
-    'callback' => 'drush_backdrop_core_status',
+    'callback' => 'backdrop_command_core_status',
     'bootstrap' => DRUSH_BOOTSTRAP_MAX,
     'aliases' => array('status', 'st'),
     'examples' => array(
@@ -285,7 +285,7 @@ function _backdrop_core_site_status_table($project = '') {
  * Command callback. Provides a birds-eye view of the current Backdrop
  * installation.
  */
-function drush_backdrop_core_status() {
+function backdrop_command_core_status() {
   $status_table = _backdrop_core_site_status_table(drush_get_option('project',''));
   // If args are specified, filter out any entry that is not named
   // (in other words, only show lines named by one of the arg values)
