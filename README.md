@@ -18,6 +18,7 @@ This integration is currently capable of executing the following commands:
 - `drush sql-*`: MySQL connection commands, such as `sql-cli` or `sql-conf`.
 - `drush cron`: Run the regular interval commands in hook_cron().
 - `drush scr`: Execute scripts with the Backdrop API.
+- `drush st` : Check the status of a Backdrop site; bootstrap, database connection etc.
 
 There are many more commands that Drush may execute, but they need to be updated
 for use with Backdrop. Although some commands may have worked through Backdrop's
