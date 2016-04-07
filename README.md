@@ -34,7 +34,7 @@ custom Drush commands such as this is in your user's home directory.
 
 - `mkdir ~/.drush/commands` (This may already exist, if so continue.)
 - `cd ~/.drush/commands`
-- `wget https://github.com/quicksketch/backdrop-drush/archive/master.zip`
+- `wget https://github.com/backdrop-contrib/drush/archive/master.zip`
 - `unzip master.zip -d backdrop`
 
 Now switch to a Backdrop site's directory and try a command! `drush cron` works well.
