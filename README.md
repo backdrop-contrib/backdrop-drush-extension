@@ -5,11 +5,6 @@ This project allows you to use [Drush](https://github.com/drush-ops/drush) with
 [Backdrop CMS](https://backdropcms.org). Drush is a command-line tool for
 manipulating content management systems.
 
-This project *requires Drush 8* (the "8.x"
-branch)[https://github.com/drush-ops/drush/tree/8.x]. Due to the recent
-expansion of Drush capabilities, be sure that you use the very latest version of
-Drush 8 with this project.
-
 This integration is currently capable of executing the following commands:
 
 - `drush cc`: Clear individual or all caches in Backdrop.
@@ -27,6 +22,11 @@ not allowed to be run within a Backdrop installation.
 
 Installation
 ------------
+
+This project requires that you use the "8.x" branch of drush (https://github.com/drush-ops/drush/tree/8.x). Neither older versions of drush nor the new 9.x or master branches will work with this extension.
+
+If you are using composer to install drush, you can run the following command to require the 8.x version: 
+`composer global require drush/drush:8.x`
 
 To install the Backdrop integration for Drush, clone or download this project
 into any location that supports Drush commands. The most common location for
