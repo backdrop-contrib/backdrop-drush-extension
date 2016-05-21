@@ -56,6 +56,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'core-status':
       $backdrop_command = 'backdrop-core-status';
       break;
+    case 'pm-update':
+      $backdrop_command = 'backdrop-pm-update';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.

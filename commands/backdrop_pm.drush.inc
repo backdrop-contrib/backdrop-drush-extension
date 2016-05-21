@@ -8,7 +8,6 @@
  */
 function backdrop_pm_drush_command() {
   $items = array();
-
   $items['backdrop-pm-download'] = array(
     'description' => 'Download Backdrop CMS contrib modules.',
     'callback' => 'backdrop_command_pm_download',
@@ -22,7 +21,20 @@ function backdrop_pm_drush_command() {
     'required-arguments' => TRUE,
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
   );
-
+  $items['backdrop-pm-update'] = array(
+    'description' => 'Update Backdrop core or contrib modules.',
+    'callback' => 'backdrop_command_pm_update',
+    'arguments' => array(
+      'module-name' => array('The name of the module(s) you would like to update.'),
+    ),
+    // TODO: show available updates and allow for selection of which to apply.
+    //'options' => array(
+    //  'show' => "Select from available updates:"
+    //),
+    'aliases' => array('up',),
+    'required-arguments' => TRUE,
+    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
+  );
   return $items;
 }
 
@@ -209,5 +221,79 @@ function backdrop_pm_dl_outcome($module_install_location, $project) {
   }
   else {
     print "\n\t\033[31m Error: \033[0m Project $project could not be found.\n\n";
+  }
+}
+
+/**
+ * Command callback for pm-update.
+ * Currently supports druhs up backdrop only.
+ * TODO: support updating modules.
+ */
+function backdrop_command_pm_update() {
+  $projects = func_get_args();
+  $projects[0] = strtolower($projects[0]);
+  if ($projects[0] === 'backdrop') {
+    // get current Backdrop version info.
+    $current_version = BACKDROP_VERSION;
+    $parse_version = explode('.', $current_version);
+    $current_version_major = $parse_version[0];
+    $current_version_minor = $parse_version[1];
+    $current_version_patch = $parse_version[2];
+    // Get proposed Backdrop version info.
+    $xml = backdrop_pm_get_tags("https://updates.backdropcms.org/release-history/backdrop/1.x");
+    $download_link = $xml->releases->release->download_link;
+    $proposed_version = $xml->releases->release->version;
+    $proposed_version_major = $xml->releases->release->version_major;
+    $proposed_version_minor = $xml->releases->release->version_minor;
+    $proposed_version_patch = $xml->releases->release->version_patch;
+    if ($current_version == $proposed_version) {
+      drush_print_r("\n\t\tBackdrop is up to date :).\n");
+    }
+    elseif ($current_version_major < $proposed_version_major) {
+      drush_print_r("\n\t\tYou can not use drush up to move between Major Versions of Backdrop.");
+    }
+    elseif (
+      (
+        $current_version_major == $proposed_version_major &&
+        $current_version_minor == $proposed_version_minor &&
+        $current_version_patch < $proposed_version_patch
+      ) ||
+      (
+        $current_version_major == $proposed_version_major &&
+        $current_version_minor < $proposed_version_minor
+      )
+    ) {
+      drush_print_r("\n\t\tCurrent Backdrop Version: $current_version
+      \t\tProposed Backdrop Version: $proposed_version\n");
+      drush_print_r("\tCode updates will be made to Backdrop core.\n");
+      drush_print_r("\t\e[33mWARNING\033[0m:  Updating core will discard any
+      modifications made to Backdrop core files.  If you have made any
+      modifications to these files, please back them up before updating so that
+      you can re-create your modifications in the updated version of the file.\n\n");
+      drush_print_r("\tNote: Updating core can potentially break your site.
+      It is NOT recommended to update production sites without prior testing.\n\n");
+      $answer = drush_prompt("Do you wish to continue? (y or n)");
+      $answer = strtolower($answer);
+      if ($answer == 'y' || $answer == 'yes') {
+        drush_print_r("\t Backing up current core folder to ~/.drush/core-$current_version");
+        $backdrop_root = BACKDROP_ROOT;
+        exec("mv $backdrop_root/core ~/.drush/core-$current_version");
+        exec("mkdir -p $backdrop_root/drush-tmp");
+        exec("wget --quiet -P $backdrop_root/drush-tmp $download_link");
+        exec("unzip $backdrop_root/drush-tmp/backdrop.zip -d $backdrop_root/drush-tmp");
+        exec("mv $backdrop_root/drush-tmp/backdrop/core $backdrop_root/core");
+        exec("rm -r $backdrop_root/drush-tmp");
+        exec("drush updb -y");
+        drush_print_r("\n\tYou can retrieve your old core files, should you need
+        to from: ~/.drush/core-$current_version");
+        drush_print_r("\t\e[32mSuccess\033[0m: Backdrop updated to $proposed_version.");
+      }
+      else {
+        drush_print_r("\tBackdrop core update cancelled.");
+      }
+    }
+    else {
+      drush_print_r("\n\tNo Backdrop core updates available. Your Backdrop is up to date!\n");
+    }
   }
 }
