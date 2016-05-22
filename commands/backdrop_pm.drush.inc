@@ -22,6 +22,26 @@ function backdrop_pm_drush_command() {
     'required-arguments' => TRUE,
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
   );
+  $items['backdrop-pm-enable'] = array(
+   'description' => 'Enable backdrop modules.',
+   'callback' => 'backdrop_command_pm_enable',
+   'arguments' => array(
+     'module-name' => array('The name of the module(s) you would like to enable.'),
+   ),
+   'aliases' => array('en',),
+   'required-arguments' => TRUE,
+   'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
+ );
+ $items['backdrop-pm-disable'] = array(
+   'description' => 'Disable backdrop modules.',
+   'callback' => 'backdrop_command_pm_disable',
+   'arguments' => array(
+     'module-name' => array('The name of the module(s) you would like to disable.'),
+   ),
+   'aliases' => array('dis',),
+   'required-arguments' => TRUE,
+   'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
+ );
 
   return $items;
 }
@@ -209,5 +229,30 @@ function backdrop_pm_dl_outcome($module_install_location, $project) {
   }
   else {
     print "\n\t\033[31m Error: \033[0m Project $project could not be found.\n\n";
+  }
+}
+
+/**
+ * Command callback for pm-enable.
+ */
+function backdrop_command_pm_enable() {
+  $projects = func_get_args();
+  drush_print_r($projects);
+  if (!empty($projects)) {
+    include_once BACKDROP_ROOT . '/core/includes/module.inc';
+    module_enable($projects);
+    drush_print_r("\t\033[32mSuccess\033[0m");
+  }
+}
+
+/**
+ * Command callback for pm-disable.
+ */
+function backdrop_command_pm_disable() {
+  $projects = func_get_args();
+  if (!empty($projects)) {
+    include_once BACKDROP_ROOT . '/core/includes/module.inc';
+    module_disable($projects);
+    drush_print_r("\t\033[32mSuccess\033[0m");
   }
 }
