@@ -59,6 +59,12 @@ function backdrop_drush_command_alter(&$command) {
     case 'pm-update':
       $backdrop_command = 'backdrop-pm-update';
       break;
+    case 'pm-enable':
+      $backdrop_command = 'backdrop-pm-enable';
+      break;
+    case 'pm-disable':
+      $backdrop_command = 'backdrop-pm-disable';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.

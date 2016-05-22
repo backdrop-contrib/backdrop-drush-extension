@@ -25,7 +25,7 @@ function backdrop_pm_drush_command() {
     'description' => 'Update Backdrop core or contrib modules.',
     'callback' => 'backdrop_command_pm_update',
     'arguments' => array(
-      'module-name' => array('The name of the module(s) you would like to update.'),
+      'module-name' => array('The name of the module you would like to update.'),
     ),
     // TODO: show available updates and allow for selection of which to apply.
     //'options' => array(
@@ -34,6 +34,26 @@ function backdrop_pm_drush_command() {
     'aliases' => array('up',),
     'required-arguments' => TRUE,
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
+  );
+  $items['backdrop-pm-enable'] = array(
+    'description' => 'Enable backdrop modules.',
+    'callback' => 'backdrop_command_pm_enable',
+    'arguments' => array(
+      'module-name' => array('The name of the module(s) you would like to enable.'),
+    ),
+    'aliases' => array('en',),
+    'required-arguments' => TRUE,
+    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
+  );
+  $items['backdrop-pm-disable'] = array(
+    'description' => 'Disable backdrop modules.',
+    'callback' => 'backdrop_command_pm_disable',
+    'arguments' => array(
+      'module-name' => array('The name of the module(s) you would like to disable.'),
+    ),
+    'aliases' => array('dis',),
+    'required-arguments' => TRUE,
+    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
   );
   return $items;
 }
@@ -226,8 +246,6 @@ function backdrop_pm_dl_outcome($module_install_location, $project) {
 
 /**
  * Command callback for pm-update.
- * Currently supports druhs up backdrop only.
- * TODO: support updating modules.
  */
 function backdrop_command_pm_update() {
   $projects = func_get_args();
@@ -388,5 +406,30 @@ function backdrop_command_pm_update() {
     drush_print_r("\n\tYou must specify a project to update. For example:\n");
     drush_print_r("\t\tdrush up project_name");
     drush_print_r("\n\tWhere project_name is the machine name of the project like webform or devel etc.\n");
+  }
+}
+
+/**
+ * Command callback for pm-enable.
+ */
+function backdrop_command_pm_enable() {
+  $projects = func_get_args();
+  drush_print_r($projects);
+  if (!empty($projects)) {
+    include_once BACKDROP_ROOT . '/core/includes/module.inc';
+    module_enable($projects);
+    drush_print_r("\t\033[32mSuccess\033[0");
+  }
+}
+
+/**
+ * Command callback for pm-disable.
+ */
+function backdrop_command_pm_disable() {
+  $projects = func_get_args();
+  if (!empty($projects)) {
+    include_once BACKDROP_ROOT . '/core/includes/module.inc';
+    module_disable($projects);
+    drush_print_r("\t\033[32mSuccess\033[0");
   }
 }
