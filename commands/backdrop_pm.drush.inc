@@ -277,17 +277,23 @@ function backdrop_command_pm_update() {
       $answer = drush_prompt("Do you wish to continue? (y or n)");
       $answer = strtolower($answer);
       if ($answer == 'y' || $answer == 'yes') {
-        drush_print_r("\t Backing up current core folder to ~/.drush/core-$current_version");
-        exec("mv $backdrop_root/core ~/.drush/core-$current_version");
-        exec("mkdir -p $backdrop_root/drush-tmp");
-        exec("wget --quiet -P $backdrop_root/drush-tmp $download_link");
-        exec("unzip $backdrop_root/drush-tmp/backdrop.zip -d $backdrop_root/drush-tmp");
-        exec("mv $backdrop_root/drush-tmp/backdrop/core $backdrop_root/core");
-        exec("rm -r $backdrop_root/drush-tmp");
+        $site_name = config_get('system.core', 'site_name');
+        drush_print_r("\t Backing up current core folder to ~/.drush/$site_name-core-$current_version");
+        exec("mv $backdrop_root/core ~/.drush/$site_name-core-$current_version");
+        exec("mkdir -p ~/.drush/drush-tmp");
+        exec("wget --quiet -P ~/.drush/drush-tmp $download_link");
+        exec("unzip ~/.drush/drush-tmp/backdrop.zip -d ~/.drush/drush-tmp");
+        exec("mv ~/.drush/drush-tmp/backdrop/core $backdrop_root/core");
+        exec("rm -r ~/.drush/drush-tmp");
         exec("drush updb -y");
         drush_print_r("\n\tYou can retrieve your old core files, should you need
         to from: ~/.drush/core-$current_version");
-        drush_print_r("\t\e[32mSuccess\033[0m: Backdrop updated to $proposed_version.");
+        if (file_exists("$backdrop_root/core")) {
+          drush_print_r("\t\e[32mSuccess\033[0m: Backdrop updated to $proposed_version.");
+        }
+        else {
+          drush_print_r("\t\033[31mFailed\033[0m: Upgrade failed.");
+        }
       }
       else {
         drush_print_r("\tBackdrop core update cancelled.");
@@ -361,18 +367,25 @@ function backdrop_command_pm_update() {
         $answer = drush_prompt("Do you wish to continue? (y or n)");
         $answer = strtolower($answer);
         if ($answer == 'y' || $answer == 'yes') {
+          $site_name = config_get('system.core', 'site_name');
           drush_print_r("\t Backing up current \033[1m$project\033[0m folder to
-          ~/.drush/$project-$module_full_version");
-          exec("mv $module_path/$project ~/.drush/$project-$module_full_version");
-          exec("mkdir -p $backdrop_root/drush-tmp");
-          exec("wget --quiet -P $backdrop_root/drush-tmp $download_link");
-          exec("unzip $backdrop_root/drush-tmp/$project.zip -d $backdrop_root/drush-tmp");
-          exec("mv $backdrop_root/drush-tmp/$project $module_path/$project");
-          exec("rm -r $backdrop_root/drush-tmp");
+          ~/.drush/$site_name-$project-$module_full_version");
+          exec("mv $module_path/$project ~/.drush/$site_name-$project-$module_full_version");
+          exec("mkdir -p ~/.drush/drush-tmp");
+          exec("wget --quiet -P ~/.drush/drush-tmp $download_link");
+          exec("unzip ~/.drush/drush-tmp/$project.zip -d ~/.drush/drush-tmp");
+          exec("mv ~/.drush/drush-tmp/$project $module_path/$project");
+          exec("rm -r ~/.drush/drush-tmp");
           exec("drush updb -y");
           drush_print_r("\n\tYou can retrieve your old \033[1m$project\033[0m files, should you need
-          to, from: ~/.drush/$project-$module_version");
-          drush_print_r("\t\e[32mSuccess\033[0m: Project \033[1m$project\033[0m exitingupdated to $proposed_version.");
+          to, from: ~/.drush/$site_name-$project-$module_version");
+          if (file_exists("$module_path/$project")) {
+            drush_print_r("\t\e[32mSuccess\033[0m: Project \033[1m$project\033[0m updated to $proposed_version.");
+          }
+          else {
+            drush_print_r("\t\033[31mFailed\033[0m: Project $project upgrade failed.");
+          }
+
         }
         else {
           drush_print_r("\tBackdrop core update cancelled.");
