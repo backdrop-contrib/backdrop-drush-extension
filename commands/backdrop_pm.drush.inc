@@ -45,6 +45,10 @@ function backdrop_pm_drush_command() {
  *  Array of Backdrop CMS contrib projects to download.
  */
 function backdrop_command_pm_download() {
+  $package_handler = backdrop_command_pm_update_validate();
+  if (!$package_handler) {
+    return;
+  }
   $projects = func_get_args();
   $options = drush_get_option('select', '');
 
@@ -225,11 +229,34 @@ function backdrop_pm_dl_outcome($module_install_location, $project) {
 }
 
 /**
+ * Command pm-update validate function.
+ */
+function backdrop_command_pm_update_validate() {
+  // Check that wget command exists. Disable possible output.
+  $debug = drush_get_context('DRUSH_DEBUG');
+  drush_set_context('DRUSH_DEBUG', FALSE);
+  $success = drush_shell_exec('wget --version');
+  drush_set_context('DRUSH_DEBUG', $debug);
+  if (!$success) {
+    return drush_set_error(
+      'DRUSH_SHELL_COMMAND_NOT_FOUND',
+      dt("\n\t\033[1mwget\033[0m executable not found.
+      Downloading projects with drush depends on wget consider installing wget on your system.\n")
+    );
+  }
+  return TRUE;
+}
+
+/**
  * Command callback for pm-update.
- * Currently supports druhs up backdrop only.
- * TODO: support updating modules.
  */
 function backdrop_command_pm_update() {
+  // Call validate function to check for required curl or wget.
+  $package = backdrop_command_pm_update_validate();
+  // If neither curl or wget are available bail.
+  if (!$package) {
+    return;
+  }
   $projects = func_get_args();
   $projects[0] = strtolower($projects[0]);
   $backdrop_root = BACKDROP_ROOT;
@@ -279,11 +306,11 @@ function backdrop_command_pm_update() {
       if ($answer == 'y' || $answer == 'yes') {
         $site_name = config_get('system.core', 'site_name');
         drush_print_r("\t Backing up current core folder to ~/.drush/$site_name-core-$current_version");
-        exec("mv $backdrop_root/core ~/.drush/$site_name-core-$current_version");
         exec("mkdir -p ~/.drush/drush-tmp");
         exec("wget --quiet -P ~/.drush/drush-tmp $download_link");
         exec("unzip ~/.drush/drush-tmp/backdrop.zip -d ~/.drush/drush-tmp");
         exec("mv ~/.drush/drush-tmp/backdrop/core $backdrop_root/core");
+        exec("mv $backdrop_root/core ~/.drush/$site_name-core-$current_version");
         exec("rm -r ~/.drush/drush-tmp");
         exec("drush updb -y");
         drush_print_r("\n\tYou can retrieve your old core files, should you need
