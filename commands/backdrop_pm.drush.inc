@@ -80,7 +80,7 @@ function backdrop_command_pm_download() {
 
     // download verssion of the project user selected.
     exec(
-      "wget --quiet --directory-prefix $project_path $sel_url"
+      "wget --quiet --O $project_path/$projects[0].zip $sel_url"
     );
     // Extract the zip file.
     exec(
@@ -116,7 +116,7 @@ function backdrop_command_pm_download() {
           continue;
         }
         exec(
-          "wget --quiet --directory-prefix $project_path https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
+          "wget --quiet -O $project_path/$project.zip https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
         );
         // Extract the zip file.
         exec(
@@ -145,7 +145,7 @@ function backdrop_command_pm_download() {
 
         // Get the core zip file.
         exec(
-          "wget --quiet --directory-prefix . https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
+          "wget --quiet -O . https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
         );
         // Extract the zip file.
         exec(
@@ -307,10 +307,11 @@ function backdrop_command_pm_update() {
         $site_name = config_get('system.core', 'site_name');
         drush_print_r("\t Backing up current core folder to ~/.drush/$site_name-core-$current_version");
         exec("mkdir -p ~/.drush/drush-tmp");
-        exec("wget --quiet --directory-prefix ~/.drush/drush-tmp $download_link");
+        exec("wget --quiet -O ~/.drush/drush-tmp/backdrop.zip $download_link");
         exec("unzip ~/.drush/drush-tmp/backdrop.zip -d ~/.drush/drush-tmp");
-        exec("mv ~/.drush/drush-tmp/backdrop/core $backdrop_root/core");
+        // Backup current core directory.
         exec("mv $backdrop_root/core ~/.drush/$site_name-core-$current_version");
+        exec("mv ~/.drush/drush-tmp/backdrop/core $backdrop_root/core");
         exec("rm -r ~/.drush/drush-tmp");
         exec("drush updb -y");
         drush_print_r("\n\tYou can retrieve your old core files, should you need
@@ -399,7 +400,7 @@ function backdrop_command_pm_update() {
           ~/.drush/$site_name-$project-$module_full_version");
           exec("mv $module_path/$project ~/.drush/$site_name-$project-$module_full_version");
           exec("mkdir -p ~/.drush/drush-tmp");
-          exec("wget --quiet --directory-prefix ~/.drush/drush-tmp $download_link");
+          exec("wget --quiet -O ~/.drush/drush-tmp/$project.zip $download_link");
           exec("unzip ~/.drush/drush-tmp/$project.zip -d ~/.drush/drush-tmp");
           exec("mv ~/.drush/drush-tmp/$project $module_path/$project");
           exec("rm -r ~/.drush/drush-tmp");
