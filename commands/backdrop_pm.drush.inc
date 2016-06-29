@@ -145,7 +145,7 @@ function backdrop_command_pm_download() {
 
         // Get the core zip file.
         exec(
-          "wget --quiet https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
+          "wget --quiet --directory-prefix . https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
         );
         // Extract the zip file.
         exec(
@@ -307,7 +307,7 @@ function backdrop_command_pm_update() {
         $site_name = config_get('system.core', 'site_name');
         drush_print_r("\t Backing up current core folder to ~/.drush/$site_name-core-$current_version");
         exec("mkdir -p ~/.drush/drush-tmp");
-        exec("wget --quiet -P ~/.drush/drush-tmp $download_link");
+        exec("wget --quiet --directory-prefix ~/.drush/drush-tmp $download_link");
         exec("unzip ~/.drush/drush-tmp/backdrop.zip -d ~/.drush/drush-tmp");
         exec("mv ~/.drush/drush-tmp/backdrop/core $backdrop_root/core");
         exec("mv $backdrop_root/core ~/.drush/$site_name-core-$current_version");
@@ -399,7 +399,7 @@ function backdrop_command_pm_update() {
           ~/.drush/$site_name-$project-$module_full_version");
           exec("mv $module_path/$project ~/.drush/$site_name-$project-$module_full_version");
           exec("mkdir -p ~/.drush/drush-tmp");
-          exec("wget --quiet -P ~/.drush/drush-tmp $download_link");
+          exec("wget --quiet --directory-prefix ~/.drush/drush-tmp $download_link");
           exec("unzip ~/.drush/drush-tmp/$project.zip -d ~/.drush/drush-tmp");
           exec("mv ~/.drush/drush-tmp/$project $module_path/$project");
           exec("rm -r ~/.drush/drush-tmp");
