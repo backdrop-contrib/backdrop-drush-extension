@@ -260,7 +260,7 @@ function backdrop_command_pm_update() {
   $projects = func_get_args();
   $projects[0] = strtolower($projects[0]);
   $backdrop_root = BACKDROP_ROOT;
-  if ($projects[0] === 'backdrop') {
+  if ($projects[0] === 'backdrop' || $projects[0] == 'core') {
     // get current Backdrop version info.
     $current_version = BACKDROP_VERSION;
     $parse_version = explode('.', $current_version);
@@ -304,7 +304,7 @@ function backdrop_command_pm_update() {
       $answer = drush_prompt("Do you wish to continue? (y or n)");
       $answer = strtolower($answer);
       if ($answer == 'y' || $answer == 'yes') {
-        $site_name = config_get('system.core', 'site_name');
+        $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
         drush_print_r("\t Backing up current core folder to ~/.drush/$site_name-core-$current_version");
         exec("mkdir -p ~/.drush/drush-tmp");
         exec("wget --quiet -O ~/.drush/drush-tmp/backdrop.zip $download_link");
