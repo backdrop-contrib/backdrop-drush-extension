@@ -313,7 +313,7 @@ function backdrop_command_pm_update() {
         exec("mv $backdrop_root/core ~/.drush/$site_name-core-$current_version");
         exec("mv ~/.drush/drush-tmp/backdrop/core $backdrop_root/core");
         exec("rm -r ~/.drush/drush-tmp");
-        exec("drush updb -y");
+        backdrop_command_updatedb();
         drush_print_r("\n\tYou can retrieve your old core files, should you need
         to from: ~/.drush/core-$current_version");
         if (file_exists("$backdrop_root/core")) {
