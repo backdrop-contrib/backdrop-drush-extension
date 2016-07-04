@@ -59,6 +59,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'pm-update':
       $backdrop_command = 'backdrop-pm-update';
       break;
+    case 'site-install':
+      $backdrop_command = 'backdrop-site-install';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.
