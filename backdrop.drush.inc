@@ -130,3 +130,80 @@ function system_module_implements_alter(&$implementations, $hook) {
     $implementations = array_diff_key($implementations, array('system' => NULL));
   }
 }
+
+/**
+ * Impements hook_drush_invoke_alter().
+ */
+function backdrop_drush_invoke_alter(&$modules, $hook) {
+  // The sql_drush_sql_sync_sanitize() function has Drupal-specific code for
+  // hashing passwords. We disable it and replace it with our own verion.
+  if ($hook === 'drush_sql_sync_sanitize') {
+    $key = array_search('sql', $modules);
+    if (isset($key)) {
+      unset($modules[$key]);
+    }
+  }
+}
+
+/**
+ * Implements hook_drush_sql_sync_sanitize().
+ *
+ * Replaces sql_drush_sql_sync_sanitize(), which has Drupal-specific code.
+ *
+ * @see sql_drush_sql_sync_sanitize()
+ * @see backdrop_drush_invoke_alter()
+ */
+function backdrop_drush_sql_sync_sanitize($site) {
+  $site_settings = drush_sitealias_get_record($site);
+  $databases = sitealias_get_databases_from_record($site_settings);
+  if (drush_get_option('db-prefix') || !empty($databases['default']['default']['prefix'])) {
+    $wrap_table_name = TRUE;
+  }
+  else {
+    $wrap_table_name = FALSE;
+  }
+  $user_table_updates = array();
+  $message_list = array();
+
+  // Sanitize passwords.
+  $newpassword = drush_get_option(array('sanitize-password', 'destination-sanitize-password'), 'password');
+  if ($newpassword != 'no' && $newpassword !== 0) {
+    $core = DRUSH_BACKDROP_CORE;
+    include_once $core . '/includes/password.inc';
+    include_once $core . '/includes/bootstrap.inc';
+    $hash = user_hash_password($newpassword);
+    $user_table_updates[] = "pass = '$hash'";
+    $message_list[] =  "passwords";
+  }
+
+  // Sanitize email addresses.
+  $newemail = drush_get_option(array('sanitize-email', 'destination-sanitize-email'), 'user+%uid@localhost.localdomain');
+  if ($newemail != 'no' && $newemail !== 0) {
+    if (strpos($newemail, '%') !== FALSE) {
+      $email_map = array('%uid' => "', uid, '", '%mail' => "', replace(mail, '@', '_'), '", '%name' => "', replace(name, ' ', '_'), '");
+      $newmail =  "concat('" . str_replace(array_keys($email_map), array_values($email_map), $newemail) . "')";
+      $user_table_updates[] = "mail = $newmail, init = $newmail";
+    }
+    else {
+      $user_table_updates[] = "mail = '$newemail', init = '$newemail'";
+    }
+    $message_list[] = 'email addresses';
+  }
+
+  if (!empty($user_table_updates)) {
+    $table = 'users';
+    if ($wrap_table_name) {
+      $table = "{{$table}}";
+    }
+    $sanitize_query = "UPDATE {$table} SET " . implode(', ', $user_table_updates) . " WHERE uid > 0;";
+    drush_sql_register_post_sync_op('user-email', dt('Reset !message in !table table', array('!message' => implode(' and ', $message_list), '!table' => $table)), $sanitize_query);
+  }
+
+  // Seems quite portable (SQLite?) - http://en.wikipedia.org/wiki/Truncate_(SQL)
+  $table = 'sessions';
+  if ($wrap_table_name) {
+    $table = "{{$table}}";
+  }
+  $sql_sessions = "TRUNCATE TABLE {$table};";
+  drush_sql_register_post_sync_op('sessions', dt('Truncate Backdrop\'s sessions table'), $sql_sessions);
+}
