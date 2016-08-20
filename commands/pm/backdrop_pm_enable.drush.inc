@@ -88,7 +88,7 @@ function _enable_project($project) {
   }
 
   if (module_enable(array($project), FALSE)) {
-    drush_print_r("\n\t\e[32mSuccess\e[0m Module $project enabled.\n");
+    drush_print_r("\n\t\e[32mSuccess\e[0m module $project enabled.\n");
     return TRUE;
   }
   drush_print_r("\n\t\e[31mFailed\e[0m to enable module " . $project);
