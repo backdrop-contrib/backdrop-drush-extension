@@ -16,7 +16,7 @@ function backdrop_pm_drush_command() {
       'module-name' => array('The name of the module(s) you would like to download.'),
     ),
     'options' => array(
-      'select' => 'Select the verison of the module.',
+      'select' => 'Select the version of the module.',
     ),
     'required-arguments' => TRUE,
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
