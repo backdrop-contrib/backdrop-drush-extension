@@ -295,27 +295,41 @@ function backdrop_command_pm_update() {
       drush_print_r("\n\t\tCurrent Backdrop Version: $current_version
       \t\tProposed Backdrop Version: $proposed_version\n");
       drush_print_r("\tCode updates will be made to Backdrop core.\n");
-      drush_print_r("\t\e[33mWARNING\033[0m:  Updating core will discard any
-      modifications made to Backdrop core files.  If you have made any
-      modifications to these files, please back them up before updating so that
-      you can re-create your modifications in the updated version of the file.\n\n");
-      drush_print_r("\tNote: Updating core can potentially break your site.
-      It is NOT recommended to update production sites without prior testing.\n\n");
-      $answer = drush_prompt("Do you wish to continue? (y or n)");
+      drush_print_r("\t\e[33mWARNING\e[0m: Updating core will discard any");
+      drush_print_r("\tmodifications made to Backdrop core files. If you have made any");
+      drush_print_r("\tmodifications to these files, please back them up before updating so that");
+      drush_print_r("\tyou can re-create your modifications in the updated version of the file.\n\n");
+      drush_print_r("\tNote: Updating core can potentially break your site.");
+      drush_print_r("\tIt is NOT recommended to update production sites without prior testing.\n\n");
+      $answer = drush_prompt("\t\e[34mDo you wish to continue?\e[0m (y or n)");
       $answer = strtolower($answer);
       if ($answer == 'y' || $answer == 'yes') {
+        $users_home_directory = $_SERVER['HOME'];
         $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
-        drush_print_r("\t Backing up current core folder to ~/.drush/$site_name-core-$current_version");
-        exec("mkdir -p ~/.drush/drush-tmp");
-        exec("wget --quiet -O ~/.drush/drush-tmp/backdrop.zip $download_link");
-        exec("unzip ~/.drush/drush-tmp/backdrop.zip -d ~/.drush/drush-tmp");
-        // Backup current core directory.
-        exec("mv $backdrop_root/core ~/.drush/$site_name-core-$current_version");
-        exec("mv ~/.drush/drush-tmp/backdrop/core $backdrop_root/core");
-        exec("rm -r ~/.drush/drush-tmp");
+        drush_print_r("\tBacking up current core folder to $users_home_directory/.drush/$site_name-core-$current_version");
+        exec("mkdir -p $users_home_directory/.drush/drush-tmp");
+        if (!file_exists("$users_home_directory/.drush/drush-tmp/")) {
+          drush_print_r("\t\e[31mFailed\e[0m: The drush-tmp directory could not be created.\n\n");
+          return FALSE;
+        }
+        exec("wget --quiet -O $users_home_directory/.drush/drush-tmp/backdrop.zip $download_link");
+        exec("unzip $users_home_directory/.drush/drush-tmp/backdrop.zip -d $users_home_directory/.drush/drush-tmp");
+        foreach (glob("$users_home_directory/.drush/drush-tmp/backdrop-backdrop*") as $glob) {
+          rename($glob, "$users_home_directory/.drush/drush-tmp/backdrop");
+        }
+        if (file_exists("$users_home_directory/.drush/drush-tmp/backdrop")) {
+          // Backup current core directory.
+          exec("mv $backdrop_root/core $users_home_directory/.drush/$site_name-core-$current_version");
+          exec("mv $users_home_directory/.drush/drush-tmp/backdrop/core $backdrop_root/core");
+          exec("rm -r $users_home_directory/.drush/drush-tmp");
+        }
+        else {
+          drush_print_r("\t\e[031mError\e[0m: New version of backdrop could not be found.");
+          return FALSE;
+        }
         backdrop_command_updatedb();
         drush_print_r("\n\tYou can retrieve your old core files, should you need
-        to from: ~/.drush/core-$current_version");
+        to from: $users_home_directory/.drush/core-$current_version");
         if (file_exists("$backdrop_root/core")) {
           drush_print_r("\t\e[32mSuccess\033[0m: Backdrop updated to $proposed_version.");
         }
@@ -392,21 +406,25 @@ function backdrop_command_pm_update() {
         you can re-create your modifications in the updated version of the file.\n\n");
         drush_print_r("\tNote: Updating modules can potentially break your site.
         It is NOT recommended to update production sites without prior testing.\n\n");
-        $answer = drush_prompt("Do you wish to continue? (y or n)");
+        $answer = drush_prompt("\t\e[34mDo you wish to continue?\e[0m (y or n)");
         $answer = strtolower($answer);
         if ($answer == 'y' || $answer == 'yes') {
+          $users_home_directory = $_SERVER['HOME'];
           $site_name = config_get('system.core', 'site_name');
           drush_print_r("\t Backing up current \033[1m$project\033[0m folder to
-          ~/.drush/$site_name-$project-$module_full_version");
-          exec("mv $module_path/$project ~/.drush/$site_name-$project-$module_full_version");
-          exec("mkdir -p ~/.drush/drush-tmp");
-          exec("wget --quiet -O ~/.drush/drush-tmp/$project.zip $download_link");
-          exec("unzip ~/.drush/drush-tmp/$project.zip -d ~/.drush/drush-tmp");
-          exec("mv ~/.drush/drush-tmp/$project $module_path/$project");
-          exec("rm -r ~/.drush/drush-tmp");
+          $users_home_directory/.drush/$site_name-$project-$module_full_version");
+          exec("mv $module_path/$project $users_home_directory/.drush/$site_name-$project-$module_full_version");
+          exec("mkdir -p $users_home_directory/.drush/drush-tmp");
+          exec("wget --quiet -O $users_home_directory/.drush/drush-tmp/$project.zip $download_link");
+          exec("unzip $users_home_directory/.drush/drush-tmp/$project.zip -d $users_home_directory/.drush/drush-tmp");
+          foreach (glob("$users_home_directory/.drush/drush-tmp/backdrop-contrib-$project-*") as $glob) {
+            rename($glob, "$users_home_directory/.drush/drush-tmp/$project");
+          }
+          exec("mv $users_home_directory/.drush/drush-tmp/$project $module_path/$project");
+          exec("rm -r $users_home_directory/.drush/drush-tmp");
           exec("drush updb -y");
           drush_print_r("\n\tYou can retrieve your old \033[1m$project\033[0m files, should you need
-          to, from: ~/.drush/$site_name-$project-$module_version");
+          to, from: $users_home_directory/.drush/$site_name-$project-$module_full_version");
           if (file_exists("$module_path/$project")) {
             drush_print_r("\t\e[32mSuccess\033[0m: Project \033[1m$project\033[0m updated to $proposed_version.");
           }
