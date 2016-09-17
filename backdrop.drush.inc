@@ -84,6 +84,7 @@ function backdrop_drush_command_alter(&$command) {
     'sql-dump',
     'sql-query',
     'sql-sanitize',
+    'release-notes',
   );
 
   $compatible_commands = array(
