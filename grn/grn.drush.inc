@@ -173,7 +173,7 @@ function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
  * Generates the output.
  */
 function _drush_grn_format_changes($items, $prev_tag, $tag1, $tag2, $git) {
-  $rendered = "<p>$tag2";
+  $rendered = "<p>Changes since $prev_tag";
   if (drush_get_option('commit-count')) {
     $rendered .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
   }
@@ -190,7 +190,7 @@ function _drush_grn_format_changes($items, $prev_tag, $tag1, $tag2, $git) {
  * Generated output in MD format.
  */
 function _drush_grn_format_md($items, $prev_tag, $tag1, $tag2, $git) {
-  $rendered = "**$tag2";
+  $rendered = "**Changes since $prev_tag";
   if (drush_get_option('commit-count')) {
     $rendered .= ' (' . trim(drush_get_option('commit-count')) . ' commits)';
   }
