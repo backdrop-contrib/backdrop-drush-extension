@@ -259,6 +259,7 @@ function backdrop_command_pm_update() {
   }
   $projects = func_get_args();
   $projects[0] = strtolower($projects[0]);
+  $projects[0] = rtrim($projects[0], '/');
   $backdrop_root = BACKDROP_ROOT;
   if ($projects[0] === 'backdrop' || $projects[0] == 'core') {
     // get current Backdrop version info.
