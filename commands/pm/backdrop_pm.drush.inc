@@ -258,194 +258,194 @@ function backdrop_command_pm_update() {
     return;
   }
   $projects = func_get_args();
-  $projects[0] = strtolower($projects[0]);
-  $backdrop_root = BACKDROP_ROOT;
-  if ($projects[0] === 'backdrop' || $projects[0] == 'core') {
-    // get current Backdrop version info.
-    $current_version = BACKDROP_VERSION;
-    $parse_version = explode('.', $current_version);
-    $current_version_major = $parse_version[0];
-    $current_version_minor = $parse_version[1];
-    $current_version_patch = $parse_version[2];
-    // Get proposed Backdrop version info.
-    $xml = backdrop_pm_get_tags("https://updates.backdropcms.org/release-history/backdrop/1.x");
-    $download_link = $xml->releases->release->download_link;
-    $proposed_version = $xml->releases->release->version;
-    $proposed_version_major = $xml->releases->release->version_major;
-    $proposed_version_minor = $xml->releases->release->version_minor;
-    $proposed_version_patch = $xml->releases->release->version_patch;
-
-    if ($current_version == $proposed_version) {
-      drush_print_r("\n\t\tBackdrop is up to date :).\n");
-    }
-    elseif ($current_version_major < $proposed_version_major) {
-      drush_print_r("\n\t\tYou can not use drush up to move between Major Versions of Backdrop.");
-    }
-    elseif (
-      (
-        $current_version_major == $proposed_version_major &&
-        $current_version_minor == $proposed_version_minor &&
-        $current_version_patch < $proposed_version_patch
-      ) ||
-      (
-        $current_version_major == $proposed_version_major &&
-        $current_version_minor < $proposed_version_minor
-      )
-    ) {
-      drush_print_r("\n\t\tCurrent Backdrop Version: $current_version
-      \t\tProposed Backdrop Version: $proposed_version\n");
-      drush_print_r("\tCode updates will be made to Backdrop core.\n");
-      drush_print_r("\t\e[33mWARNING\e[0m: Updating core will discard any");
-      drush_print_r("\tmodifications made to Backdrop core files. If you have made any");
-      drush_print_r("\tmodifications to these files, please back them up before updating so that");
-      drush_print_r("\tyou can re-create your modifications in the updated version of the file.\n\n");
-      drush_print_r("\tNote: Updating core can potentially break your site.");
-      drush_print_r("\tIt is NOT recommended to update production sites without prior testing.\n\n");
-      $answer = drush_prompt("\t\e[34mDo you wish to continue?\e[0m (y or n)");
-      $answer = strtolower($answer);
-      if ($answer == 'y' || $answer == 'yes') {
-        $users_home_directory = $_SERVER['HOME'];
-        $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
-        drush_print_r("\tBacking up current core folder to $users_home_directory/.drush/$site_name-core-$current_version");
-        exec("mkdir -p $users_home_directory/.drush/drush-tmp");
-        if (!file_exists("$users_home_directory/.drush/drush-tmp/")) {
-          drush_print_r("\t\e[31mFailed\e[0m: The drush-tmp directory could not be created.\n\n");
-          return FALSE;
-        }
-        exec("wget --quiet -O $users_home_directory/.drush/drush-tmp/backdrop.zip $download_link");
-        exec("unzip $users_home_directory/.drush/drush-tmp/backdrop.zip -d $users_home_directory/.drush/drush-tmp");
-        foreach (glob("$users_home_directory/.drush/drush-tmp/backdrop-backdrop*") as $glob) {
-          rename($glob, "$users_home_directory/.drush/drush-tmp/backdrop");
-        }
-        if (file_exists("$users_home_directory/.drush/drush-tmp/backdrop")) {
-          // Backup current core directory.
-          exec("mv $backdrop_root/core $users_home_directory/.drush/$site_name-core-$current_version");
-          exec("mv $users_home_directory/.drush/drush-tmp/backdrop/core $backdrop_root/core");
-          exec("rm -r $users_home_directory/.drush/drush-tmp");
-        }
-        else {
-          drush_print_r("\t\e[031mError\e[0m: New version of backdrop could not be found.");
-          return FALSE;
-        }
-        backdrop_command_updatedb();
-        drush_print_r("\n\tYou can retrieve your old core files, should you need
-        to from: $users_home_directory/.drush/core-$current_version");
-        if (file_exists("$backdrop_root/core")) {
-          drush_print_r("\t\e[32mSuccess\033[0m: Backdrop updated to $proposed_version.");
-        }
-        else {
-          drush_print_r("\t\033[31mFailed\033[0m: Upgrade failed.");
-        }
-      }
-      else {
-        drush_print_r("\tBackdrop core update cancelled.");
-      }
-    }
-    else {
-      drush_print_r("\n\tNo Backdrop core updates available. Your Backdrop is up to date!\n");
-    }
-  } // end of drush up backdrop.
-  elseif (!empty($projects[0])) {
-    if (file_exists("$backdrop_root/modules/contrib")) {
-      $module_path = "$backdrop_root/modules/contrib";
-    }
-    else {
-      $module_path = "$backdrop_root/modules";
-    }
-    $ls = scandir($module_path);
-    $projects[0] = strtolower($projects[0]);
-    if (in_array($projects[0], $ls)) {
-      $info = file("$module_path/$projects[0]/$projects[0].info", FILE_IGNORE_NEW_LINES);
-      foreach($info as $i) {
-        if (strpos($i, 'version =') !== FALSE) {
-          $module_version_raw = $i;
-        }
-      }
-      $module_version_arr = explode(' = ', $module_version_raw);
-      $module_full_version = trim($module_version_arr[1]);
-      $module_sem_version_arr = explode('-', $module_version_arr[1]);
-      $module_sem_version = trim($module_sem_version_arr[1]);
-      $module_core_compat = trim($module_sem_version_arr[0]);
-      $module_sem_version_parts = explode('.', $module_sem_version);
-      $module_version_major = $module_sem_version_parts[0];
-      $module_version_minor = $module_sem_version_parts[1];
-      $module_version_patch = $module_sem_version_parts[2];
+  foreach($projects as $project) {
+    $project = strtolower($project);
+    $backdrop_root = BACKDROP_ROOT;
+    if ($project === 'backdrop' || $project == 'core') {
+      // get current Backdrop version info.
+      $current_version = BACKDROP_VERSION;
+      $parse_version = explode('.', $current_version);
+      $current_version_major = $parse_version[0];
+      $current_version_minor = $parse_version[1];
+      $current_version_patch = $parse_version[2];
       // Get proposed Backdrop version info.
-      $project = $projects[0];
-      $xml = backdrop_pm_get_tags("https://updates.backdropcms.org/release-history/$project/1.x");
+      $xml = backdrop_pm_get_tags("https://updates.backdropcms.org/release-history/backdrop/1.x");
       $download_link = $xml->releases->release->download_link;
       $proposed_version = $xml->releases->release->version;
       $proposed_version_major = $xml->releases->release->version_major;
       $proposed_version_minor = $xml->releases->release->version_minor;
       $proposed_version_patch = $xml->releases->release->version_patch;
 
-      if (empty($proposed_version)) {
-        drush_print_r("\tThere are no official releases for \033[1m$project\033[0m.
-        Upgrading is not possible.
-        ");
+      if ($current_version == $proposed_version) {
+        drush_print_r("\n\t\tBackdrop is up to date :).\n");
       }
-      elseif ($module_full_version == $proposed_version) {
-        drush_print_r("\n\t\tProject \033[1m$project\033[0m is up to date :).\n");
+      elseif ($current_version_major < $proposed_version_major) {
+        drush_print_r("\n\t\tYou can not use drush up to move between Major Versions of Backdrop.");
       }
       elseif (
         (
-          $module_version_major == $proposed_version_major &&
-          $module_version_minor == $proposed_version_minor &&
-          $module_version_patch < $proposed_version_patch
+          $current_version_major == $proposed_version_major &&
+          $current_version_minor == $proposed_version_minor &&
+          $current_version_patch < $proposed_version_patch
         ) ||
         (
-          $module_version_major == $proposed_version_major &&
-          $module_version_minor < $proposed_version_minor
+          $current_version_major == $proposed_version_major &&
+          $current_version_minor < $proposed_version_minor
         )
       ) {
-        drush_print_r("\n\t\tCurrent \033[1m$project\033[0m Version: $module_full_version");
-        drush_print_r("\t\tProposed \033[1m$project\033[0m Version: $proposed_version\n");
-        drush_print_r("\t\e[33mWARNING\033[0m:  Updating \033[1m$project\033[0m will discard any
-        modifications made to \033[1m$project\033[0m files.  If you have made any
-        modifications to these files, please back them up before updating so that
-        you can re-create your modifications in the updated version of the file.\n\n");
-        drush_print_r("\tNote: Updating modules can potentially break your site.
-        It is NOT recommended to update production sites without prior testing.\n\n");
+        drush_print_r("\n\t\tCurrent Backdrop Version: $current_version
+        \t\tProposed Backdrop Version: $proposed_version\n");
+        drush_print_r("\tCode updates will be made to Backdrop core.\n");
+        drush_print_r("\t\e[33mWARNING\e[0m: Updating core will discard any");
+        drush_print_r("\tmodifications made to Backdrop core files. If you have made any");
+        drush_print_r("\tmodifications to these files, please back them up before updating so that");
+        drush_print_r("\tyou can re-create your modifications in the updated version of the file.\n\n");
+        drush_print_r("\tNote: Updating core can potentially break your site.");
+        drush_print_r("\tIt is NOT recommended to update production sites without prior testing.\n\n");
         $answer = drush_prompt("\t\e[34mDo you wish to continue?\e[0m (y or n)");
         $answer = strtolower($answer);
         if ($answer == 'y' || $answer == 'yes') {
           $users_home_directory = $_SERVER['HOME'];
-          $site_name = config_get('system.core', 'site_name');
-          drush_print_r("\t Backing up current \033[1m$project\033[0m folder to
-          $users_home_directory/.drush/$site_name-$project-$module_full_version");
-          exec("mv $module_path/$project $users_home_directory/.drush/$site_name-$project-$module_full_version");
+          $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
+          drush_print_r("\tBacking up current core folder to $users_home_directory/.drush/$site_name-core-$current_version");
           exec("mkdir -p $users_home_directory/.drush/drush-tmp");
-          exec("wget --quiet -O $users_home_directory/.drush/drush-tmp/$project.zip $download_link");
-          exec("unzip $users_home_directory/.drush/drush-tmp/$project.zip -d $users_home_directory/.drush/drush-tmp");
-          foreach (glob("$users_home_directory/.drush/drush-tmp/backdrop-contrib-$project-*") as $glob) {
-            rename($glob, "$users_home_directory/.drush/drush-tmp/$project");
+          if (!file_exists("$users_home_directory/.drush/drush-tmp/")) {
+            drush_print_r("\t\e[31mFailed\e[0m: The drush-tmp directory could not be created.\n\n");
+            return FALSE;
           }
-          exec("mv $users_home_directory/.drush/drush-tmp/$project $module_path/$project");
-          exec("rm -r $users_home_directory/.drush/drush-tmp");
-          exec("drush updb -y");
-          drush_print_r("\n\tYou can retrieve your old \033[1m$project\033[0m files, should you need
-          to, from: $users_home_directory/.drush/$site_name-$project-$module_full_version");
-          if (file_exists("$module_path/$project")) {
-            drush_print_r("\t\e[32mSuccess\033[0m: Project \033[1m$project\033[0m updated to $proposed_version.");
+          exec("wget --quiet -O $users_home_directory/.drush/drush-tmp/backdrop.zip $download_link");
+          exec("unzip $users_home_directory/.drush/drush-tmp/backdrop.zip -d $users_home_directory/.drush/drush-tmp");
+          foreach (glob("$users_home_directory/.drush/drush-tmp/backdrop-backdrop*") as $glob) {
+            rename($glob, "$users_home_directory/.drush/drush-tmp/backdrop");
+          }
+          if (file_exists("$users_home_directory/.drush/drush-tmp/backdrop")) {
+            // Backup current core directory.
+            exec("mv $backdrop_root/core $users_home_directory/.drush/$site_name-core-$current_version");
+            exec("mv $users_home_directory/.drush/drush-tmp/backdrop/core $backdrop_root/core");
+            exec("rm -r $users_home_directory/.drush/drush-tmp");
           }
           else {
-            drush_print_r("\t\033[31mFailed\033[0m: Project $project upgrade failed.");
+            drush_print_r("\t\e[031mError\e[0m: New version of backdrop could not be found.");
+            return FALSE;
           }
-
+          backdrop_command_updatedb();
+          drush_print_r("\n\tYou can retrieve your old core files, should you need
+          to from: $users_home_directory/.drush/core-$current_version");
+          if (file_exists("$backdrop_root/core")) {
+            drush_print_r("\t\e[32mSuccess\033[0m: Backdrop updated to $proposed_version.");
+          }
+          else {
+            drush_print_r("\t\033[31mFailed\033[0m: Upgrade failed.");
+          }
         }
         else {
           drush_print_r("\tBackdrop core update cancelled.");
         }
       }
-    }
+      else {
+        drush_print_r("\n\tNo Backdrop core updates available. Your Backdrop is up to date!\n");
+      }
+    } // end of drush up backdrop.
+    elseif (!empty($project)) {
+      if (file_exists("$backdrop_root/modules/contrib")) {
+        $module_path = "$backdrop_root/modules/contrib";
+      }
+      else {
+        $module_path = "$backdrop_root/modules";
+      }
+      $ls = scandir($module_path);
+      if (in_array($project, $ls)) {
+        $info = file("$module_path/$project/$project.info", FILE_IGNORE_NEW_LINES);
+        foreach($info as $i) {
+          if (strpos($i, 'version =') !== FALSE) {
+            $module_version_raw = $i;
+          }
+        }
+        $module_version_arr = explode(' = ', $module_version_raw);
+        $module_full_version = trim($module_version_arr[1]);
+        $module_sem_version_arr = explode('-', $module_version_arr[1]);
+        $module_sem_version = trim($module_sem_version_arr[1]);
+        $module_core_compat = trim($module_sem_version_arr[0]);
+        $module_sem_version_parts = explode('.', $module_sem_version);
+        $module_version_major = $module_sem_version_parts[0];
+        $module_version_minor = $module_sem_version_parts[1];
+        $module_version_patch = $module_sem_version_parts[2];
+        // Get proposed Backdrop version info.
+        $xml = backdrop_pm_get_tags("https://updates.backdropcms.org/release-history/$project/1.x");
+        $download_link = $xml->releases->release->download_link;
+        $proposed_version = $xml->releases->release->version;
+        $proposed_version_major = $xml->releases->release->version_major;
+        $proposed_version_minor = $xml->releases->release->version_minor;
+        $proposed_version_patch = $xml->releases->release->version_patch;
+
+        if (empty($proposed_version)) {
+          drush_print_r("\tThere are no official releases for \033[1m$project\033[0m.
+          Upgrading is not possible.
+          ");
+        }
+        elseif ($module_full_version == $proposed_version) {
+          drush_print_r("\n\t\tProject \033[1m$project\033[0m is up to date :).\n");
+        }
+        elseif (
+          (
+            $module_version_major == $proposed_version_major &&
+            $module_version_minor == $proposed_version_minor &&
+            $module_version_patch < $proposed_version_patch
+          ) ||
+          (
+            $module_version_major == $proposed_version_major &&
+            $module_version_minor < $proposed_version_minor
+          )
+        ) {
+          drush_print_r("\n\t\tCurrent \033[1m$project\033[0m Version: $module_full_version");
+          drush_print_r("\t\tProposed \033[1m$project\033[0m Version: $proposed_version\n");
+          drush_print_r("\t\e[33mWARNING\033[0m:  Updating \033[1m$project\033[0m will discard any
+          modifications made to \033[1m$project\033[0m files.  If you have made any
+          modifications to these files, please back them up before updating so that
+          you can re-create your modifications in the updated version of the file.\n\n");
+          drush_print_r("\tNote: Updating modules can potentially break your site.
+          It is NOT recommended to update production sites without prior testing.\n\n");
+          $answer = drush_prompt("\t\e[34mDo you wish to continue?\e[0m (y or n)");
+          $answer = strtolower($answer);
+          if ($answer == 'y' || $answer == 'yes') {
+            $users_home_directory = $_SERVER['HOME'];
+            $site_name = config_get('system.core', 'site_name');
+            drush_print_r("\t Backing up current \033[1m$project\033[0m folder to
+            $users_home_directory/.drush/$site_name-$project-$module_full_version");
+            exec("mv $module_path/$project $users_home_directory/.drush/$site_name-$project-$module_full_version");
+            exec("mkdir -p $users_home_directory/.drush/drush-tmp");
+            exec("wget --quiet -O $users_home_directory/.drush/drush-tmp/$project.zip $download_link");
+            exec("unzip $users_home_directory/.drush/drush-tmp/$project.zip -d $users_home_directory/.drush/drush-tmp");
+            foreach (glob("$users_home_directory/.drush/drush-tmp/backdrop-contrib-$project-*") as $glob) {
+              rename($glob, "$users_home_directory/.drush/drush-tmp/$project");
+            }
+            exec("mv $users_home_directory/.drush/drush-tmp/$project $module_path/$project");
+            exec("rm -r $users_home_directory/.drush/drush-tmp");
+            exec("drush updb -y");
+            drush_print_r("\n\tYou can retrieve your old \033[1m$project\033[0m files, should you need
+            to, from: $users_home_directory/.drush/$site_name-$project-$module_full_version");
+            if (file_exists("$module_path/$project")) {
+              drush_print_r("\t\e[32mSuccess\033[0m: Project \033[1m$project\033[0m updated to $proposed_version.");
+            }
+            else {
+              drush_print_r("\t\033[31mFailed\033[0m: Project $project upgrade failed.");
+            }
+
+          }
+          else {
+            drush_print_r("\tBackdrop core update cancelled.");
+          }
+        }
+      }
+      else {
+        drush_print_r("\n\t\e[33mWARNING\033[0m: There is no project \e[1m$project\033[0m intalled on your backdrop site.");
+        drush_print_r("\tNo action taken.\n");
+      }
+    } // end of drush up $project
     else {
-      drush_print_r("\n\t\e[33mWARNING\033[0m: There is no project \e[1m$projects[0]\033[0m intalled on your backdrop site.");
-      drush_print_r("\tNo action taken.\n");
+      drush_print_r("\n\tYou must specify a project to update. For example:\n");
+      drush_print_r("\t\tdrush up project_name");
+      drush_print_r("\n\tWhere project_name is the machine name of the project like webform or devel etc.\n");
     }
-  } // end of drush up $project[0]
-  else {
-    drush_print_r("\n\tYou must specify a project to update. For example:\n");
-    drush_print_r("\t\tdrush up project_name");
-    drush_print_r("\n\tWhere project_name is the machine name of the project like webform or devel etc.\n");
   }
 }
