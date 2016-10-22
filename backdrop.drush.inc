@@ -65,6 +65,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'user-password':
       $backdrop_command = 'backdrop-user-password';
       break;
+    case 'config-export':
+      $backdrop_command = 'backdrop-config-export';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.
