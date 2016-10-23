@@ -6,6 +6,7 @@
  */
 
 use \Drush\Boot\BackdropBoot;
+use Drush\Log\LogLevel;
 
 /**
  * Implements hook_drush_command().
@@ -18,7 +19,7 @@ function backdrop_config_export_drush_command() {
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
     'aliases' => array('bcex'),
     'examples' => array(
-      'drush cex' => 'Exports the configuration for the current site to the staging config directory.',
+      'drush bcex' => 'Exports the configuration for the current site to the staging config directory.',
     ),
   );
 
@@ -31,8 +32,6 @@ function backdrop_config_export_drush_command() {
 function backdrop_config_export() {
   try {
     require_once BACKDROP_ROOT . '/settings.php';
-    //global $config_directories['active'];
-    drush_print_r($config_directories);
     $config_dir_active = $config_directories['active'];
     $config_dir_staging = $config_directories['staging'];
     passthru(
@@ -41,8 +40,9 @@ function backdrop_config_export() {
     passthru(
       "cp -R " . BACKDROP_ROOT . "/$config_dir_active/  " . BACKDROP_ROOT . "/$config_dir_staging"
     );
+    drush_log(dt('Configuration is exported to !staging', array('!staging' => $config_dir_staging)), LogLevel::SUCCESS);
   }
   catch(Exception $e) {
-    drush_print_r('couldn\t do it' . $e);
+    drush_print_r('couldn\'t do it ' . $e);
   }
 }
