@@ -16,7 +16,7 @@ function backdrop_config_export_drush_command() {
     'description' => 'Export a Backdrop site configuration.',
     'callback' => 'backdrop_config_export',
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
-    'aliases' => array('cex'),
+    'aliases' => array('bcex'),
     'examples' => array(
       'drush cex' => 'Exports the configuration for the current site to the staging config directory.',
     ),
