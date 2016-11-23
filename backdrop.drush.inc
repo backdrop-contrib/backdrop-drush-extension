@@ -68,6 +68,10 @@ function backdrop_drush_command_alter(&$command) {
     case 'config-export':
       $backdrop_command = 'backdrop-config-export';
       break;
+    case 'config-import':
+    case 'backdrop-config-import':
+      $backdrop_command = 'backdrop-config-import';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.
