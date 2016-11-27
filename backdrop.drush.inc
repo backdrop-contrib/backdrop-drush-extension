@@ -62,6 +62,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'pm-enable':
       $backdrop_command = 'backdrop-pm-enable';
       break;
+      case 'pm-disable':
+        $backdrop_command = 'backdrop-pm-disable';
+        break;
     case 'user-password':
       $backdrop_command = 'backdrop-user-password';
       break;
@@ -107,7 +110,7 @@ function backdrop_drush_command_alter(&$command) {
   }
   // Commands provided by modules.
   if ($command['scope'] === 'site') {
-    return;
+    //return;
   }
 
   // And finally commands that are not supported (yet) use the fallback command.
