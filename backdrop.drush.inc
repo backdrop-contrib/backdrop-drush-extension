@@ -105,10 +105,6 @@ function backdrop_drush_command_alter(&$command) {
     $GLOBALS['settings']['backdrop_drupal_compatibility'] = TRUE;
     $backdrop_command = $command['command'];
   }
-  // Commands provided by modules.
-  if ($command['scope'] === 'site') {
-    return;
-  }
 
   // And finally commands that are not supported (yet) use the fallback command.
   $commands = drush_get_commands();
