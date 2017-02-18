@@ -294,8 +294,8 @@ function backdrop_command_pm_update() {
           $current_version_minor < $proposed_version_minor
         )
       ) {
-        drush_print_r("\n\t\tCurrent Backdrop Version: $current_version
-        \t\tProposed Backdrop Version: $proposed_version\n");
+        drush_print_r("\n\t\tCurrent Backdrop Version: $current_version");
+        drush_print_r("\t\tProposed Backdrop Version: $proposed_version\n");
         drush_print_r("\tCode updates will be made to Backdrop core.\n");
         drush_print_r("\t\e[33mWARNING\e[0m: Updating core will discard any");
         drush_print_r("\tmodifications made to Backdrop core files. If you have made any");
