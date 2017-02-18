@@ -362,11 +362,20 @@ function backdrop_command_pm_update() {
             $module_version_raw = $i;
           }
         }
+        if (!$module_version_raw) {
+          drush_print_r("\tCurrent module version of \033[1m$project\033[0m could not be determined.");
+          drush_print_r("\tThis is usually because the module doesn't have and official release.");
+        }
         $module_version_arr = explode(' = ', $module_version_raw);
         $module_full_version = trim($module_version_arr[1]);
-        $module_sem_version_arr = explode('-', $module_version_arr[1]);
-        $module_sem_version = trim($module_sem_version_arr[1]);
-        $module_core_compat = trim($module_sem_version_arr[0]);
+        if (strpos($module_full_version, '-') !== FALSE) {
+          $module_sem_version_arr = explode('-', $module_version_arr[1]);
+          $module_sem_version = trim($module_sem_version_arr[1]);
+          $module_core_compat = trim($module_sem_version_arr[0]);
+        }
+        else {
+           $module_sem_version = $module_full_version;
+        }
         $module_sem_version_parts = explode('.', $module_sem_version);
         $module_version_major = $module_sem_version_parts[0];
         $module_version_minor = $module_sem_version_parts[1];
@@ -379,12 +388,18 @@ function backdrop_command_pm_update() {
         $proposed_version_minor = $xml->releases->release->version_minor;
         $proposed_version_patch = $xml->releases->release->version_patch;
 
+        // Check if proposed version has prepended Backrop compatibility string.
+        if (strpos($proposed_version, "-") !== FALSE) {
+          $proposed_version_array = explode('-', $proposed_version);
+          $proposed_version = $proposed_version_array[1];
+        }
+
         if (empty($proposed_version)) {
           drush_print_r("\tThere are no official releases for \033[1m$project\033[0m.
           Upgrading is not possible.
           ");
         }
-        elseif ($module_full_version == $proposed_version) {
+        elseif ($module_sem_version == $proposed_version) {
           drush_print_r("\n\t\tProject \033[1m$project\033[0m is up to date :).\n");
         }
         elseif (
@@ -404,8 +419,8 @@ function backdrop_command_pm_update() {
           modifications made to \033[1m$project\033[0m files.  If you have made any
           modifications to these files, please back them up before updating so that
           you can re-create your modifications in the updated version of the file.\n\n");
-          drush_print_r("\tNote: Updating modules can potentially break your site.
-          It is NOT recommended to update production sites without prior testing.\n\n");
+          drush_print_r("\tNote: Updating modules can potentially break your site.");
+          drush_print_r("\tIt is NOT recommended to update production sites without prior testing.\n\n");
           $answer = drush_prompt("\t\e[34mDo you wish to continue?\e[0m (y or n)");
           $answer = strtolower($answer);
           if ($answer == 'y' || $answer == 'yes') {
