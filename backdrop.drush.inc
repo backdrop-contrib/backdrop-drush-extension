@@ -65,7 +65,14 @@ function backdrop_drush_command_alter(&$command) {
     case 'user-password':
       $backdrop_command = 'backdrop-user-password';
       break;
-    case 'fix-permission':
+    case 'config-export':
+      $backdrop_command = 'backdrop-config-export';
+      break;
+    case 'config-import':
+    case 'backdrop-config-import':
+      $backdrop_command = 'backdrop-config-import';
+      break;
+    case 'fix-permissions':
       $backdrop_command = 'fix-permissions';
       break;
   }
