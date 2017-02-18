@@ -102,6 +102,9 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     //$options['prefix'] = drush_prompt("\tdriver: ");
     $options['database'] = drush_prompt("\t\033[94mDatabase name\033[0m");
     drush_print_r("\033[0m\n");
+
+    // Check if the database exists and create it if not.
+    _create_database($url['user'], $url['pass'], $options['database']);
   }
   else {
     $url = (object)array_map('urldecode', $url);
@@ -115,6 +118,9 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
       // Remove leading / character from database names.
       'database' => substr($url->path, 1),
     );
+
+    // Check if the database exists and create it if not.
+    _create_database($url->user, $url->pass, substr($url->path, 1));
   }
 
   $settings = array(
@@ -162,7 +168,6 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
   require_once './core/includes/install.core.inc';
 
   try {
-    //render_text(array('value' => "Installing Backdrop. This may take a moment...", '#color' => 'bold_blue'));
     drush_print_r("\t" . dt("Installing Backdrop. This may take a moment...") . "\n\n");
     install_backdrop($settings);
     drush_print_r(dt("\t\033[92mBackdrop installed successfully.\033[0m\n"));
@@ -175,4 +180,22 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     drush_print_r(dt("An error occurred. Output of installation attempt is as follows: !error", array( '!error' => $e->getMessage())), 'error');
     return FALSE;
   }
+}
+
+/**
+ * Helper function to create the database if it does not exist.
+ *
+ * @param string $user
+ *   The mysql username to execute the create command as.
+ *
+ * @param string $pass
+ *   The password of the mysql user.
+ *
+ * @param string $database
+ *   The name of the database to create.
+ */
+function _create_database($user, $pass, $database) {
+  exec(
+    "mysql -u$user -p$pass -e \"create database if not exists $database;\""
+  );
 }
