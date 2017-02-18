@@ -56,6 +56,8 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     'locale' => drush_get_option('Locale', 'en'),
     'site-mail' => drush_get_option('site-mail', 'admin@example.com'),
     'root' => drush_get_option('root', ''),
+    'user' => drush_get_option('user', ''),
+    'database' => drush_get_option('database', ''),
   );
 
   $additional_form_options = array();
