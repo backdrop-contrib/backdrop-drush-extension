@@ -366,7 +366,7 @@ function backdrop_command_pm_update() {
         }
         if (!$module_version_raw) {
           drush_print_r("\tCurrent module version of \033[1m$project\033[0m could not be determined.");
-          drush_print_r("\tThis is usually because the module doesn't have and official release.");
+          drush_print_r("\tThis is usually because the module doesn't have an official release.");
         }
         $module_version_arr = explode(' = ', $module_version_raw);
         $module_full_version = trim($module_version_arr[1]);
@@ -450,7 +450,6 @@ function backdrop_command_pm_update() {
             else {
               drush_print_r("\t\033[31mFailed\033[0m: Project $project upgrade failed.");
             }
-
           }
           else {
             drush_print_r("\tBackdrop core update cancelled.");
