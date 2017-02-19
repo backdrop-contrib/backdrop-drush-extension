@@ -308,7 +308,8 @@ function backdrop_command_pm_update() {
         if ($answer == 'y' || $answer == 'yes') {
           $users_home_directory = $_SERVER['HOME'];
           $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
-          drush_print_r("\tBacking up current core folder to $users_home_directory/.drush/$site_name-core-$current_version");
+          $timestamp = date_timestamp_get(date_create());
+          drush_print_r("\tBacking up current core folder to $users_home_directory/drush-backups/$site_name/$timestamp/core-$current_version");
           exec("mkdir -p $users_home_directory/.drush/drush-tmp");
           if (!file_exists("$users_home_directory/.drush/drush-tmp/")) {
             drush_print_r("\t\e[31mFailed\e[0m: The drush-tmp directory could not be created.\n\n");
@@ -321,7 +322,8 @@ function backdrop_command_pm_update() {
           }
           if (file_exists("$users_home_directory/.drush/drush-tmp/backdrop")) {
             // Backup current core directory.
-            exec("mv $backdrop_root/core $users_home_directory/.drush/$site_name-core-$current_version");
+            exec("mkdir -p $users_home_directory/drush-backups/$site_name/$timestamp/");
+            exec("mv $backdrop_root/core $users_home_directory/drush-backups/$site_name/$timestamp/core-$current_version");
             exec("mv $users_home_directory/.drush/drush-tmp/backdrop/core $backdrop_root/core");
             exec("rm -r $users_home_directory/.drush/drush-tmp");
           }
@@ -425,10 +427,12 @@ function backdrop_command_pm_update() {
           $answer = strtolower($answer);
           if ($answer == 'y' || $answer == 'yes') {
             $users_home_directory = $_SERVER['HOME'];
-            $site_name = config_get('system.core', 'site_name');
+            $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
+            $timestamp = date_timestamp_get(date_create());
+            exec("mkdir -p $users_home_directory/drush-backups/$site_name/$timestamp/modules/");
             drush_print_r("\t Backing up current \033[1m$project\033[0m folder to
-            $users_home_directory/.drush/$site_name-$project-$module_full_version");
-            exec("mv $module_path/$project $users_home_directory/.drush/$site_name-$project-$module_full_version");
+            $users_home_directory/drush-backups/$site_name/$timestamp/modules/$project-$module_full_version");
+            exec("mv $module_path/$project $users_home_directory/drush-backups/$site_name/$timestamp/modules/$project-$module_full_version");
             exec("mkdir -p $users_home_directory/.drush/drush-tmp");
             exec("wget --quiet -O $users_home_directory/.drush/drush-tmp/$project.zip $download_link");
             exec("unzip $users_home_directory/.drush/drush-tmp/$project.zip -d $users_home_directory/.drush/drush-tmp");
@@ -437,9 +441,9 @@ function backdrop_command_pm_update() {
             }
             exec("mv $users_home_directory/.drush/drush-tmp/$project $module_path/$project");
             exec("rm -r $users_home_directory/.drush/drush-tmp");
-            exec("drush updb -y");
+            backdrop_command_updatedb();
             drush_print_r("\n\tYou can retrieve your old \033[1m$project\033[0m files, should you need
-            to, from: $users_home_directory/.drush/$site_name-$project-$module_full_version");
+            to, from: $users_home_directory/drush-backups/$site_name/$timestamp/modules/$project-$module_full_version");
             if (file_exists("$module_path/$project")) {
               drush_print_r("\t\e[32mSuccess\033[0m: Project \033[1m$project\033[0m updated to $proposed_version.");
             }
