@@ -74,6 +74,8 @@ function backdrop_drush_command_alter(&$command) {
       break;
     case 'fix-permissions':
       $backdrop_command = 'fix-permissions';
+    case 'site-install':
+      $backdrop_command = 'backdrop-site-install';
       break;
   }
 
