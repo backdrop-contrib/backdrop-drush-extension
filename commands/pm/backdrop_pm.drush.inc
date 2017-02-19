@@ -458,7 +458,7 @@ function backdrop_command_pm_update() {
         }
       }
       else {
-        drush_print_r("\n\t\e[33mWARNING\033[0m: There is no project \e[1m$project\033[0m intalled on your backdrop site.");
+        drush_print_r("\n\t\e[33mWARNING\033[0m: There is no project \e[1m$project\033[0m installed on your backdrop site.");
         drush_print_r("\tNo action taken.\n");
       }
     } // end of drush up $project
