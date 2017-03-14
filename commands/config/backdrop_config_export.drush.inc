@@ -41,7 +41,7 @@ function backdrop_config_export() {
     // passthru(
     //   "cp " . BACKDROP_ROOT . "/$config_dir_active/\* " . BACKDROP_ROOT . "/$config_dir_staging"
     // );drush_print_r('maybe');
-    foreach (glob(BACKDROP_ROOT . "$config_dir_active/*.json") as $config_file) {
+    foreach (glob(BACKDROP_ROOT . "/$config_dir_active/*.json") as $config_file) {
       copy($config_file, BACKDROP_ROOT . "/$cofig_dir_staging");
     }
     drush_log(dt('Configuration is exported to !staging', array('!staging' => $config_dir_staging)), LogLevel::SUCCESS);
