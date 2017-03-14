@@ -68,7 +68,7 @@ function backdrop_config_import() {
         "rm -rf " . BACKDROP_ROOT . "/$config_dir_active/*"
       );
       passthru(
-        "cp -R " . BACKDROP_ROOT . "/$config_dir_staging/  " . BACKDROP_ROOT . "/$config_dir_active"
+        "cp -a " . BACKDROP_ROOT . "/$config_dir_staging/*  " . BACKDROP_ROOT . "/$config_dir_active/"
       );
     }
     drush_log(dt('Configuration imported to !active', array('!active' => $config_dir_active)), LogLevel::SUCCESS);
