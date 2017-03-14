@@ -38,7 +38,7 @@ function backdrop_config_export() {
       "rm -rf " . BACKDROP_ROOT . "/$config_dir_staging/"
     );
     passthru(
-      "cp -r " . BACKDROP_ROOT . "/$config_dir_active " . BACKDROP_ROOT . "/$config_dir_staging"
+      "cp -a " . BACKDROP_ROOT . "/$config_dir_active/. " . BACKDROP_ROOT . "/$config_dir_staging/"
     );drush_print_r('maybe');
     drush_log(dt('Configuration is exported to !staging', array('!staging' => $config_dir_staging)), LogLevel::SUCCESS);
   }
