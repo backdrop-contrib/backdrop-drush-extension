@@ -39,9 +39,9 @@ function backdrop_config_export() {
       "mkdir " . BACKDROP_ROOT . "/$config_dir_stagig"
     );
     passthru(
-      "cp " . BACKDROP_ROOT . "/$config_dir_active/\* " . BACKDROP_ROOT . "/$config_dir_staging"
+      "cp -r " . BACKDROP_ROOT . "/$config_dir_active/* " . BACKDROP_ROOT . "/$config_dir_staging"
     );
-    drush_print_r("\n\n\tDouble fix 112?\n\n");
+    drush_print_r("\n\n\tDouble fix 135?\n\n");
     // foreach (glob(BACKDROP_ROOT . "/$config_dir_active/*.json") as $config_file) {
     //   copy($config_file, BACKDROP_ROOT . "/$cofig_dir_staging");
     // }
