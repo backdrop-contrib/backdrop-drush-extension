@@ -38,13 +38,13 @@ function backdrop_config_export() {
       "rm -rf " . BACKDROP_ROOT . "/$config_dir_staging/" &&
       "mkdir " . BACKDROP_ROOT . "/$config_dir_stagig"
     );
-    // passthru(
-    //   "cp " . BACKDROP_ROOT . "/$config_dir_active/\* " . BACKDROP_ROOT . "/$config_dir_staging"
-    // );
+    passthru(
+      "cp " . BACKDROP_ROOT . "/$config_dir_active/\* " . BACKDROP_ROOT . "/$config_dir_staging"
+    );
     drush_print_r("\n\n\tmaybe this is the big time?\n\n");
-    foreach (glob(BACKDROP_ROOT . "/$config_dir_active/*.json") as $config_file) {
-      copy($config_file, BACKDROP_ROOT . "/$cofig_dir_staging");
-    }
+    // foreach (glob(BACKDROP_ROOT . "/$config_dir_active/*.json") as $config_file) {
+    //   copy($config_file, BACKDROP_ROOT . "/$cofig_dir_staging");
+    // }
     drush_log(dt('Configuration is exported to !staging', array('!staging' => $config_dir_staging)), LogLevel::SUCCESS);
   }
   catch(Exception $e) {
