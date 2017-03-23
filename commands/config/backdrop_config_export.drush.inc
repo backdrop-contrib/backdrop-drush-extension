@@ -35,14 +35,16 @@ function backdrop_config_export() {
     $config_dir_active = $config_directories['active'];
     $config_dir_staging = $config_directories['staging'];
     passthru(
-      "rm -rf " . BACKDROP_ROOT . "/$config_dir_staging/*"
+      "rm -rf " . BACKDROP_ROOT . "/$config_dir_staging/" &&
+      "mkdir " . BACKDROP_ROOT . "/$config_dir_stagig"
     );
     passthru(
-      "cp -a " . BACKDROP_ROOT . "/$config_dir_active/* " . BACKDROP_ROOT . "/$config_dir_staging/"
+      "cp -r " . BACKDROP_ROOT . "/$config_dir_active/* " . BACKDROP_ROOT . "/$config_dir_staging"
     );
+
     drush_log(dt('Configuration is exported to !staging', array('!staging' => $config_dir_staging)), LogLevel::SUCCESS);
   }
   catch(Exception $e) {
-    drush_print_r('couldn\'t do it ' . $e);
+    drush_print_r('Could not export: ' . $e);
   }
 }
