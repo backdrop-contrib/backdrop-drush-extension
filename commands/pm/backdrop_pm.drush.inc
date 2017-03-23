@@ -257,6 +257,10 @@ function backdrop_command_pm_update() {
   if (!$package) {
     return;
   }
+
+  // Grab the transliteration.inc file so we can sanitize $site_name string.
+  require_once 'core/includes/transliteration.inc';
+
   $projects = func_get_args();
   foreach($projects as $project) {
     $project = strtolower($project);
@@ -307,7 +311,7 @@ function backdrop_command_pm_update() {
         $answer = strtolower($answer);
         if ($answer == 'y' || $answer == 'yes') {
           $users_home_directory = $_SERVER['HOME'];
-          $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
+          $site_name = strtolower(transliteration_clean_filename(config_get('system.core', 'site_name')));
           $timestamp = date_timestamp_get(date_create());
           drush_print_r("\tBacking up current core folder to $users_home_directory/drush-backups/$site_name/$timestamp/core-$current_version");
           exec("mkdir -p $users_home_directory/.drush/drush-tmp");
@@ -333,7 +337,7 @@ function backdrop_command_pm_update() {
           }
           backdrop_command_updatedb();
           drush_print_r("\n\tYou can retrieve your old core files, should you need
-          to from: $users_home_directory/.drush/core-$current_version");
+          to from: $users_home_directory/drush-backups/$site_name/$timestamp/core-$current_version");
           if (file_exists("$backdrop_root/core")) {
             drush_print_r("\t\e[32mSuccess\033[0m: Backdrop updated to $proposed_version.");
           }
@@ -427,7 +431,7 @@ function backdrop_command_pm_update() {
           $answer = strtolower($answer);
           if ($answer == 'y' || $answer == 'yes') {
             $users_home_directory = $_SERVER['HOME'];
-            $site_name = strtolower(str_replace(' ', '_', config_get('system.core', 'site_name')));
+            $site_name = strtolower(transliteration_clean_filename(config_get('system.core', 'site_name')));
             $timestamp = date_timestamp_get(date_create());
             exec("mkdir -p $users_home_directory/drush-backups/$site_name/$timestamp/modules/");
             drush_print_r("\t Backing up current \033[1m$project\033[0m folder to
