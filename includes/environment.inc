@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Specific functions for a backdrop 7 environment.
+ *   Specific functions for a Backdrop 1 environment.
  *   drush_include_engine() magically includes either this file
  *   or environment_X.inc depending on which version of backdrop drush
  *   is called from.
@@ -131,47 +131,6 @@ function drush_get_named_extensions_list($extensions) {
 }
 
 /**
- * Enable a list of modules. It is assumed the list contains all the dependencies not already enabled.
- *
- * @param $modules
- *   Array of module names
- */
-function drush_module_enable($modules) {
-  // The list of modules already have all the dependencies, but they might not
-  // be in the correct order. Still pass $enable_dependencies = TRUE so that
-  // Backdrop will enable the modules in the correct order.
-  module_enable($modules);
-  // Flush all caches.
-  backdrop_flush_all_caches();
-}
-
-/**
- * Disable a list of modules. It is assumed the list contains all dependents not already disabled.
- *
- * @param $modules
- *   Array of module names
- */
-function drush_module_disable($modules) {
-  // The list of modules already have all the dependencies, but they might not
-  // be in the correct order. Still pass $enable_dependencies = TRUE so that
-  // Backdrop will enable the modules in the correct order.
-  module_disable($modules);
-  // Flush all caches.
-  backdrop_flush_all_caches();
-}
-
-/**
- * Uninstall a list of modules.
- *
- * @param $modules
- *   Array of module names
- */
-function drush_module_uninstall($modules) {
-  require_once DRUSH_BACKDROP_CORE . '/includes/install.inc';
-  backdrop_uninstall_modules($modules);
-}
-
-/**
  * Checks that a given module exists and is enabled.
  *
  * @see module_exists().
@@ -195,7 +154,7 @@ function drush_module_implements($hook, $sort = FALSE, $reset = FALSE) {
  */
 function drush_module_invoke($module, $hook) {
   $args = func_get_args();
-  return call_user_func_array('module_invoke', $args);  
+  return call_user_func_array('module_invoke', $args);
 }
 
 /**
@@ -226,26 +185,6 @@ function drush_get_themes($include_hidden = TRUE) {
   }
 
   return $themes;
-}
-
-/**
- * Enable a list of themes.
- *
- * @param $themes
- *  Array of theme names.
- */
-function drush_theme_enable($themes) {
-  theme_enable($themes);
-}
-
-/**
- * Disable a list of themes.
- *
- * @param $themes
- *  Array of theme names.
- */
-function drush_theme_disable($themes) {
-  theme_disable($themes);
 }
 
 /**
