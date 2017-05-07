@@ -104,7 +104,8 @@ function _enable_project($project) {
 function backdrop_command_pm_enable_validate($project) {
   $file = file_exists(BACKDROP_ROOT . "/modules/contrib/$project") ||
     file_exists(BACKDROP_ROOT . "/modules/$project") ||
-    file_exists(BACKDROP_ROOT . "/core/modules/$project");
+    file_exists(BACKDROP_ROOT . "/core/modules/$project") ||
+    file_exists(BACKDROP_ROOT . "/modules/custom/$project");
   if ($file) {
     return TRUE;
   }
