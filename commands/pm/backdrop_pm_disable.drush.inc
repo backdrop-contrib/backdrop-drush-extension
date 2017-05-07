@@ -44,6 +44,6 @@ function backdrop_command_pm_disable() {
     else {
       $is_are = 'is';
     }
-    drush_print_r("\t\033[32mSuccess\033[0m: $output_projects $is_are disabled.");
+    drush_print_r("\n\t\033[32mSuccess\033[0m: $output_projects $is_are disabled.\n");
   }
 }
