@@ -109,14 +109,33 @@ function backdrop_command_pm_download() {
         $url = $html[1];
         $latest = explode('/', $url);
         $latest = array_reverse($latest);
+
+        // Build the path to location to download the module.
         $module_install_location = $project_path . '/' . $project;
+
+        // Build the download URL.
+        $download_url = "https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip";
+
+        // Get the HTTP/1.1 response to check against.
+        $response = get_headers($download_url);
+
+        // If the http response is 404 gracefully bow out; offer user the dev version?
+        if (strpos($response[0], '404') !== FALSE) {
+          drush_print_r(
+            dt("\n\t\e[31mError\e[0m: There is no release located at $download_url." .
+              "\n\tTry visiting the \e[1m$project\e[0m page directly: https://github.com/backdrop-contrib/$project\n"
+            )
+          );
+
+          continue;
+        }
 
         if (is_dir($module_install_location)) {
           drush_log(dt('Module is already installed ... exiting without re-writing module.'), 'error');
           continue;
         }
         exec(
-          "wget --quiet -O $project_path/$project.zip https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip"
+          "wget --quiet -O $project_path/$project.zip $download_url"
         );
         // Extract the zip file.
         exec(
@@ -127,35 +146,6 @@ function backdrop_command_pm_download() {
           "rm $project_path/$project.zip"
         );
         backdrop_pm_dl_outcome($module_install_location, $project);
-      }
-      // Downloading backdrop itself is a special case.
-      // TODO: Downloading backdrop itself does not currently work since
-      //   the backdrop drush command hooks are only picked up once a valid
-      //   backdrop installation is detected, so we have a chicken and the egg
-      //   problem here.
-      elseif ($project == 'backdrop') {
-        $html = backdrop_pm_get_from_github(
-          "https://github.com/backdrop/backdrop/releases/latest"
-        );
-
-        $html = explode("\"", $html);
-        $url = $html[1];
-        $latest = explode('/', $url);
-        $latest = array_reverse($latest);
-
-        // Get the core zip file.
-        exec(
-          "wget --quiet -O . https://github.com/$project/$project/releases/download/$latest[0]/backdrop.zip"
-        );
-        // Extract the zip file.
-        exec(
-          "unzip backdrop.zip"
-        );
-        // Remove the zip file.
-        exec(
-          "rm backdrop.zip"
-        );
-        backdrop_pm_dl_outcome('.', 'Backdrop CMS');
       }
     }
   }
