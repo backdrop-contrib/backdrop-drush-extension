@@ -157,7 +157,10 @@ class BackdropBoot extends BaseBoot {
    * Validate the BackdropBoot::BOOTSTRAP_ROOT phase.
    */
   function bootstrap_backdrop_root_validate() {
-    $backdrop_root = drush_locate_root();
+    $backdrop_root = drush_get_option('root');
+    if (!isset($backdrop_root)) {
+      $backdrop_root = drush_locate_root();
+    }
     drush_set_context('DRUSH_SELECTED_BACKDROP_ROOT', $backdrop_root);
 
     if (empty($backdrop_root)) {
