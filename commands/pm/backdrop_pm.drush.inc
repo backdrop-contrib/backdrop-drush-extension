@@ -53,9 +53,9 @@ function backdrop_command_pm_download() {
   $options = drush_get_option('select', '');
 
   if (!empty($options)) {
-    drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \n");
+    drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \033[0m\n");
     // get available releases.
-    $tags = backdrop_command_get_tags(
+    $tags = backdrop_pm_get_tags(
       "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
     );
 
