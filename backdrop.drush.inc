@@ -91,6 +91,7 @@ function backdrop_drush_command_alter(&$command) {
     'topic',
     'php-eval',
     'php-script',
+    'site-alias',
     'sql-cli',
     'sql-conf',
     'sql-connect',
