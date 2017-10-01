@@ -40,91 +40,92 @@ function backdrop_download_backdrop() {
   if (!$package_handler) {
     return;
   }
+
   $projects = func_get_args();
-  // TODO: Allow users to select a version of Backdrop CMS for now latest.
-  //$options = drush_get_option('select', '');
-  $download_location = drush_get_option('path', '.');
+  $options = drush_get_option('select', '');
+  $download_location = drush_get_option('path', './');
 
-  // if (!empty($options)) {
-  //   drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \n");
-  //   // get available releases.
-  //   $tags = backdrop_command_get_tags(
-  //     "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
-  //   );
-  //
-  //   $project_path = backdrop_download_backdrop_get_path($download_location);
-  //
-  //   for($i = 0; $i < count($tags->releases->release); $i++) {
-  //     $version = (string) $tags->releases->release[$i]->version;
-  //     drush_print_r("\t\t [$i] \t:\t " . $version);
-  //   }
-  //   // get users's menu selection
-  //   $handle = fopen ("php://stdin","r");
-  //   print("\n\tSelect one [0]: ");
-  //   print("\033[0m");
-  //   $selection = fgets($handle);
-  //   $selection = trim($selection);
-  //   // default to latest release if user just hits enter.
-  //   if (empty($selection)) {
-  //     $selection = 0;
-  //   }
-  //
-  //   $sel_url = $tags->releases->release[(int) $selection]->download_link;
-  //
-  //   // download verssion of the project user selected.
-  //   exec(
-  //     "wget --quiet --O $project_path/$projects[0].zip $sel_url"
-  //   );
-  //   // Extract the zip file.
-  //   exec(
-  //     "unzip $project_path/$projects[0].zip -d $project_path"
-  //   );
-  //   // Remove the zip file.
-  //   exec(
-  //     "rm $project_path/$projects[0].zip"
-  //   );
-  //   backdrop_download_backdrop_dl_outcome($project_path, $projects[0]);
-  // }
+  if (!empty($options)) {
+    drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \033[0m\n");
+    // get available releases.
+    $tags = backdrop_pm_get_tags(
+      "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
+    );
 
-  // Downloading backdrop itself is a special case.
-  // TODO: Downloading backdrop itself does not currently work since
-  //   the backdrop drush command hooks are only picked up once a valid
-  //   backdrop installation is detected, so we have a chicken and the egg
-  //   problem here.
-  $html = backdrop_download_backdrop_from_github(
-    "https://github.com/backdrop/backdrop/releases/latest"
-  );
+    $project_path = $download_location;
 
-  $html = explode("\"", $html);
-  $url = $html[1];
-  $latest = explode('/', $url);
-  $latest = array_reverse($latest);
+    for($i = 0; $i < count($tags->releases->release); $i++) {
+      $version = (string) $tags->releases->release[$i]->version;
+      drush_print_r("\t\t [$i] \t:\t " . $version);
+    }
+    // get users's menu selection
+    $handle = fopen ("php://stdin","r");
+    print("\n\tSelect one [0]: ");
+    print("\033[0m");
+    $selection = fgets($handle);
+    $selection = trim($selection);
+    // default to latest release if user just hits enter.
+    if (empty($selection)) {
+      $selection = 0;
+    }
 
-  // Get the core zip file.
-  exec(
-    "wget https://github.com/$projects[0]/$projects[0]/releases/download/$latest[0]/backdrop.zip"
-  );
-  // Make the Directory.
-  exec(
-    "mkdir -p my_tmp"
-  );
-  // Extract the zip file.
-  exec(
-    "unzip backdrop.zip -d my_tmp"
-  );
-  // Move to desired location.
-  exec(
-    "mv my_tmp/backdrop $download_location"
-  );
-  // Remove the zip file.
-  exec(
-    "rm backdrop.zip"
-  );
-  // Remove my_tmp.
-  exec(
-    "rm -rf my_tmp"
-  );
-  backdrop_download_backdrop_dl_outcome($download_location, 'Backdrop CMS');
+    $sel_url = $tags->releases->release[(int) $selection]->download_link;
+
+    // download verssion of the project user selected.
+    exec(
+      "wget --quiet -O $project_path/$projects[0].zip $sel_url"
+    );
+    // Extract the zip file.
+    exec(
+      "unzip $project_path/$projects[0].zip -d $download_location"
+    );
+    // Remove the zip file.
+    exec(
+      "rm $project_path/$projects[0].zip"
+    );
+    backdrop_download_backdrop_dl_outcome($project_path, $projects[0]);
+  }
+  else {
+    // Downloading backdrop itself is a special case.
+    // TODO: Downloading backdrop itself does not currently work since
+    //   the backdrop drush command hooks are only picked up once a valid
+    //   backdrop installation is detected, so we have a chicken and the egg
+    //   problem here.
+    $html = backdrop_download_backdrop_from_github(
+      "https://github.com/backdrop/backdrop/releases/latest"
+    );
+
+    $html = explode("\"", $html);
+    $url = $html[1];
+    $latest = explode('/', $url);
+    $latest = array_reverse($latest);
+
+    // Get the core zip file.
+    exec(
+      "wget https://github.com/$projects[0]/$projects[0]/releases/download/$latest[0]/backdrop.zip"
+    );
+    // Make the Directory.
+    exec(
+      "mkdir -p my_tmp"
+    );
+    // Extract the zip file.
+    exec(
+      "unzip backdrop.zip -d my_tmp"
+    );
+    // Move to desired location.
+    exec(
+      "mv my_tmp/backdrop $download_location"
+    );
+    // Remove the zip file.
+    exec(
+      "rm backdrop.zip"
+    );
+    // Remove my_tmp.
+    exec(
+      "rm -rf my_tmp"
+    );
+    backdrop_download_backdrop_dl_outcome($download_location, 'Backdrop CMS');
+  }
 }
 
 /**
