@@ -126,7 +126,7 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
   $settings = array(
     'parameters' => array(
       'profile' => $profile,
-      'locale' => $options['locale'],
+      'langcode' => $options['locale'],
     ),
     'forms' => array(
       'install_settings_form' => array(
