@@ -25,7 +25,7 @@ Installation
 
 This project requires that you use the "8.x" branch of drush (https://github.com/drush-ops/drush/tree/8.x). Neither older versions of drush nor the new 9.x or master branches will work with this extension.
 
-If you are using composer to install drush, you can run the following command to require the 8.x version: 
+If you are using composer to install drush, you can run the following command to require the 8.x version:
 `composer global require drush/drush:8.x`
 
 To install the Backdrop integration for Drush, clone or download this project
@@ -67,3 +67,5 @@ Thanks to all the Drush maintainers for their project, in particular:
 - [Moshe Weitzman](https://github.com/weitzman)
 
 for their help in making Drush for Backdrop possible.
+
+![Drush Logo](backdrop-drush-extension-logopn.png)

@@ -53,9 +53,9 @@ function backdrop_command_pm_download() {
   $options = drush_get_option('select', '');
 
   if (!empty($options)) {
-    drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \n");
+    drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \033[0m\n");
     // get available releases.
-    $tags = backdrop_command_get_tags(
+    $tags = backdrop_pm_get_tags(
       "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
     );
 
@@ -80,7 +80,7 @@ function backdrop_command_pm_download() {
 
     // download verssion of the project user selected.
     exec(
-      "wget --quiet --O $project_path/$projects[0].zip $sel_url"
+      "wget --quiet -O $project_path/$projects[0].zip $sel_url"
     );
     // Extract the zip file.
     exec(
@@ -288,8 +288,8 @@ function backdrop_command_pm_update() {
           $current_version_minor < $proposed_version_minor
         )
       ) {
-        drush_print_r("\n\t\tCurrent Backdrop Version: $current_version");
-        drush_print_r("\t\tProposed Backdrop Version: $proposed_version\n");
+        drush_print_r("\n\t\tCurrent \033[1mBackdrop\033[0m Version:\t$current_version");
+        drush_print_r("\t\tProposed \033[1mBackdrop\033[0m Version:\t$proposed_version\n");
         drush_print_r("\tCode updates will be made to Backdrop core.\n");
         drush_print_r("\t\e[33mWARNING\e[0m: Updating core will discard any");
         drush_print_r("\tmodifications made to Backdrop core files. If you have made any");
@@ -325,7 +325,11 @@ function backdrop_command_pm_update() {
             drush_print_r("\t\e[031mError\e[0m: New version of backdrop could not be found.");
             return FALSE;
           }
+
+          // Run db updates and clear cache.
           backdrop_command_updatedb();
+          backdrop_flush_all_caches();
+
           drush_print_r("\n\tYou can retrieve your old core files, should you need
           to from: $users_home_directory/drush-backups/$site_name/$timestamp/core-$current_version");
           if (file_exists("$backdrop_root/core")) {
@@ -387,7 +391,7 @@ function backdrop_command_pm_update() {
         // Check if proposed version has prepended Backrop compatibility string.
         if (strpos($proposed_version, "-") !== FALSE) {
           $proposed_version_array = explode('-', $proposed_version);
-          $proposed_version = $proposed_version_array[1];
+          $proposed_sem_version = $proposed_version_array[1];
         }
 
         if (empty($proposed_version)) {
@@ -395,7 +399,7 @@ function backdrop_command_pm_update() {
           Upgrading is not possible.
           ");
         }
-        elseif ($module_sem_version == $proposed_version) {
+        elseif ($module_sem_version == $proposed_sem_version) {
           drush_print_r("\n\t\tProject \033[1m$project\033[0m is up to date :).\n");
         }
         elseif (
@@ -409,12 +413,13 @@ function backdrop_command_pm_update() {
             $module_version_minor < $proposed_version_minor
           )
         ) {
-          drush_print_r("\n\t\tCurrent \033[1m$project\033[0m Version: $module_full_version");
-          drush_print_r("\t\tProposed \033[1m$project\033[0m Version: $proposed_version\n");
-          drush_print_r("\t\e[33mWARNING\033[0m:  Updating \033[1m$project\033[0m will discard any
-          modifications made to \033[1m$project\033[0m files.  If you have made any
-          modifications to these files, please back them up before updating so that
-          you can re-create your modifications in the updated version of the file.\n\n");
+          drush_print_r("\n\t\tCurrent \033[1m$project\033[0m Version:\t$module_full_version");
+          drush_print_r("\t\tProposed \033[1m$project\033[0m Version:\t$proposed_version\n");
+          drush_print_r("\t\e[33mWARNING\033[0m:\n
+          Updating \033[1m$project\033[0m will discard anymodifications made to
+          \033[1m$project\033[0m files.  If you have made any modifications to
+          these files, please back them up before updating so that you can
+          re-create your modifications in the updated version of the file.\n\n");
           drush_print_r("\tNote: Updating modules can potentially break your site.");
           drush_print_r("\tIt is NOT recommended to update production sites without prior testing.\n\n");
           $answer = drush_prompt("\t\e[34mDo you wish to continue?\e[0m (y or n)");
@@ -435,7 +440,11 @@ function backdrop_command_pm_update() {
             }
             exec("mv $users_home_directory/.drush/drush-tmp/$project $module_path/$project");
             exec("rm -r $users_home_directory/.drush/drush-tmp");
+
+            // Run db updates and clear cache.
             backdrop_command_updatedb();
+            backdrop_flush_all_caches();
+
             drush_print_r("\n\tYou can retrieve your old \033[1m$project\033[0m files, should you need
             to, from: $users_home_directory/drush-backups/$site_name/$timestamp/modules/$project-$module_full_version");
             if (file_exists("$module_path/$project")) {

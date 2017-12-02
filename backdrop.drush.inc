@@ -94,6 +94,7 @@ function backdrop_drush_command_alter(&$command) {
     'topic',
     'php-eval',
     'php-script',
+    'site-alias',
     'sql-cli',
     'sql-conf',
     'sql-connect',
@@ -117,6 +118,11 @@ function backdrop_drush_command_alter(&$command) {
   if (in_array($command['command'], $safe_commands)) {
     return;
   }
+  // Commands provided by Backdrop modules relative to this site installation.
+  if (strpos($command['path'], '/') !== 0 && strpos($command['path'], 'modules') !== FALSE) {
+    return;
+  }
+
   // Commands that are fine to be run through the compatibility layer.
   if (in_array($command['command'], $compatible_commands)) {
     require_once BACKDROP_ROOT . '/core/includes/drupal.inc';
