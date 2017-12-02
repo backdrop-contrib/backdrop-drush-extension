@@ -5,7 +5,7 @@
  * Drush project management disable command.
  */
 
-Use \Drupal\Core\Logger\RfcLogLevel;
+use Drush\Log\LogLevel;
 
 /**
  * Implements hook_drush_command().
@@ -31,12 +31,20 @@ function backdrop_pm_disable_drush_command() {
  */
 function backdrop_command_pm_disable() {
   $projects = func_get_args();
+
   if (!empty($projects)) {
     include_once BACKDROP_ROOT . '/core/includes/module.inc';
-    module_disable($projects);
+
     $output_projects = '';
     foreach ($projects as $project) {
       $output_projects .= " $project";
+      if (!drush_confirm(dt("Do you want to disable $project?"))) {
+        drush_print_r(
+          dt("\n\t\e[033mCancelled\e[0m $project was not disabled.\n")
+        );
+        return FALSE;
+      }
+      module_disable([$project]);
     }
     if (count($projects) > 1) {
       $is_are = 'are';
@@ -44,6 +52,9 @@ function backdrop_command_pm_disable() {
     else {
       $is_are = 'is';
     }
-    drush_print_r("\n\t\033[32mSuccess\033[0m: $output_projects $is_are disabled.\n");
+
+    drush_print_r(
+      dt("\n\t\033[32mSuccess\033[0m: $output_projects $is_are disabled.\n")
+    );
   }
 }

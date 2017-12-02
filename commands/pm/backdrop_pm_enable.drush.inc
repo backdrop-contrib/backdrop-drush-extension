@@ -88,7 +88,7 @@ function _enable_project($project) {
   }
 
   if (module_enable(array($project), FALSE)) {
-    drush_print_r("\n\t\e[32mSuccess\e[0m module $project enabled.\n");
+    drush_print_r("\n\t\e[32mSuccess\e[0m: module $project enabled.\n");
     return TRUE;
   }
   drush_print_r("\n\t\e[31mFailed\e[0m to enable module " . $project);
@@ -106,8 +106,10 @@ function backdrop_command_pm_enable_validate($project) {
     file_exists(BACKDROP_ROOT . "/modules/$project") ||
     file_exists(BACKDROP_ROOT . "/core/modules/$project") ||
     file_exists(BACKDROP_ROOT . "/modules/custom/$project");
+
   if ($file) {
     return TRUE;
   }
+
   return FALSE;
 }
