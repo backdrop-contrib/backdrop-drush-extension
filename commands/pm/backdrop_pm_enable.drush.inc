@@ -4,6 +4,8 @@
  * Drush project management enable command.
  */
 
+use Drupal\Core\Logger\RfcLogLevel;
+
 /**
  * Implements hook_drush_command().
  */
@@ -102,12 +104,9 @@ function _enable_project($project) {
  *   The project that the user is attempting to enable.
  */
 function backdrop_command_pm_enable_validate($project) {
-  $file = file_exists(BACKDROP_ROOT . "/modules/contrib/$project") ||
-    file_exists(BACKDROP_ROOT . "/modules/$project") ||
-    file_exists(BACKDROP_ROOT . "/core/modules/$project") ||
-    file_exists(BACKDROP_ROOT . "/modules/custom/$project");
+  $module_list = system_rebuild_module_data();
 
-  if ($file) {
+  if (array_key_exists($project, $module_list)) {
     return TRUE;
   }
 
