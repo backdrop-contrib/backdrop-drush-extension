@@ -5,6 +5,8 @@
  */
 use \Drush\Boot\BackdropBoot;
 
+define('BACKDROP_DRUSH_VERSION', '1.x-0.x');
+
 /**
  * Implements hook_drush_command().
  */
@@ -79,7 +81,44 @@ function backdrop_core_drush_command() {
     'outputformat' => array(
       'default' => 'key-value',
       'pipe-format' => 'json',
-      'field-labels' => array('backdrop-version' => 'Backdrop version', 'uri' => 'Site URI', 'db-driver' => 'Database driver', 'db-hostname' => 'Database hostname', 'db-port' => 'Database port', 'db-username' => 'Database username', 'db-password' => 'Database password', 'db-name' => 'Database name', 'db-status' => 'Database', 'bootstrap' => 'Backdrop bootstrap', 'user' => 'Drupal user', 'theme' => 'Default theme', 'admin-theme' => 'Administration theme', 'php-bin' => 'PHP executable', 'php-conf' => 'PHP configuration', 'php-os' => 'PHP OS', 'drush-script' => 'Drush script', 'drush-version' => 'Drush version', 'drush-temp' => 'Drush temp directory', 'drush-conf' => 'Drush configuration', 'drush-alias-files' => 'Drush alias files', 'install-profile' => 'Install profile', 'root' => 'Drupal root', 'drupal-settings-file' => 'Backdrop Settings File', 'site-path' => 'Site path', 'root' => 'Drupal root', 'site' => 'Site path', 'themes' => 'Themes path', 'modules' => 'Modules path', 'files' => 'File directory path', 'private' => 'Private file directory path', 'temp' => 'Temporary file directory path', 'config-sync' => 'Sync config path', 'files-path' => 'File directory path', 'temp-path' => 'Temporary file directory path', '%paths' => 'Other paths'),
+      'field-labels' => array(
+        'backdrop-version' => 'Backdrop version',
+        'uri' => 'Site URI',
+        'db-driver' => 'Database driver',
+        'db-hostname' => 'Database hostname',
+        'db-port' => 'Database port',
+        'db-username' => 'Database username',
+        'db-password' => 'Database password',
+        'db-name' => 'Database name',
+        'db-status' => 'Database',
+        'bootstrap' => 'Backdrop bootstrap',
+        'user' => 'Drupal user',
+        'theme' => 'Default theme',
+        'admin-theme' => 'Administration theme',
+        'php-bin' => 'PHP executable',
+        'php-conf' => 'PHP configuration',
+        'php-os' => 'PHP OS',
+        'drush-script' => 'Drush script',
+        'drush-version' => 'Drush version',
+        'backdrop-drush-version' => 'Backdrop Drush',
+        'drush-temp' => 'Drush temp directory',
+        'drush-conf' => 'Drush configuration',
+        'drush-alias-files' => 'Drush alias files',
+        'install-profile' => 'Install profile',
+        'root' => 'Drupal root',
+        'drupal-settings-file' => 'Backdrop Settings File',
+        'site-path' => 'Site path',
+        'site' => 'Site path',
+        'themes' => 'Themes path',
+        'modules' => 'Modules path',
+        'files' => 'File directory path',
+        'private' => 'Private file directory path',
+        'temp' => 'Temporary file directory path',
+        'config-sync' => 'Sync config path',
+        'files-path' => 'File directory path',
+        'temp-path' => 'Temporary file directory path',
+        '%paths' => 'Other paths'
+      ),
       'formatted-filter' => '_drush_backdrop_core_status_format_table_data',
       'private-fields' => 'db-password',
       'simplify-single' => TRUE,
@@ -237,6 +276,9 @@ function _backdrop_core_site_status_table($project = '') {
             }
           }
         }
+
+        // Set Backdrop Drush version for status output.
+        $status_table['backdrop-drush-version'] = BACKDROP_DRUSH_VERSION;
       }
       catch (Exception $e) {
         // Don't worry be happy.
@@ -293,6 +335,7 @@ function backdrop_command_core_status() {
   if (!empty($args)) {
     $field_list = $args;
     $metadata = drush_get_command_format_metadata('backdrop-core-status');
+
     foreach ($metadata['field-labels'] as $field_key => $field_label) {
       if (_drush_backdrop_core_is_named_in_array($field_label, $args)) {
         $field_list[] = $field_key;
