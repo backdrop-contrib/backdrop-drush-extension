@@ -34,15 +34,44 @@ function backdrop_pm_enable_drush_command() {
 function backdrop_command_pm_enable() {
   $projects = func_get_args();
 
+  // Get modules present in files system that are possible to enable.
+  $module_list = system_rebuild_module_data();
+
   if (!isset($projects)) {
     drush_print_r(dt("\tPlease provide module name(s)\n\n"));
     return;
   }
 
   $clear_cache = FALSE;
-  foreach($projects as $project ) {
-    if (_enable_project($project)) {
-      $clear_cache = TRUE;
+  foreach($projects as $project) {
+    // Check if requested module depends on other modules.
+    $dependencies = $module_list[$project]->info['dependencies'];
+    $dependents = [];
+    foreach ($dependencies as $dependency) {
+      if (module_exists($dependency) || in_array($dependency, $projects)) {
+        // Dependency is already accounted for.
+      }
+      else {
+        array_unshift($projects, $dependency);
+        $dependents = array_merge($projects, $dependents);
+      }
+    }
+  }
+
+  $operating_list = implode(', ', $dependents);
+  $procede = drush_confirm(
+    "The following projects will be enabled: $operating_list.
+    Do you want to enable the projects?"
+  );
+
+  if (!$procede) {
+    drush_print_r(
+      dt("\n\t\e[033mCancelled\e[0m $operating_list not enabled.\n")
+    );
+  }
+  else {
+    foreach ($dependents as $dependent) {
+      _enable_project($dependent, $module_list);
     }
   }
 
@@ -57,12 +86,16 @@ function backdrop_command_pm_enable() {
  * @param string $project
  *  The project machine name to be enabled.
  *
+ * @param array $module_list
+ *  List of modules that exist in the file system.
+ *
  * @return bool
  *
  * @see backdrop_command_pm_enable_validate()
  */
-function _enable_project($project) {
-  $project_exists = backdrop_command_pm_enable_validate($project);
+function _enable_project($project, $module_list) {
+  // Check against the module_list.
+  $project_exists = backdrop_command_pm_enable_validate($project, $module_list);
   // If the $project directory does not exist then gracefully fail.
   if (!$project_exists) {
     drush_print_r("\n\t\e[031mError\e[0m $project does not exist in your Backdrop installation.");
@@ -82,13 +115,6 @@ function _enable_project($project) {
     return FALSE;
   }
 
-  if (!drush_confirm(dt("Do you want to enable $project?"))) {
-    drush_print_r(
-      dt("\n\t\e[033mCancelled\e[0m $project not enabled.\n")
-    );
-    return FALSE;
-  }
-
   if (module_enable(array($project), FALSE)) {
     drush_print_r("\n\t\e[32mSuccess\e[0m: module $project enabled.\n");
     return TRUE;
@@ -103,9 +129,7 @@ function _enable_project($project) {
  * @param string $project
  *   The project that the user is attempting to enable.
  */
-function backdrop_command_pm_enable_validate($project) {
-  $module_list = system_rebuild_module_data();
-
+function backdrop_command_pm_enable_validate($project, $module_list) {
   if (array_key_exists($project, $module_list)) {
     return TRUE;
   }
