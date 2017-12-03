@@ -32,29 +32,45 @@ function backdrop_pm_disable_drush_command() {
 function backdrop_command_pm_disable() {
   $projects = func_get_args();
 
-  if (!empty($projects)) {
-    include_once BACKDROP_ROOT . '/core/includes/module.inc';
+  // Get modules present in files system that are possible to disable.
+  $module_list = system_rebuild_module_data();
 
-    $output_projects = '';
-    foreach ($projects as $project) {
-      $output_projects .= " $project";
-      if (!drush_confirm(dt("Do you want to disable $project?"))) {
-        drush_print_r(
-          dt("\n\t\e[033mCancelled\e[0m $project was not disabled.\n")
-        );
-        return FALSE;
+  foreach($projects as $project) {
+    // Check if requested module is required by other modules.
+    $required_bys = $module_list[$project]->required_by;
+
+    $kids = [];
+    if (!empty($required_bys)) {
+      foreach ($required_bys as $key => $required) {
+        if (module_exists($key) && !in_array($key, $projects)) {
+          array_unshift($projects, $key);
+          $kids = array_merge($projects, $kids);
+        }
+        else {
+          // Kids is already accounted for.
+        }
       }
-      module_disable([$project]);
     }
-    if (count($projects) > 1) {
-      $is_are = 'are';
-    }
-    else {
-      $is_are = 'is';
+  }
+
+  $operating_list = implode(', ', $kids);
+  $proceed = drush_confirm(
+    "The following projects will be disabled: $operating_list.
+    Do you want to disable the projects?"
+  );
+
+  if (!$proceed) {
+    drush_print_r(
+      dt("\n\t\e[033mCancelled\e[0m $operating_list not disabled.\n")
+    );
+  }
+  else {
+    foreach ($kids as $kid) {
+      module_disable([$kid]);
     }
 
     drush_print_r(
-      dt("\n\t\033[32mSuccess\033[0m: $output_projects $is_are disabled.\n")
+      dt("\n\t\033[32mSuccess\033[0m: $operating_list are disabled.\n")
     );
   }
 }

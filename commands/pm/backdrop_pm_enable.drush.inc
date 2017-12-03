@@ -59,12 +59,12 @@ function backdrop_command_pm_enable() {
   }
 
   $operating_list = implode(', ', $dependents);
-  $procede = drush_confirm(
+  $proceed = drush_confirm(
     "The following projects will be enabled: $operating_list.
     Do you want to enable the projects?"
   );
 
-  if (!$procede) {
+  if (!$proceed) {
     drush_print_r(
       dt("\n\t\e[033mCancelled\e[0m $operating_list not enabled.\n")
     );
@@ -72,6 +72,7 @@ function backdrop_command_pm_enable() {
   else {
     foreach ($dependents as $dependent) {
       _enable_project($dependent, $module_list);
+      $clear_cache = TRUE;
     }
   }
 
