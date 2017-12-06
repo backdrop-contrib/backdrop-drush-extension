@@ -77,7 +77,7 @@ function backdrop_command_pm_enable() {
     }
   }
   else {
-    // If $dependents was empty just disable the projects specified on the cli.
+    // If $dependents was empty just enable the projects specified on the cli.
     foreach ($projects as $project) {
       _enable_project($project, $module_list);
       $clear_cache = TRUE;
