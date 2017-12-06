@@ -58,7 +58,7 @@ function backdrop_command_pm_enable() {
     }
   }
 
-  $operating_list = implode(', ', $dependents);
+  $operating_list = ($dependents) ? implode(', ', $dependents): implode($projects);
   $proceed = drush_confirm(
     "The following projects will be enabled: $operating_list.
     Do you want to enable the projects?"
@@ -69,9 +69,17 @@ function backdrop_command_pm_enable() {
       dt("\n\t\e[033mCancelled\e[0m $operating_list not enabled.\n")
     );
   }
-  else {
+  elseif (!empty($dependents)) {
+    // If $dependents has data it was merged with the specified $projects.
     foreach ($dependents as $dependent) {
       _enable_project($dependent, $module_list);
+      $clear_cache = TRUE;
+    }
+  }
+  else {
+    // If $dependents was empty just disable the projects specified on the cli.
+    foreach ($projects as $project) {
+      _enable_project($project, $module_list);
       $clear_cache = TRUE;
     }
   }

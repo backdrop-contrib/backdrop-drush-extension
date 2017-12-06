@@ -31,6 +31,7 @@ function backdrop_pm_disable_drush_command() {
  */
 function backdrop_command_pm_disable() {
   $projects = func_get_args();
+  //drush_print_r($projects); return;
 
   // Get modules present in files system that are possible to disable.
   $module_list = system_rebuild_module_data();
@@ -53,7 +54,7 @@ function backdrop_command_pm_disable() {
     }
   }
 
-  $operating_list = implode(', ', $kids);
+  $operating_list = ($kids) ? implode(',', $kids) : implode(', ', $projects);
   $proceed = drush_confirm(
     "The following projects will be disabled: $operating_list.
     Do you want to disable the projects?"
@@ -64,13 +65,19 @@ function backdrop_command_pm_disable() {
       dt("\n\t\e[033mCancelled\e[0m $operating_list not disabled.\n")
     );
   }
-  else {
+  elseif (!empty($kids)) {
     foreach ($kids as $kid) {
       module_disable([$kid]);
     }
-
-    drush_print_r(
-      dt("\n\t\033[32mSuccess\033[0m: $operating_list are disabled.\n")
-    );
   }
+  else {
+    // Now disable the projects specified on the command line.
+    foreach ($projects as $project) {
+      module_disable([$project]);
+    }
+  }
+
+  drush_print_r(
+    dt("\n\t\033[32mSuccess\033[0m: $operating_list are disabled.\n")
+  );
 }
