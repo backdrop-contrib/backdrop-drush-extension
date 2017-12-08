@@ -19,7 +19,7 @@ function backdrop_pm_enable_drush_command() {
       'module-name' => array('The name of the module(s) you would like to enable.'),
     ),
     'required-arguments' => TRUE,
-    'aliases' => array('en', 'pm-enable'),
+    'aliases' => array('en',),
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
   );
 
