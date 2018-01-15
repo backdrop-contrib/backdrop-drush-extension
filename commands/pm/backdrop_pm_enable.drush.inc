@@ -70,7 +70,11 @@ function backdrop_command_pm_enable() {
   else {
     // Enable the projects specified on the cli with dependencies.
     foreach ($projects as $project) {
-      _enable_project($project, $module_list);
+      $status = _enable_project($project, $module_list);
+      if (!$status) {
+        // _enable_project() already output an error message.
+        return FALSE;
+      }
     }
 
     backdrop_flush_all_caches();
