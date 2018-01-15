@@ -34,57 +34,45 @@ function backdrop_pm_enable_drush_command() {
 function backdrop_command_pm_enable() {
   $projects = func_get_args();
 
-  // Get modules present in files system that are possible to enable.
-  $module_list = system_rebuild_module_data();
-
   if (!isset($projects)) {
     drush_print_r(dt("\tPlease provide module name(s)\n\n"));
     return;
   }
 
-  $clear_cache = FALSE;
+  // Get modules present in files system that are possible to enable.
+  $module_list = system_rebuild_module_data();
+
+  // Loop through projects to handle dependencies.
   foreach($projects as $project) {
     // Check if requested module depends on other modules.
     $dependencies = $module_list[$project]->info['dependencies'];
-    $dependents = [];
-    foreach ($dependencies as $dependency) {
-      if (module_exists($dependency) || in_array($dependency, $projects)) {
-        // Dependency is already accounted for.
-      }
-      else {
-        array_unshift($projects, $dependency);
-        $dependents = array_merge($projects, $dependents);
+    if (!empty($dependencies)) {
+      foreach ($dependencies as $dependency) {
+        // Prepend dependency to projects list
+        if (!module_exists($dependency) && !in_array($dependency, $projects)) {
+          array_unshift($projects, $dependency);
+        }
       }
     }
   }
 
-  $operating_list = ($dependents) ? implode(', ', $dependents): implode($projects);
+  $projects_list = implode(', ', $projects);
   $proceed = drush_confirm(
-    "The following projects will be enabled: $operating_list.
+    "The following projects will be enabled: $projects_list.
     Do you want to enable the projects?"
   );
 
   if (!$proceed) {
     drush_print_r(
-      dt("\n\t\e[033mCancelled\e[0m $operating_list not enabled.\n")
+      dt("\n\t\e[033mCancelled\e[0m $projects_list not enabled.\n")
     );
   }
-  elseif (!empty($dependents)) {
-    // If $dependents has data it was merged with the specified $projects.
-    foreach ($dependents as $dependent) {
-      _enable_project($dependent, $module_list);
-      $clear_cache = TRUE;
-    }
-  }
   else {
-    // If $dependents was empty just enable the projects specified on the cli.
+    // Enable the projects specified on the cli with dependencies.
     foreach ($projects as $project) {
       _enable_project($project, $module_list);
-      $clear_cache = TRUE;
     }
-  }
 
-  if ($clear_cache) {
     backdrop_flush_all_caches();
   }
 }
