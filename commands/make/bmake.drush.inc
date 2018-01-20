@@ -38,7 +38,8 @@ function bmake_drush_command() {
 function bmake() {
   $args = func_get_args();
 
-  $make = yaml_parse_file($args[0]);
+  $make = parse_ini_file($args[0], TRUE);
+  drush_print_r($make);
   $project_path = $args[1];
 
   // Get Backdrop and put it in the project_path.
@@ -61,21 +62,21 @@ function bmake() {
   // Dowload the modules specified by the make file.
   if (!empty($make['modules'])) {
     foreach ($make['modules'] as $key => $module) {
-      exec("drush dl $key");  
+      passthru("drush dl $key");  
     }
   }
 
   // Dowload the themes specified by the make file.
   if (!empty($make['themes'])) {
     foreach ($make['themes'] as $key => $theme) {
-      exec("drush dl $key");
+      passthru("drush dl $key");
     }
   }
 
     // Dowload the modules specified by the make file.
   if (!empty($make['layouts'])) {
     foreach ($make['layouts'] as $key => $layouts) {
-      exec("drush dl $key");
+      passthru("drush dl $key");
     }
   }
 }
