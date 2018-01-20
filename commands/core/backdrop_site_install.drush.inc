@@ -51,7 +51,7 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     'account-pass' => drush_get_option('account-pass', md5(microtime() . mt_rand())),
     'site-name' => drush_get_option('site-name', 'Backdrop'),
     'clean-url' => drush_get_option('clean-url', '1'),
-    'db-prefix' => drush_get_option('db-prefix', ''),
+    //'db-prefix' => drush_get_option('db-prefix', ''),
     'db-url' => drush_get_option('db-url', ''),
     'locale' => drush_get_option('Locale', 'en'),
     'site-mail' => drush_get_option('site-mail', 'admin@example.com'),
@@ -73,16 +73,6 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     $profile = $arguments['profile'];
   }
 
-  $url = parse_url($options['db-url']);
-  $url += array(
-    'driver' => NULL,
-    'user' => NULL,
-    'pass' => NULL,
-    'host' => NULL,
-    'port' => NULL,
-    //'prefix' => NULL,
-    'database' => NULL,
-  );
   // If db-url is not specified use interactive prompts.
   if ($options['db-url'] === '') {
     $options['account-mail'] = drush_prompt("\n\t\033[94maccount-mail\033[0m", 'admin@example.com');
@@ -96,17 +86,36 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     $options['root'] = drush_prompt("\t\033[94mroot\033[0m", '.');
     $url['driver'] = drush_prompt("\t\033[94mDatabase driver\033[0m", 'mysql');
     $url['user'] = drush_prompt("\t\033[94mDatabase user\033[0m");
-    $url['pass'] = drush_prompt("\t\033[94mDatabase password\033[0m");
+    $url['pass'] = drush_prompt("\t\033[94mDatabase password\033[0m", 'pass');
     $url['host'] = drush_prompt("\t\033[94mDatabase host\033[0m", 'localhost');
     $url['port'] = drush_prompt("\t\033[94mDatabase port\033[0m", '3306');
     //$options['prefix'] = drush_prompt("\tdriver: ");
     $options['database'] = drush_prompt("\t\033[94mDatabase name\033[0m");
     drush_print_r("\033[0m\n");
 
+    $db_spec = array(
+      'driver' => 'mysql',
+      'username' => $url['user'],
+      'password' => $url['pass'],
+      'port' => $url['port'],
+      'host' => $url['host'],
+      'database' => $options['database'],
+    );
+
     // Check if the database exists and create it if not.
     _create_database($url['user'], $url['pass'], $options['database']);
   }
   else {
+    $url = parse_url($options['db-url']);
+    $url += array(
+      'driver' => NULL,
+      'user' => NULL,
+      'pass' => NULL,
+      'host' => NULL,
+      'port' => NULL,
+      //'prefix' => NULL,
+      'database' => NULL,
+    );
     $url = (object)array_map('urldecode', $url);
     $db_spec = array(
       'driver' => 'mysql',
