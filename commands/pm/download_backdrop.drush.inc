@@ -163,10 +163,10 @@ function backdrop_download_backdrop_get_tags($url) {
  */
 function backdrop_download_backdrop_dl_outcome($module_install_location, $project) {
   if (file_exists($module_install_location)) {
-    print "\n\t\033[32m Success: \033[0m Project $project downloaded to $module_install_location.\n\n";
+    print "\n\t\033[32mSuccess: \033[0m Project $project downloaded to $module_install_location.\n\n";
   }
   else {
-    print "\n\t\033[31m Error: \033[0m Project $project could not be found.\n\n";
+    print "\n\t\033[31mError: \033[0m Project $project could not be found.\n\n";
   }
 }
 
