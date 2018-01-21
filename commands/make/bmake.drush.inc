@@ -62,21 +62,36 @@ function bmake() {
   // Dowload the modules specified by the make file.
   if (!empty($make['modules'])) {
     foreach ($make['modules'] as $key => $module) {
-      passthru("drush dl $key");  
+      if ($module == 'latest') {
+        passthru("drush dl $key");
+      }
+      else {
+        passthru("drush dl $key --version=$module");
+      }
     }
   }
 
   // Dowload the themes specified by the make file.
   if (!empty($make['themes'])) {
     foreach ($make['themes'] as $key => $theme) {
-      passthru("drush dl $key");
+      if ($theme == 'latest') {
+        passthru("drush dl $key");
+      }
+      else {
+        passthru("drush dl $key --version=$theme");
+      }
     }
   }
 
     // Dowload the modules specified by the make file.
   if (!empty($make['layouts'])) {
-    foreach ($make['layouts'] as $key => $layouts) {
-      passthru("drush dl $key");
+    foreach ($make['layouts'] as $key => $layout) {
+      if ($layout == 'latest') {
+        passthru("drush dl $key");
+      }
+      else {
+        passthru("drush dl $key --version=$layout");
+      }
     }
   }
 }
