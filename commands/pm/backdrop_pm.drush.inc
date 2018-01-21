@@ -88,8 +88,6 @@ function backdrop_command_pm_download() {
 
       if ($num_releases > 1) {
         foreach ((array) $releases['release'] as $release) {
-          drush_print_r($release);
-          return;
           if ((string) $release->version == $options['version']) {
             $sel_url = (string) $release->download_link;
           }
