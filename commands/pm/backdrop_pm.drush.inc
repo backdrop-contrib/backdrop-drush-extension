@@ -17,6 +17,7 @@ function backdrop_pm_drush_command() {
     ),
     'options' => array(
       'select' => 'Select the version of the module.',
+      'version' => 'Specify the tagged version of the module that you want. (This overrides the --select option.',
     ),
     'required-arguments' => TRUE,
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
@@ -50,10 +51,10 @@ function backdrop_command_pm_download() {
     return;
   }
   $projects = func_get_args();
-  $options = drush_get_option('select', '');
+  $options['select'] = drush_get_option('select', '');
+  $options['version'] = drush_get_option('version', '');
 
-  if (!empty($options)) {
-    drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \033[0m\n");
+  if (!empty($options['select']) || !empty($options['version'])) {
     // get available releases.
     $tags = backdrop_pm_get_tags(
       "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
@@ -61,24 +62,41 @@ function backdrop_command_pm_download() {
 
     $project_path = backdrop_pm_get_path($tags);
 
-    for($i = 0; $i < count($tags->releases->release); $i++) {
-      $version = (string) $tags->releases->release[$i]->version;
-      drush_print_r("\t\t [$i] \t:\t " . $version);
+    if (empty($options['version'])) {
+      drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \033[0m\n");
+
+      for($i = 0; $i < count($tags->releases->release); $i++) {
+        $version = (string) $tags->releases->release[$i]->version;
+        drush_print_r("\t\t [$i] \t:\t " . $version);
+      }
+      // get users's menu selection
+      $handle = fopen ("php://stdin","r");
+      print("\n\tSelect one [0]: ");
+      print("\033[0m");
+      $selection = fgets($handle);
+      $selection = trim($selection);
+      // default to latest release if user just hits enter.
+      if (empty($selection)) {
+        $selection = 0;
+      }
+      $sel_url = $tags->releases->release[(int) $selection]->download_link;
     }
-    // get users's menu selection
-    $handle = fopen ("php://stdin","r");
-    print("\n\tSelect one [0]: ");
-    print("\033[0m");
-    $selection = fgets($handle);
-    $selection = trim($selection);
-    // default to latest release if user just hits enter.
-    if (empty($selection)) {
-      $selection = 0;
+    else {
+      $releases = (array) $tags->releases;
+      foreach ($releases['release'] as $release) {
+        if ((string) $release->version == $options['version']) {
+          $sel_url = (string) $release->download_link;
+        }
+      }
+
+      // If the $sel_url is still empty we will not be able to get the project.
+      if (empty($sel_url)) {
+        drush_print_r('You must specify a valid version string. Project ' . $projects[0] . ' does not have a version: ' . $options['version']. '.');
+        return;
+      }
     }
 
-    $sel_url = $tags->releases->release[(int) $selection]->download_link;
-
-    // download verssion of the project user selected.
+    // Download the version of the project user specified.
     exec(
       "wget --quiet -O $project_path/$projects[0].zip $sel_url"
     );
