@@ -38,8 +38,10 @@ function bmake_drush_command() {
 function bmake() {
   $args = func_get_args();
 
+  // Get the specifications from the users' makefile.
   $make = parse_ini_file($args[0], TRUE);
-  drush_print_r($make);
+
+  // Get the path that user wants to put the Backdrop CMS build.
   $project_path = $args[1];
 
   // Get Backdrop and put it in the project_path.
@@ -59,7 +61,7 @@ function bmake() {
     passthru("drush si");
   }
   
-  // Dowload the modules specified by the make file.
+  // Download the modules specified by the make file.
   if (!empty($make['modules'])) {
     foreach ($make['modules'] as $key => $module) {
       if ($module == 'latest') {
@@ -71,7 +73,7 @@ function bmake() {
     }
   }
 
-  // Dowload the themes specified by the make file.
+  // Download the themes specified by the make file.
   if (!empty($make['themes'])) {
     foreach ($make['themes'] as $key => $theme) {
       if ($theme == 'latest') {
@@ -83,7 +85,7 @@ function bmake() {
     }
   }
 
-    // Dowload the modules specified by the make file.
+    // Download the layouts specified by the make file.
   if (!empty($make['layouts'])) {
     foreach ($make['layouts'] as $key => $layout) {
       if ($layout == 'latest') {
