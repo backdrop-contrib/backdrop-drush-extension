@@ -83,10 +83,20 @@ function backdrop_command_pm_download() {
     }
     else {
       $releases = (array) $tags->releases;
-      foreach ($releases['release'] as $release) {
-        if ((string) $release->version == $options['version']) {
-          $sel_url = (string) $release->download_link;
+      // Check how many releases we have. One release requires special handling.
+      $num_releases = count($releases);
+
+      if ($num_releases > 1) {
+        foreach ((array) $releases['release'] as $release) {
+          drush_print_r($release);
+          return;
+          if ((string) $release->version == $options['version']) {
+            $sel_url = (string) $release->download_link;
+          }
         }
+      }
+      else {
+        $sel_url = (string) $releases['release']->download_link;
       }
 
       // If the $sel_url is still empty we will not be able to get the project.
