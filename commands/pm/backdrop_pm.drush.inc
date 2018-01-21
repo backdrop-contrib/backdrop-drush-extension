@@ -84,16 +84,15 @@ function backdrop_command_pm_download() {
     else {
       $releases = (array) $tags->releases;
       // Check how many releases we have. One release requires special handling.
-      $num_releases = count($releases);
-
-      if ($num_releases > 1) {
+      $num_releases = count($releases['release']);
+      if ($num_releases > 1 && gettype($releases['release']) == 'array') {
         foreach ((array) $releases['release'] as $release) {
           if ((string) $release->version == $options['version']) {
             $sel_url = (string) $release->download_link;
           }
         }
       }
-      else {
+      elseif (gettype($releases['release']) == 'object') {
         $sel_url = (string) $releases['release']->download_link;
       }
 
