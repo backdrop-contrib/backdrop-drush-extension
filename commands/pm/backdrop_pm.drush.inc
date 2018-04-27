@@ -208,19 +208,26 @@ function backdrop_pm_get_tags($url) {
  */
 function backdrop_pm_get_path($tags) {
   $type = (string)$tags->type;
+  if (!empty(drush_get_context('DRUSH_BACKDROP_SITE_ROOT'))) {
+    $site_root = realpath(BACKDROP_ROOT . '/' . drush_get_context('DRUSH_BACKDROP_SITE_ROOT'));
+  }
+  else {
+    $site_root = BACKDROP_ROOT;
+  }
+
   if ($type == 'project_module') {
-    if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
-      $project_path = BACKDROP_ROOT . '/modules/contrib';
+    if (file_exists($site_root . '/modules/contrib')) {
+      $project_path = $site_root . '/modules/contrib';
     }
     else {
-      $project_path = BACKDROP_ROOT . '/modules';
+      $project_path = $site_root . '/modules';
     }
   }
   elseif ($type == 'project_theme') {
-    $project_path = BACKDROP_ROOT . '/themes';
+    $project_path = $site_root . '/themes';
   }
   elseif ($type == 'project_layout') {
-    $project_path = BACKDROP_ROOT . '/layouts';
+    $project_path = $site_root . '/layouts';
   }
   return $project_path;
 }
