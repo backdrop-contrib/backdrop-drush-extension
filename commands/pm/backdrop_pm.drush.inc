@@ -380,11 +380,18 @@ function backdrop_command_pm_update() {
       }
     } // end of drush up backdrop.
     elseif (!empty($project)) {
-      if (file_exists("$backdrop_root/modules/contrib")) {
-        $module_path = "$backdrop_root/modules/contrib";
+      if (!empty(drush_get_context('DRUSH_BACKDROP_SITE_ROOT'))) {
+        $site_root = realpath($backdrop_root . '/' . drush_get_context('DRUSH_BACKDROP_SITE_ROOT'));
       }
       else {
-        $module_path = "$backdrop_root/modules";
+        $site_root = $backdrop_root;
+      }
+
+      if (file_exists("$site_root/modules/contrib")) {
+        $module_path = "$site_root/modules/contrib";
+      }
+      else {
+        $module_path = "$site_root/modules";
       }
       $ls = scandir($module_path);
       if (in_array($project, $ls)) {
