@@ -36,7 +36,7 @@ function backdrop_runserver_drush_command() {
       'addr:port/path' => 'Host IP address and port number to bind to and path to open in web browser. Format is addr:port/path, default 127.0.0.1:8888, all elements optional. See examples for shorthand. Only opens a browser if a path is specified.',
     ),
     'options' => array(
-      'variables' => 'Key-value array of variables to override in the $conf array for the running site. By default disables drupal_http_request_fails to avoid errors on Windows (which supports only one connection at a time). Comma delimited list of name=value pairs (or array in drushrc).',
+      'variables' => 'Key-value array of variables to override in the $conf array for the running site. By default disables backdrop_http_request_fails to avoid errors on Windows (which supports only one connection at a time). Comma delimited list of name=value pairs (or array in drushrc).',
       'default-server' => 'A default addr:port/path to use for any values not specified as an argument.',
       'dns' => 'Resolve hostnames/IPs using DNS/rDNS (if possible) to determine binding IPs and/or human friendly hostnames for URLs and browser.',
     ),
@@ -81,7 +81,7 @@ function backdrop_runserver_callback($uri = NULL) {
   // We set the effective base_url, since we have now detected the current site,
   // and need to ensure generated URLs point to our runserver host.
   // We also pass in the effective base_url to our auto_prepend_script via the
-  // CGI environment. This allows Drupal to generate working URLs to this http
+  // CGI environment. This allows Backdrop to generate working URLs to this http
   // server, whilst finding the correct multisite from the HTTP_HOST header.
   $base_url = 'http://' . $addr . ':' . $uri['port'];
   $env['RUNSERVER_BASE_URL'] = $base_url;

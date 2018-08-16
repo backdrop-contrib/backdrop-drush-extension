@@ -54,7 +54,7 @@ if (file_exists('.' . urldecode($url['path']))) {
 // Populate the "q" query key with the path, skip the leading slash.
 $_GET['q'] = $_REQUEST['q'] = substr($url['path'], 1);
 
-// We set the base_url so that Drupal generates correct URLs for runserver
+// We set the base_url so that Backdrop generates correct URLs for runserver
 // (e.g. http://127.0.0.1:8888/...), but can still select and serve a specific
 // site in a multisite configuration (e.g. http://mysite.com/...).
 $base_url = runserver_env('RUNSERVER_BASE_URL');
@@ -65,6 +65,6 @@ $base_url = runserver_env('RUNSERVER_BASE_URL');
 // See https://github.com/drush-ops/drush/issues/2033 for more information.
 $_SERVER['SCRIPT_NAME'] = '/index.php';
 
-// Include the main index.php and let Drupal take over.
-// n.b. Drush sets the cwd to the Drupal root during bootstrap.
+// Include the main index.php and let Backdrop take over.
+// n.b. Drush sets the cwd to the Backdrop root during bootstrap.
 include 'index.php';
