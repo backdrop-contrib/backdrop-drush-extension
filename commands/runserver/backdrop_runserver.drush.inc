@@ -8,7 +8,7 @@
 /**
  * Implements hook_drush_help().
  */
-function runserver_drush_help($section) {
+function backdrop_runserver_drush_help($section) {
   switch ($section) {
     case 'meta:runserver:title':
       return dt("Runserver commands");
@@ -25,7 +25,7 @@ function runserver_drush_help($section) {
 /**
  * Implements hook_drush_command().
  */
-function runserver_drush_command() {
+function backdrop_runserver_drush_command() {
   $items = array();
 
   $items['backdrop-runserver'] = array(
