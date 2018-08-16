@@ -31,6 +31,7 @@ function backdrop_runserver_drush_command() {
   $items['backdrop-runserver'] = array(
     'description' => 'Runs PHP\'s built-in http server for development.',
     'bootstrap' => DRUSH_BOOTSTRAP_DRUPAL_FULL,
+    'callback' => 'backdrop_runserver_callback',
     'arguments' => array(
       'addr:port/path' => 'Host IP address and port number to bind to and path to open in web browser. Format is addr:port/path, default 127.0.0.1:8888, all elements optional. See examples for shorthand. Only opens a browser if a path is specified.',
     ),
@@ -57,11 +58,11 @@ function backdrop_runserver_drush_command() {
 /**
  * Callback for runserver command.
  */
-function drush_core_runserver($uri = NULL) {
+function backdrop_runserver_callback($uri = NULL) {
   global $user, $base_url;
 
   // Determine active configuration.
-  $uri = runserver_uri($uri);
+  $uri = backdrop_runserver_uri($uri);
   if (!$uri) {
     return FALSE;
   }
@@ -69,7 +70,7 @@ function drush_core_runserver($uri = NULL) {
   // Remove any leading slashes from the path, since that is what url() expects.
   $path = ltrim($uri['path'], '/');
 
-  // $uri['addr'] is a special field set by runserver_uri()
+  // $uri['addr'] is a special field set by backdrop_runserver_uri()
   $hostname = $uri['host'];
   $addr = $uri['addr'];
 
@@ -149,15 +150,15 @@ function drush_core_runserver($uri = NULL) {
 /**
  * Determine the URI to use for this server.
  */
-function runserver_uri($uri) {
+function backdrop_runserver_uri($uri) {
   $drush_default = array(
     'host' => '127.0.0.1',
     'port' => '8888',
     'path' => '',
   );
-  $user_default = runserver_parse_uri(drush_get_option('default-server', ''));
-  $site_default = runserver_parse_uri(drush_get_option('uri', ''));
-  $uri = runserver_parse_uri($uri);
+  $user_default = backdrop_runserver_parse_uri(drush_get_option('default-server', ''));
+  $site_default = backdrop_runserver_parse_uri(drush_get_option('uri', ''));
+  $uri = backdrop_runserver_parse_uri($uri);
   if (is_array($uri)) {
     // Populate defaults.
     $uri = $uri + $user_default + $site_default + $drush_default;
@@ -188,7 +189,7 @@ function runserver_uri($uri) {
  * @return array
  *   URI array as returned by parse_url.
  */
-function runserver_parse_uri($uri) {
+function backdrop_runserver_parse_uri($uri) {
   if (empty($uri)) {
     return array();
   }
