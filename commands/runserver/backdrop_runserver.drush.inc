@@ -119,7 +119,7 @@ function backdrop_runserver_callback($uri = NULL) {
 //    $user_message = ', logged in as ' . $usersingle->getUsername();
 //  }
 //  else {
-    $browse = drush_url($path);
+//    $browse = drush_url($path);
 //  }
 
   drush_print(dt('HTTP server listening on !addr, port !port (see http://!hostname:!port/!path), serving site !site!user...', array('!addr' => $addr, '!hostname' => $hostname, '!port' => $uri['port'], '!path' => $path, '!site' => drush_get_context('DRUSH_DRUPAL_SITE', 'default'), '!user' => $user_message)));
@@ -128,21 +128,29 @@ function backdrop_runserver_callback($uri = NULL) {
   foreach ($env as $key => $value) {
     putenv($key . '=' . $value);
   }
-  if (!empty($uri['path'])) {
-    // Start a browser if desired. Include a 2 second delay to allow the
-    // server to come up.
-    drush_start_browser($browse, 2);
-  }
-  // Start the server using 'php -S'.
-  if (drush_drupal_major_version() >= 8) {
-    $extra = ' "' . __DIR__ . '/d8-rs-router.php"';
-  }
-  elseif (drush_drupal_major_version() == 7) {
+
+
+//  if (!empty($uri['path'])) {
+//    // Start a browser if desired. Include a 2 second delay to allow the
+//    // server to come up.
+//    drush_start_browser($browse, 2);
+//  }
+
+
+//  // Start the server using 'php -S'.
+//  if (drush_drupal_major_version() >= 8) {
+//    $extra = ' "' . __DIR__ . '/d8-rs-router.php"';
+//  }
+
+//  elseif (drush_drupal_major_version() == 7) {
+
     $extra = ' "' . __DIR__ . '/d7-rs-router.php"';
-  }
-  else {
-    $extra = ' --define auto_prepend_file="' . __DIR__ . '/runserver-prepend.php"';
-  }
+
+  //  }
+//  else {
+//    $extra = ' --define auto_prepend_file="' . __DIR__ . '/runserver-prepend.php"';
+//  }
+
   $root = drush_get_context('DRUSH_SELECTED_DRUPAL_ROOT');
   drush_shell_exec_interactive('cd %s && %s -S ' . $addr . ':' . $uri['port']. $extra, $root, drush_get_option('php', 'php'));
 }
