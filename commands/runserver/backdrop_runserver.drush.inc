@@ -38,7 +38,6 @@ function backdrop_runserver_drush_command() {
     'options' => array(
       'variables' => 'Key-value array of variables to override in the $conf array for the running site. By default disables drupal_http_request_fails to avoid errors on Windows (which supports only one connection at a time). Comma delimited list of name=value pairs (or array in drushrc).',
       'default-server' => 'A default addr:port/path to use for any values not specified as an argument.',
-      'browser' => 'If opening a web browser, which browser to user (defaults to operating system default). Use --no-browser to avoid opening a browser.',
       'dns' => 'Resolve hostnames/IPs using DNS/rDNS (if possible) to determine binding IPs and/or human friendly hostnames for URLs and browser.',
     ),
     'aliases' => array('rs'),
@@ -76,14 +75,6 @@ function backdrop_runserver_callback($uri = NULL) {
 
   drush_set_context('DRUSH_URI', 'http://' . $hostname . ':' . $uri['port']);
 
-  // We pass in the currently logged in user (if set via the --user option),
-  // which will automatically log this user in the browser during the first
-  // request.
-  if (drush_get_option('user', FALSE) === FALSE) {
-    drush_set_option('user', 1);
-  }
-  drush_bootstrap_max(DRUSH_BOOTSTRAP_DRUPAL_LOGIN);
-
   // We delete any registered files here, since they are not caught by Ctrl-C.
   _drush_delete_registered_files();
 
@@ -108,19 +99,8 @@ function backdrop_runserver_callback($uri = NULL) {
   }
   $env['RUNSERVER_CONF'] = urlencode(serialize($override));
 
-  // We log in with the specified user ID (if set) via the password reset URL.
-  $user_message = '';
-
-
-
-//  $usersingle = drush_user_get_class()->getCurrentUserAsSingle();
-//  if ($usersingle->id()) {
-//    $browse = $usersingle->passResetUrl($path);
-//    $user_message = ', logged in as ' . $usersingle->getUsername();
-//  }
-//  else {
-//    $browse = drush_url($path);
-//  }
+  // NOTE: The original runserver command had a way to log in a user and open a
+  // browser. Those have been removed from the Backdrop version of this command.
 
   drush_print(dt('HTTP server listening on !addr, port !port (see http://!hostname:!port/!path), serving site !site!user...', array('!addr' => $addr, '!hostname' => $hostname, '!port' => $uri['port'], '!path' => $path, '!site' => drush_get_context('DRUSH_DRUPAL_SITE', 'default'), '!user' => $user_message)));
   // Start php 5.4 builtin server.
@@ -129,28 +109,12 @@ function backdrop_runserver_callback($uri = NULL) {
     putenv($key . '=' . $value);
   }
 
+  // As best I can tell, $extra contains the path to the Drupal router based on
+  // the Drupal major version, 7.x or 8.x. We want to always use the Drupal 7
+  // router.
+  $extra = ' "' . __DIR__ . '/d7-rs-router.php"';
 
-//  if (!empty($uri['path'])) {
-//    // Start a browser if desired. Include a 2 second delay to allow the
-//    // server to come up.
-//    drush_start_browser($browse, 2);
-//  }
-
-
-//  // Start the server using 'php -S'.
-//  if (drush_drupal_major_version() >= 8) {
-//    $extra = ' "' . __DIR__ . '/d8-rs-router.php"';
-//  }
-
-//  elseif (drush_drupal_major_version() == 7) {
-
-    $extra = ' "' . __DIR__ . '/d7-rs-router.php"';
-
-  //  }
-//  else {
-//    $extra = ' --define auto_prepend_file="' . __DIR__ . '/runserver-prepend.php"';
-//  }
-
+  // Start the server using 'php -S'.
   $root = drush_get_context('DRUSH_SELECTED_DRUPAL_ROOT');
   drush_shell_exec_interactive('cd %s && %s -S ' . $addr . ':' . $uri['port']. $extra, $root, drush_get_option('php', 'php'));
 }
@@ -170,7 +134,7 @@ function backdrop_runserver_uri($uri) {
   if (is_array($uri)) {
     // Populate defaults.
     $uri = $uri + $user_default + $site_default + $drush_default;
-    if (ltrim($uri['path'], '/') == '-') {
+    if (ltrim($uri['path'], '/') === '-') {
       // Allow a path of a single hyphen to clear a default path.
       $uri['path'] = '';
     }
@@ -201,7 +165,7 @@ function backdrop_runserver_parse_uri($uri) {
   if (empty($uri)) {
     return array();
   }
-  if ($uri[0] == ':') {
+  if ($uri[0] === ':') {
     // ':port/path' shorthand, insert a placeholder hostname to allow parsing.
     $uri = 'placeholder-hostname' . $uri;
   }
@@ -217,14 +181,14 @@ function backdrop_runserver_parse_uri($uri) {
   if (empty($uri)) {
     return drush_set_error('RUNSERVER_INVALID_ADDRPORT', dt('Invalid argument - should be in the "host:port/path" format, numeric (port only) or non-numeric (path only).'));
   }
-  if (count($uri) == 1 && isset($uri['path'])) {
+  if (count($uri) === 1 && isset($uri['path'])) {
     if (is_numeric($uri['path'])) {
       // Port only shorthand.
       $uri['port'] = $uri['path'];
       unset($uri['path']);
     }
   }
-  if (isset($uri['host']) && $uri['host'] == 'placeholder-hostname') {
+  if (isset($uri['host']) && $uri['host'] === 'placeholder-hostname') {
     unset($uri['host']);
   }
   return $uri;
