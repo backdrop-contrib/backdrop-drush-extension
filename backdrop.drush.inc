@@ -81,6 +81,9 @@ function backdrop_drush_command_alter(&$command) {
     case 'pm-list':
       $backdrop_command = 'backdrop-pm-list';
       break;
+    case 'pm-lost':
+      $backdrop_command = 'backdrop-pm-lost';
+      break;
   }
 
   // Commands that work with Backdrop with no adjustments.
