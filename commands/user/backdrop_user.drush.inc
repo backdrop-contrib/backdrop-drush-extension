@@ -86,8 +86,17 @@ function backdrop_command_user_login($user = NULL, $path = NULL) {
     }
 
     // Try to load a user from provided options and arguments.
-    if ($uid) {
-      if ($user_object = user_load($uid)) {
+    if ($uid || $name || $mail) {
+      if ($uid) {
+        $user_object = user_load($uid);
+      }
+      elseif ($name) {
+        $user_object = user_load_by_name($name);
+      }
+      elseif ($mail) {
+        $user_object = user_load_by_mail($mail);
+      }
+      if ($user_object) {
         if ($user_object->status) {
           $options = array();
           if ($path) {
