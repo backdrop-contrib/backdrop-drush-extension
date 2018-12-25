@@ -69,8 +69,8 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
   }
 
   $profile = 'standard';
-  if (isset($arguments['profile'])) {
-    $profile = $arguments['profile'];
+  if (isset($arguments)) {
+    $profile = $arguments;
   }
 
   // If db-url is not specified use interactive prompts.
