@@ -351,10 +351,6 @@ function backdrop_command_pm_update() {
             return FALSE;
           }
 
-          // Run db updates and clear cache.
-          backdrop_command_updatedb();
-          backdrop_flush_all_caches();
-
           drush_print_r("\n\tYou can retrieve your old core files, should you need
           to from: $users_home_directory/drush-backups/$site_name/$timestamp/core-$current_version");
           if (file_exists("$backdrop_root/core")) {
@@ -466,10 +462,6 @@ function backdrop_command_pm_update() {
             exec("mv $users_home_directory/.drush/drush-tmp/$project $module_path/$project");
             exec("rm -r $users_home_directory/.drush/drush-tmp");
 
-            // Run db updates and clear cache.
-            backdrop_command_updatedb();
-            backdrop_flush_all_caches();
-
             drush_print_r("\n\tYou can retrieve your old \033[1m$project\033[0m files, should you need
             to, from: $users_home_directory/drush-backups/$site_name/$timestamp/modules/$project-$module_full_version");
             if (file_exists("$module_path/$project")) {
@@ -495,4 +487,8 @@ function backdrop_command_pm_update() {
       drush_print_r("\n\tWhere project_name is the machine name of the project like webform or devel etc.\n");
     }
   }
+
+  // Run db updates and clear cache.
+  backdrop_command_updatedb();
+  backdrop_flush_all_caches();
 }
