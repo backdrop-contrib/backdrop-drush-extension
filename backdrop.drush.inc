@@ -89,6 +89,7 @@ function backdrop_drush_command_alter(&$command) {
     'cache-set',
     'core-exec',
     'help',
+    'helpsingle',
     'topic',
     'php-eval',
     'php-script',
