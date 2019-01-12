@@ -58,6 +58,30 @@ function backdrop_drush_command_alter(&$command) {
       break;
     case 'boilerplate':
       $backdrop_command = 'backdrop-boilerplate';
+    case 'pm-update':
+      $backdrop_command = 'backdrop-pm-update';
+      break;
+    case 'pm-enable':
+      $backdrop_command = 'backdrop-pm-enable';
+      break;
+    case 'user-password':
+      $backdrop_command = 'backdrop-user-password';
+      break;
+    case 'config-export':
+      $backdrop_command = 'backdrop-config-export';
+      break;
+    case 'config-import':
+    case 'backdrop-config-import':
+      $backdrop_command = 'backdrop-config-import';
+      break;
+    case 'fix-permissions':
+      $backdrop_command = 'fix-permissions';
+      break;
+    case 'site-install':
+      $backdrop_command = 'backdrop-site-install';
+      break;
+    case 'pm-list':
+      $backdrop_command = 'backdrop-pm-list';
       break;
   }
 
@@ -67,9 +91,11 @@ function backdrop_drush_command_alter(&$command) {
     'cache-set',
     'core-exec',
     'help',
+    'helpsingle',
     'topic',
     'php-eval',
     'php-script',
+    'site-alias',
     'sql-cli',
     'sql-conf',
     'sql-connect',
@@ -78,6 +104,7 @@ function backdrop_drush_command_alter(&$command) {
     'sql-dump',
     'sql-query',
     'sql-sanitize',
+    'release-notes',
   );
 
   $compatible_commands = array(
@@ -92,6 +119,11 @@ function backdrop_drush_command_alter(&$command) {
   if (in_array($command['command'], $safe_commands)) {
     return;
   }
+  // Commands provided by Backdrop modules relative to this site installation.
+  if (strpos($command['path'], '/') !== 0 && strpos($command['path'], 'modules') !== FALSE) {
+    return;
+  }
+
   // Commands that are fine to be run through the compatibility layer.
   if (in_array($command['command'], $compatible_commands)) {
     require_once BACKDROP_ROOT . '/core/includes/drupal.inc';

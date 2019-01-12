@@ -157,7 +157,10 @@ class BackdropBoot extends BaseBoot {
    * Validate the BackdropBoot::BOOTSTRAP_ROOT phase.
    */
   function bootstrap_backdrop_root_validate() {
-    $backdrop_root = drush_locate_root();
+    $backdrop_root = drush_get_option('root');
+    if (!isset($backdrop_root)) {
+      $backdrop_root = drush_locate_root();
+    }
     drush_set_context('DRUSH_SELECTED_BACKDROP_ROOT', $backdrop_root);
 
     if (empty($backdrop_root)) {
@@ -425,7 +428,13 @@ class BackdropBoot extends BaseBoot {
 
     $_SERVER['SERVER_SOFTWARE'] = NULL;
     $_SERVER['HTTP_USER_AGENT'] = NULL;
-    $_SERVER['SCRIPT_FILENAME'] = DRUPAL_ROOT . '/index.php';
+    $_SERVER['SCRIPT_FILENAME'] = BACKDROP_ROOT . '/index.php';
+    
+    // Allows the user to drop in db connection info by setting BACKDROP_SETTINGS in the environment
+    // This is helpful when backdrops database connection is not specified in settings.php such as on Pantheon or Kalabox
+    if (getenv('BACKDROP_SETTINGS') !== false) {
+      $_SERVER['BACKDROP_SETTINGS'] = getenv('BACKDROP_SETTINGS');
+    }
   }
 
   /**

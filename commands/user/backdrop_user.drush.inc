@@ -67,7 +67,11 @@ function backdrop_command_user_login($user = NULL, $path = NULL) {
       return FALSE;
     }
 
-    if (drush_get_option('uid', FALSE) || drush_get_option('name', FALSE) || drush_get_option('mail', FALSE)) {
+    // Get the options
+    $uid = drush_get_option('uid', FALSE);
+    $name = drush_get_option('name', FALSE);
+    $mail = drush_get_option('mail', FALSE);
+    if ($uid || $name || $mail) {
       // A user option was passed, prefer that to the user argument.
       $user = NULL;
       // If we only have a single argument and one of the user options is passed,
@@ -82,8 +86,17 @@ function backdrop_command_user_login($user = NULL, $path = NULL) {
     }
 
     // Try to load a user from provided options and arguments.
-    if ($uid || $uid = reset(_drush_user_get_users_from_options_and_arguments($user))) {
-      if ($user_object = user_load($uid)) {
+    if ($uid || $name || $mail) {
+      if ($uid) {
+        $user_object = user_load($uid);
+      }
+      elseif ($name) {
+        $user_object = user_load_by_name($name);
+      }
+      elseif ($mail) {
+        $user_object = user_load_by_mail($mail);
+      }
+      if ($user_object) {
         if ($user_object->status) {
           $options = array();
           if ($path) {
