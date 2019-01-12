@@ -45,7 +45,7 @@ Install with Lando
 
 I primarily use [Lando](https://docs.devwithlando.io) to do my development and
 Lando comes with the Backdrop Drush Extension installed 'out of the box'. I
-recommend that is a way to do local development in general and as a great way to
+recommend Lando to do local development in general and as a great way to
 isolate dev dependencies and tooling for Backdrop site development.
 
 By default Lando will install the latest stable release of the Backdrop Drush
