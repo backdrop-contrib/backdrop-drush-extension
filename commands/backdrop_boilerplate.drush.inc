@@ -12,12 +12,8 @@ function backdrop_boilerplate_drush_command() {
   $items['backdrop-boilerplate'] = array(
     'description' => 'Generate boilerplate code for developers; *.info and *.module files.',
     'aliases' => array('bp', 'boilerplate'),
-    //'callback' => 'backdrop_command_boilerplate',
+    'callback' => 'backdrop_command_boilerplate',
     'bootstrap' => DRUSH_BOOTSTRAP_NONE,
-    'options' => array(
-      'module' => 'Tell drush that you are generating a module.',
-      // TODO: add support for themes and layouts.
-    ),
     'examples' => array(
       'drush bp module' => 'Prompts users for the necessary info to create the stub module structure.',
     ),
@@ -29,7 +25,7 @@ function backdrop_boilerplate_drush_command() {
  * Command callback for boilerplate.
  * Generate boilerplate code for stub module structure.
  */
-function drush_backdrop_boilerplate() {
+function backdrop_command_boilerplate() {
   $type = func_get_args();
   $project_path = '';
   $project_name = '';
@@ -56,25 +52,23 @@ function drush_backdrop_boilerplate() {
     );
     return;
   }
-  
+
   // Get the info to generate the project from the user.
-  $handle = fopen ("php://stdin","r");
-  print("\n\tEnter the $type[0] name: ");
-  print("\033[0m");
-  $project_name = fgets($handle);
-  $project_name = trim($project_name);
+  $project_name = drush_prompt(
+    "\n\t\033[94mEnter the $type[0] name: \033[0m",
+    'mymodule'
+  );
   $project_path = $project_path . "/$project_name";
 
-  $handle = fopen ("php://stdin","r");
-  print("\n\tEnter the $type[0] description: ");
-  print("\033[0m");
-  $project_description = fgets($handle);
-  $project_description = trim($project_description);
+  $project_description = drush_prompt(
+    "\n\t\033[94mEnter the $type[0] description: \033[0m",
+    'This module extends Backdrop ...'
+  );
 
-  $handle = fopen ("php://stdin","r");
-  print("\n\tEnter the $type[0] package (optional): ");
-  print("\033[0m");
-  $project_package = fgets($handle);
+  $project_package = drush_prompt(
+    "\n\t\033[94mEnter the $type[0] package: (optional)\033[0m",
+    "custom"
+  );
   $project_package = trim($project_package);
 
   if (!file_exists($project_path)) {
@@ -97,9 +91,28 @@ function drush_backdrop_boilerplate() {
     $module = fopen($project_path . "/$project_name.module", 'c');
       fwrite($module, "<?php\n");
     fclose($module);
+
+    if ($info !== FALSE && $module !== FALSE) {
+      drush_print_r(
+        "\n\n\t" .
+        dt(
+          "Contgratulations! !project was created in !project_path.",
+          array(
+            '!project' => $project_name,
+            '!project_path' => $project_path
+          )
+        ) .
+        "\n\n"
+      );
+    }
   }
   else {
-    drush_print_r(dt("The project !project already exists.", array('!project' => $project_name)));
+    drush_print_r(
+      dt(
+        "The project !project already exists.",
+        array('!project' => $project_name)
+      )
+    );
   }
   return TRUE;
 }
