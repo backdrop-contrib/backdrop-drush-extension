@@ -1,5 +1,10 @@
 <?php
 /**
+ * @file
+ * Install Backdrop with drush si command.
+ */
+
+/**
  * Implements drush_hook_command().
  */
 function backdrop_site_install_drush_command() {
@@ -10,7 +15,7 @@ function backdrop_site_install_drush_command() {
       'key=value' => array(
         'description' => dt('Any additional settings you wish to pass to the profile. The key is in the form [form name].[parameter name]'),
         'multiple' => TRUE,
-      )
+      ),
     ),
     'options' => array(
       'root' => 'Set the working directory for the script to the specified path. Required if running this script from a directory other than the Backdrop root.',
@@ -27,7 +32,7 @@ function backdrop_site_install_drush_command() {
         'description' => 'A short language code. Sets the default site language. Language files must already be present. You may use download command to get them.',
         'example-value' => 'en-GB',
       ),
-      'clean-url'=> 'Defaults to 1',
+      'clean-url' => 'Defaults to 1',
       'site-name' => 'Defaults to Site-Install',
       'site-mail' => 'From: for system mailings. Defaults to admin@example.com',
     ),
@@ -39,9 +44,15 @@ function backdrop_site_install_drush_command() {
 }
 
 /**
- * @param $arguments
- * @param $options
+ * Callback for site-install command.
+ *
+ * @param string $arguments
+ *   String representing install profile
+ * @param array $options
+ *   Array of options for site-install
+ *
  * @return bool
+ *   TRUE on success otherwise FALSE
  */
 function backdrop_site_install_drush_callback($arguments = 'standard', $options = array()) {
 
@@ -51,7 +62,7 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     'account-pass' => drush_get_option('account-pass', md5(microtime() . mt_rand())),
     'site-name' => drush_get_option('site-name', 'Backdrop'),
     'clean-url' => drush_get_option('clean-url', '1'),
-    //'db-prefix' => drush_get_option('db-prefix', ''),
+    // 'db-prefix' => drush_get_option('db-prefix', ''),
     'db-url' => drush_get_option('db-url', ''),
     'locale' => drush_get_option('Locale', 'en'),
     'site-mail' => drush_get_option('site-mail', 'admin@example.com'),
@@ -62,7 +73,7 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
 
   $additional_form_options = array();
   if (isset($arguments['key=value']) && !empty($arguments['key=value'])) {
-    foreach($arguments['key=value'] as $argument) {
+    foreach ($arguments['key=value'] as $argument) {
       list($key, $value) = explode('=', $argument);
       $additional_form_options[$key] = $value;
     }
@@ -80,7 +91,7 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     $options['account-pass'] = drush_prompt("\t\033[94maccount-pass\033[0m", md5(microtime() . mt_rand()));
     $options['site-name'] = drush_prompt("\t\033[94msite-name\033[0m", 'Backdrop');
     $options['clean-url'] = drush_prompt("\t\033[94mclean-url\033[0m", '1');
-    //$options['db-prefix'] = drush_prompt("\t\033[94mdb-prefix\033[0m", '');
+    // $options['db-prefix'] = drush_prompt("\t\033[94mdb-prefix\033[0m", '');
     $options['locale'] = drush_prompt("\t\033[94mLocale\033[0m", 'en');
     $options['site-mail'] = drush_prompt("\t\033[94msite-mail\033[0m", 'admin@example.com');
     $options['root'] = drush_prompt("\t\033[94mroot\033[0m", '.');
@@ -89,7 +100,7 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     $url['pass'] = drush_prompt("\t\033[94mDatabase password\033[0m", 'pass');
     $url['host'] = drush_prompt("\t\033[94mDatabase host\033[0m", 'localhost');
     $url['port'] = drush_prompt("\t\033[94mDatabase port\033[0m", '3306');
-    //$options['prefix'] = drush_prompt("\tdriver: ");
+    // $options['prefix'] = drush_prompt("\tdriver: ");
     $options['database'] = drush_prompt("\t\033[94mDatabase name\033[0m");
     drush_print_r("\033[0m\n");
 
@@ -113,17 +124,17 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
       'pass' => NULL,
       'host' => NULL,
       'port' => NULL,
-      //'prefix' => NULL,
+      // 'prefix' => NULL,
       'database' => NULL,
     );
-    $url = (object)array_map('urldecode', $url);
+    $url = (object) array_map('urldecode', $url);
     $db_spec = array(
       'driver' => 'mysql',
       'username' => $url->user,
       'password' => $url->pass,
       'port' => $url->port,
       'host' => $url->host,
-      //'prefix' => $url->prefix,
+      // 'prefix' => $url->prefix,
       // Remove leading / character from database names.
       'database' => substr($url->path, 1),
     );
@@ -165,9 +176,9 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
   );
 
   // Merge in the additional options.
-  foreach($additional_form_options as $key => $value) {
+  foreach ($additional_form_options as $key => $value) {
     $current = &$settings['forms'];
-    foreach(explode('.', $key) as $param) {
+    foreach (explode('.', $key) as $param) {
       $current = &$current[$param];
     }
     $current = $value;
@@ -186,7 +197,7 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
   }
   catch (Exception $e) {
     echo $e->getMessage();
-    drush_print_r(dt("An error occurred. Output of installation attempt is as follows: !error", array( '!error' => $e->getMessage())), 'error');
+    drush_print_r(dt("An error occurred. Output of installation attempt is as follows: !error", array('!error' => $e->getMessage())), 'error');
     return FALSE;
   }
 }
