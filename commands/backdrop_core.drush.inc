@@ -3,6 +3,7 @@
  * @file
  * Core commands for Backdrop's Drush integration.
  */
+
 use \Drush\Boot\BackdropBoot;
 
 define('BACKDROP_DRUSH_VERSION', '1.x-0.x');
@@ -49,7 +50,11 @@ function backdrop_core_drush_command() {
     'outputformat' => array(
       'default' => 'table',
       'pipe-format' => 'csv',
-      'field-labels' => array('module' => 'Module', 'update_id' => 'Update ID', 'description' => 'Description'),
+      'field-labels' => array(
+        'module' => 'Module',
+        'update_id' => 'Update ID',
+        'description' => 'Description',
+      ),
       'fields-default' => array('module', 'update_id', 'description'),
       'output-data-type' => 'format-table',
     ),
@@ -117,7 +122,7 @@ function backdrop_core_drush_command() {
         'config-sync' => 'Sync config path',
         'files-path' => 'File directory path',
         'temp-path' => 'Temporary file directory path',
-        '%paths' => 'Other paths'
+        '%paths' => 'Other paths',
       ),
       'formatted-filter' => '_drush_backdrop_core_status_format_table_data',
       'private-fields' => 'db-password',
@@ -202,31 +207,34 @@ function backdrop_command_updatedb_status() {
  */
 function _drush_backdrop_core_is_named_in_array($key, $the_array) {
   $is_named = FALSE;
-
   $simplified_key = str_replace(array(' ', '_', '-'), array('', '', ''), $key);
-
   foreach ($the_array as $name) {
-    if (stristr($simplified_key, str_replace(array(' ', '_', '-'), array('', '', ''), $name))) {
+    if (
+      stristr(
+        $simplified_key,
+        str_replace(array(' ', '_', '-'), array('', '', ''), $name))
+    ) {
       $is_named = TRUE;
     }
   }
 
   return $is_named;
 }
-
-// Adjust the status output for any non-pipe output format
+/**
+ * Adjust the status output for any non-pipe output format.
+ */
 function _drush_backdrop_core_status_format_table_data($output, $metadata) {
   if (drush_get_option('full', FALSE) == FALSE) {
-    // Hide any key that begins with a %
+    // Hide any key that begins with a %.
     foreach ($output as $key => $value) {
       if ($key[0] == '%') {
         unset($output[$key]);
       }
     }
-    // Hide 'Modules path' and 'Themes path' as well
+    // Hide 'Modules path' and 'Themes path' as well.
     unset($output['modules']);
     unset($output['themes']);
-    // Shorten the list of alias files if there are too many
+    // Shorten the list of alias files if there are too many.
     if (isset($output['drush-alias-files']) && count($output['drush-alias-files']) > 24) {
       $msg = dt("\nThere are !count more alias files. Run with --full to see the full list.", array('!count' => count($output['drush-alias-files']) - 1));
       $output['drush-alias-files'] = array($output['drush-alias-files'][0] , $msg);
@@ -239,7 +247,7 @@ function _drush_backdrop_core_status_format_table_data($output, $metadata) {
 }
 
 /**
- * Helper function for backdrop_core_status()
+ * Helper function for backdrop_core_status().
  */
 function _backdrop_core_site_status_table($project = '') {
   $phase = drush_get_context('DRUSH_BOOTSTRAP_PHASE');
@@ -286,8 +294,8 @@ function _backdrop_core_site_status_table($project = '') {
     }
     // TODO: what is going on here gff.
     // if (drush_has_boostrapped(DRUSH_BOOTSTRAP_BACKDROP_FULL)) {
-    //   $status_table['theme'] = drush_theme_get_default();
-    //   $status_table['admin-theme'] = drush_theme_get_admin();
+    // $status_table['theme'] = drush_theme_get_default();
+    // $status_table['admin-theme'] = drush_theme_get_admin();
     // }
   }
   if ($php_bin = drush_get_option('php')) {
@@ -308,8 +316,8 @@ function _backdrop_core_site_status_table($project = '') {
   if (!empty($paths)) {
     foreach ($paths as $target => $one_path) {
       $name = $target;
-      if (substr($name,0,1) == '%') {
-        $name = substr($name,1);
+      if (substr($name, 0, 1) == '%') {
+        $name = substr($name, 1);
       }
       $status_table[$name] = $one_path;
     }
@@ -324,13 +332,12 @@ function _backdrop_core_site_status_table($project = '') {
 }
 
 /**
- * Command callback. Provides a birds-eye view of the current Backdrop
- * installation.
+ * Command callback. Provides a birds-eye view of the current Backdrop install.
  */
 function backdrop_command_core_status() {
-  $status_table = _backdrop_core_site_status_table(drush_get_option('project',''));
+  $status_table = _backdrop_core_site_status_table(drush_get_option('project', ''));
   // If args are specified, filter out any entry that is not named
-  // (in other words, only show lines named by one of the arg values)
+  // (in other words, only show lines named by one of the arg values).
   $args = func_get_args();
   if (!empty($args)) {
     $field_list = $args;
