@@ -1,11 +1,11 @@
 <?php
 /**
- *  @file
- *  Drush generate boilerplate code for modules.
+ * @file
+ * Drush generate boilerplate code for modules.
  */
 
 /**
- *  Implements hook_drush_command().
+ * Implements hook_drush_command().
  */
 function backdrop_boilerplate_drush_command() {
   $items = array();
@@ -23,7 +23,6 @@ function backdrop_boilerplate_drush_command() {
 
 /**
  * Command callback for boilerplate.
- * Generate boilerplate code for stub module structure.
  */
 function backdrop_command_boilerplate() {
   $type = func_get_args();
@@ -43,7 +42,7 @@ function backdrop_command_boilerplate() {
   elseif ($type[0] == 'theme') {
     $project_path = BACKDROP_ROOT . '/themes';
   }
-  elseif($type[0] == 'layout') {
+  elseif ($type[0] == 'layout') {
     $project_path = BACKDROP_ROOT . '/layouts';
   }
   else {
@@ -78,18 +77,18 @@ function backdrop_command_boilerplate() {
 
     // Write the info file.
     $info = fopen($project_path . "/$project_name.info", 'c');
-      fwrite($info, "name = $project_name\n");
-      fwrite($info, "description = $project_description\n");
-      fwrite($info, "backdrop = 1.x\n");
-      if (!empty($project_package)) {
-        fwrite($info, "package = $project_package\n");
-      }
-      fwrite($info, "type = $type[0]\n");
+    fwrite($info, "name = $project_name\n");
+    fwrite($info, "description = $project_description\n");
+    fwrite($info, "backdrop = 1.x\n");
+    if (!empty($project_package)) {
+      fwrite($info, "package = $project_package\n");
+    }
+    fwrite($info, "type = $type[0]\n");
     fclose($info);
 
     // Write the module file.
     $module = fopen($project_path . "/$project_name.module", 'c');
-      fwrite($module, "<?php\n");
+    fwrite($module, "<?php\n");
     fclose($module);
 
     if ($info !== FALSE && $module !== FALSE) {
@@ -99,7 +98,7 @@ function backdrop_command_boilerplate() {
           "Contgratulations! !project was created in !project_path.",
           array(
             '!project' => $project_name,
-            '!project_path' => $project_path
+            '!project_path' => $project_path,
           )
         ) .
         "\n\n"
