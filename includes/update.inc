@@ -1,29 +1,33 @@
 <?php
 /**
  * @file
- *   Update.php for provisioned sites.
- *   This file is a derivative of the standard drupal update.php,
- *   which has been modified to allow being run from the command
- *   line.
+ * Update.php for provisioned sites.
+ * This file is a derivative of the standard drupal update.php,
+ * which has been modified to allow being run from the command
+ * line.
  */
 
 /**
  * Global flag to identify update.php run, and so avoid various unwanted
  * operations, such as hook_init() and hook_exit() invokes, css/js preprocessing
- * and translation, and solve some theming issues. This flag is checked on several
- * places in Backdrop code (not just update.php).
+ * and translation, and solve some theming issues. This flag is checked on
+ * several places in Backdrop code (not just update.php).
  */
 define('MAINTENANCE_MODE', 'update');
 
 /**
- * Backdrop's update.inc has functions that are in previous update_X.inc files
- * for example, update_check_incompatibility() which can prove useful when
+ * Backdrop's update.inc has functions that are in previous update_X.inc files.
+ *
+ * For example, update_check_incompatibility() which can prove useful when
  * enabling modules.
  */
 require_once DRUSH_BACKDROP_CORE . '/includes/update.inc';
+
 /**
- * Returns (and optionally stores) extra requirements that only apply during
- * particular parts of the update.php process.
+ * Returns (and optionally stores) extra requirements.
+ *
+ * The requirements that only apply during particular parts of the update.php
+ * process.
  */
 function update_extra_requirements($requirements = NULL) {
   static $extra_requirements = array();
@@ -34,8 +38,7 @@ function update_extra_requirements($requirements = NULL) {
 }
 
 /**
- * Perform one update and store the results which will later be displayed on
- * the finished page.
+ * Perform one update and store the results which will later be displayed.
  *
  * An update function can force the current and all later updates for this
  * module to abort by returning a $ret array with an element like:
@@ -44,14 +47,14 @@ function update_extra_requirements($requirements = NULL) {
  * aborted updates will continue to appear on update.php as updates that
  * have not yet been run.
  *
- * @param $module
+ * @param string $module
  *   The module whose update will be run.
- * @param $number
+ * @param int $number
  *   The update number to run.
- * @param $context
+ * @param array $context
  *   The batch context array
  */
-function drush_update_do_one($module, $number, $dependency_map,  &$context) {
+function drush_update_do_one($module, $number, $dependency_map, &$context) {
   $function = $module . '_update_' . $number;
 
   // If this update was aborted in a previous step, or has a dependency that
@@ -80,8 +83,8 @@ function drush_update_do_one($module, $number, $dependency_map,  &$context) {
 
       $ret['results']['success'] = TRUE;
     }
-      // @TODO We may want to do different error handling for different exception
-      // types, but for now we'll just print the message.
+    // @TODO We may want to do different error handling for different exception
+    // types, but for now we'll just print the message.
     catch (Exception $e) {
       $ret['#abort'] = array('success' => FALSE, 'query' => $e->getMessage());
       drush_set_error('BACKDROP_EXCEPTION', $e->getMessage());
@@ -142,7 +145,9 @@ function update_check_requirements() {
   return $warnings;
 }
 
-
+/**
+ * Prepare the update.
+ */
 function update_main_prepare() {
   // Some unavoidable errors happen because the database is not yet up-to-date.
   // Our custom error handler is not yet installed, so we just suppress them.
@@ -218,6 +223,9 @@ function update_main_prepare() {
   module_list(TRUE, FALSE, TRUE);
 }
 
+/**
+ * The main event.
+ */
 function update_main() {
   update_main_prepare();
 
@@ -238,6 +246,12 @@ function update_main() {
   }
 }
 
+/**
+ * Helper to run the commands.
+ *
+ * @param int $id
+ *   The id for the batch.
+ */
 function _update_batch_command($id) {
   update_main_prepare();
   include_once __DIR__ . '/batch.inc';
@@ -247,18 +261,8 @@ function _update_batch_command($id) {
 /**
  * Start the database update batch process.
  *
- * @param $start
+ * @param array $start
  *   An array of all the modules and which update to start at.
- * @param $redirect
- *   Path to redirect to when the batch has finished processing.
- * @param $url
- *   URL of the batch processing page (should only be used for separate
- *   scripts like update.php).
- * @param $batch
- *   Optional parameters to pass into the batch API.
- * @param $redirect_callback
- *   (optional) Specify a function to be called to redirect to the progressive
- *   processing page.
  */
 function drush_update_batch($start) {
   // Resolve any update dependencies to determine the actual updates that will
@@ -286,7 +290,14 @@ function drush_update_batch($start) {
       }
       // Add this update function to the batch.
       $function = $update['module'] . '_update_' . $update['number'];
-      $operations[] = array('drush_update_do_one', array($update['module'], $update['number'], $dependency_map[$function]));
+      $operations[] = array(
+        'drush_update_do_one',
+        array(
+          $update['module'],
+          $update['number'],
+          $dependency_map[$function],
+        ),
+      );
     }
   }
 
@@ -307,15 +318,20 @@ function drush_update_batch($start) {
   _drush_backend_batch_process('updatedb-batch-process', $args, $options);
 }
 
-
-
+/**
+ * Finish the update.
+ */
 function drush_update_finished($success, $results, $operations) {
-  // Nothing to do here. All caches already cleared. Kept as documentation of 'finished' callback.
+  // Nothing to do here. All caches already cleared. Kept as documentation of
+  // 'finished' callback.
 }
 
 /**
- * Return a 2 item array with
- *  - an array where each item is a 3 item associative array describing a pending update.
+ * Return a 2 item array.
+ *
+ *  Array contains:
+ *  - an array where each item is a 3 item associative array describing a
+ *    pending update.
  *  - an array listing the first update to run, keyed by module.
  */
 function updatedb_status() {
@@ -327,11 +343,15 @@ function updatedb_status() {
 
   // Print a list of pending updates for this module and get confirmation.
   foreach ($pending as $module => $updates) {
-    if (isset($updates['start']))  {
+    if (isset($updates['start'])) {
       foreach ($updates['pending'] as $update_id => $description) {
         // Strip cruft from front.
         $description = str_replace($update_id . ' -   ', '', $description);
-        $return[] = array('module' => ucfirst($module), 'update_id' => $update_id, 'description' => $description);
+        $return[] = array(
+          'module' => ucfirst($module),
+          'update_id' => $update_id,
+          'description' => $description,
+        );
       }
       if (isset($updates['start'])) {
         $start[$module] = $updates['start'];

@@ -7,14 +7,13 @@
 /**
  * Main loop for the Drush batch API.
  *
- * Saves a record of the batch into the database, and progressively call $command to
- * process the operations.
+ * Saves a record of the batch into the database, and progressively call
+ * $command to process the operations.
  *
- * @param command
- *    The command to call to process the batch.
- *
+ * @param string $command
+ *   The command to call to process the batch.
  */
-function _drush_backend_batch_process($command = 'batch-process', $args, $options) {
+function _drush_backend_batch_process($args, $options, $command = 'batch-process') {
   $batch =& batch_get();
 
   if (isset($batch)) {
@@ -53,7 +52,11 @@ function _drush_backend_batch_process($command = 'batch-process', $args, $option
     $finished = FALSE;
 
     while (!$finished) {
-      $data = drush_invoke_process('@self', $command, $args, array($batch['id'], '-u', $GLOBALS['user']->uid));
+      $data = drush_invoke_process('@self', $command, $args, array(
+        $batch['id'],
+        '-u',
+        $GLOBALS['user']->uid)
+      );
 
       $finished = drush_get_error() || !$data || (isset($data['context']['drush_batch_process_finished']) && $data['context']['drush_batch_process_finished'] == TRUE);
     }
@@ -67,7 +70,7 @@ function _drush_backend_batch_process($command = 'batch-process', $args, $option
  * Loads the batch record from the database and sets up the requirements
  * for the worker, such as registering the shutdown function.
  *
- * @param id
+ * @param string $id
  *   The batch id of the batch being processed.
  */
 function _drush_batch_command($id) {
@@ -97,7 +100,7 @@ function _drush_batch_command($id) {
 
 
 /**
- * Process batch operations
+ * Process batch operations.
  *
  * Using the current $batch process each of the operations until the batch
  * has been completed or half of the available memory for the process has been
@@ -200,7 +203,8 @@ function _drush_batch_worker() {
 }
 
 /**
- * End the batch processing:
+ * End the batch processing.
+ *
  * Call the 'finished' callbacks to allow custom handling of results,
  * and resolve page redirection.
  */
@@ -239,8 +243,9 @@ function _drush_batch_finished() {
 }
 
 /**
- * Shutdown function: store the batch data for next request,
- * or clear the table if the batch is finished.
+ * Shutdown function: store the batch data for next request.
+ *
+ * Otherwise clear the table if the batch is finished.
  */
 function _drush_batch_shutdown() {
   if ($batch = batch_get()) {
