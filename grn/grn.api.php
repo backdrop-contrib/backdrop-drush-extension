@@ -7,9 +7,9 @@
 /**
  * Modify release notes items before rendering.
  *
- * @param $items
- *  Array of individual, cleaned-up commits.
- *  Array values are HTML, keys are cleaned-up version of commits without HTML.
+ * @param array $items
+ *   Array of individual, cleaned-up commits.
+ *   Array values are HTML, keys are cleaned-up version of commits without HTML.
  */
 function hook_release_notes_output_alter(&$items) {
   foreach ($items as $k => $item) {
@@ -18,4 +18,3 @@ function hook_release_notes_output_alter(&$items) {
     }
   }
 }
-

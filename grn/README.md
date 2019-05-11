@@ -1,10 +1,10 @@
 Git Release Notes
 =================
 
-This is a port of the drupal grn project http://drupal.org/project/grn 
+This is a port of the drupal grn project http://drupal.org/project/grn
 modified to meet the the needs of Backdrop CMS releases.
 
-Automates creation of the release notes features, bug fixes an enhancements 
+Automates creation of the release notes features, bug fixes an enhancements
 between two git tags.
 
 REQUIREMENTS
@@ -29,8 +29,8 @@ like this:
 
     `drush rn 1.0.0 origin/1.x`
 
-If you only provide the `<end>` tag, the previous tag before that will be used as
-`<start>` tag.  If both tags are ommitted, the latest tag will be used as the
+If you only provide the `<end>` tag, the previous tag before that will be used
+as `<start>` tag.  If both tags are ommitted, the latest tag will be used as the
 <end> tag.
 
 The command `release-notes`, has the aliases: `relnotes` and `rn` and there
@@ -72,4 +72,5 @@ CREDITS
 * Originally written for CVS by dww.
 * Ported to git by [Josh The Geek](http://drupal.org/user/926382)
   for [#1002410](http://drupal.org/node/1002410).
-* Ported to Backdrop Drush Extension by [Geoff St. Pierre](https://github.com/serundeputy)
+* Ported to Backdrop Drush Extension by [Geoff St. Pierre]
+  (https://github.com/serundeputy)
