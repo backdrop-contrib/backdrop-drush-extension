@@ -1,0 +1,21 @@
+language: php
+dist: xenial
+php:
+  - 7.2
+cache:
+  directories:
+    - $HOME/.composer/cache/files
+    - $HOME/.composer/cache/repo
+services:
+  - docker
+before_install:
+  - sudo apt-get -y update
+  - sudo apt-get -y install cgroup-bin curl
+
+script:
+  # Check code standards
+  - vendor/bin/phpcs --config-set installed_paths /app/vendor/backdrop/coder/coder_sniffer
+  - vendor/bin/phpcs -n --report=full --standard=Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
+
+  # Unit tests
+
