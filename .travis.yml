@@ -13,7 +13,6 @@ before_install:
   - sudo apt-get -y update
   - sudo apt-get -y install cgroup-bin curl
   - composer install
-  - sleep 2
 
 script:
   # Check code standards
