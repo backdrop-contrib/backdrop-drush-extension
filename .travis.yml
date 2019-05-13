@@ -17,7 +17,8 @@ before_install:
 script:
   # Check code standards
   - vendor/bin/phpcs --config-set installed_paths /app/vendor/backdrop/coder/coder_sniffer
-  - vendor/bin/phpcs -n --report=full --standard=Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
+  - composer dumpautoload
+  - vendor/bin/phpcs -n --standard=Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
 
   # Unit tests
 
