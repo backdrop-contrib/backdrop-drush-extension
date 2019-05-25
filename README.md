@@ -13,7 +13,8 @@ This integration is currently capable of executing the following commands:
 - `drush sql-*`: MySQL connection commands, such as `sql-cli` or `sql-conf`.
 - `drush cron`: Run the regular interval commands in hook_cron().
 - `drush scr`: Execute scripts with the Backdrop API.
-- `drush st` : Check the status of a Backdrop site; bootstrap, database connection etc.
+- `drush st` : Check the status of a Backdrop site; bootstrap, database
+  connection etc.
 
 There are many more commands that Drush may execute, but they need to be updated
 for use with Backdrop. Although some commands may have worked through Backdrop's
@@ -51,7 +52,8 @@ isolate dev dependencies and tooling for Backdrop site development.
 By default Lando will install the latest stable release of the Backdrop Drush
 extension, but you can point it at any git tag or commit hash. If you wish to
 live on the bleeding edge and run the Backdrop Drush extension from source you
-can use this example [.lando.yml](https://github.com/backdrop-contrib/drush/wiki/Contributing-code-to-the-Backdrop-drush-extension.)
+can use this example
+[.lando.yml](https://github.com/backdrop-contrib/drush/wiki/Contributing-code-to-the-Backdrop-drush-extension.)
 file.
 
 Install as Site Local

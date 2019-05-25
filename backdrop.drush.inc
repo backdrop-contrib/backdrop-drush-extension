@@ -1,8 +1,7 @@
 <?php
-
 /**
  * @file
- *   Core drush commands.
+ * Core drush commands.
  */
 
 include_once __DIR__ . '/BackdropBoot.php';
@@ -38,51 +37,68 @@ function backdrop_drush_command_alter(&$command) {
     case 'core-cron':
       $backdrop_command = 'backdrop-cron';
       break;
+
     case 'updatedb':
       $backdrop_command = 'backdrop-updatedb';
       break;
+
     case 'updatedb-batch-process':
       $backdrop_command = 'backdrop-updatedb-batch-process';
       break;
+
     case 'updatedb-status':
       $backdrop_command = 'backdrop-updatedb-status';
       break;
+
     case 'pm-download':
       $backdrop_command = 'backdrop-pm-download';
       break;
+
     case 'user-login':
       $backdrop_command = 'backdrop-user-login';
       break;
+
     case 'core-status':
       $backdrop_command = 'backdrop-core-status';
       break;
+
     case 'boilerplate':
       $backdrop_command = 'backdrop-boilerplate';
+      break;
+
     case 'pm-update':
       $backdrop_command = 'backdrop-pm-update';
       break;
+
     case 'pm-enable':
       $backdrop_command = 'backdrop-pm-enable';
       break;
+
     case 'user-password':
       $backdrop_command = 'backdrop-user-password';
       break;
+
     case 'config-export':
       $backdrop_command = 'backdrop-config-export';
       break;
+
     case 'config-import':
     case 'backdrop-config-import':
       $backdrop_command = 'backdrop-config-import';
       break;
+
     case 'fix-permissions':
       $backdrop_command = 'fix-permissions';
       break;
+
     case 'site-install':
       $backdrop_command = 'backdrop-site-install';
       break;
+
     case 'pm-list':
       $backdrop_command = 'backdrop-pm-list';
       break;
+
   }
 
   // Commands that work with Backdrop with no adjustments.

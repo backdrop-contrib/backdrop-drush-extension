@@ -1,5 +1,6 @@
 <?php
 /**
+ * @file
  * Package management Drush commands for Backdrop.
  */
 
@@ -29,10 +30,10 @@ function backdrop_pm_drush_command() {
       'module-name' => array('The name of the module(s) you would like to update.'),
     ),
     // TODO: show available updates and allow for selection of which to apply.
-    //'options' => array(
-    //  'show' => "Select from available updates:"
-    //),
-    'aliases' => array('up',),
+    // 'options' => array(
+    // 'show' => "Select from available updates:"
+    // ),
+    'aliases' => array('up'),
     'required-arguments' => TRUE,
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
   );
@@ -40,10 +41,7 @@ function backdrop_pm_drush_command() {
 }
 
 /**
- * Command callback. Download a Backdrop CMS contrib project.
- *
- * @param $projects
- *  Array of Backdrop CMS contrib projects to download.
+ * Command callback to download a Backdrop CMS contrib project.
  */
 function backdrop_command_pm_download() {
   $package_handler = backdrop_command_pm_update_validate();
@@ -55,7 +53,7 @@ function backdrop_command_pm_download() {
   $options['version'] = drush_get_option('version', '');
 
   if (!empty($options['select']) || !empty($options['version'])) {
-    // get available releases.
+    // Get available releases.
     $tags = backdrop_pm_get_tags(
       "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
     );
@@ -65,17 +63,17 @@ function backdrop_command_pm_download() {
     if (empty($options['version'])) {
       drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \033[0m\n");
 
-      for($i = 0; $i < count($tags->releases->release); $i++) {
+      for ($i = 0; $i < count($tags->releases->release); $i++) {
         $version = (string) $tags->releases->release[$i]->version;
         drush_print_r("\t\t [$i] \t:\t " . $version);
       }
-      // get users's menu selection
-      $handle = fopen ("php://stdin","r");
-      print("\n\tSelect one [0]: ");
-      print("\033[0m");
+      // Get users's menu selection.
+      $handle = fopen("php://stdin", "r");
+      print ("\n\tSelect one [0]: ");
+      print ("\033[0m");
       $selection = fgets($handle);
       $selection = trim($selection);
-      // default to latest release if user just hits enter.
+      // Default to latest release if user just hits enter.
       if (empty($selection)) {
         $selection = 0;
       }
@@ -98,7 +96,7 @@ function backdrop_command_pm_download() {
 
       // If the $sel_url is still empty we will not be able to get the project.
       if (empty($sel_url)) {
-        drush_print_r('You must specify a valid version string. Project ' . $projects[0] . ' does not have a version: ' . $options['version']. '.');
+        drush_print_r('You must specify a valid version string. Project ' . $projects[0] . ' does not have a version: ' . $options['version'] . '.');
         return;
       }
     }
@@ -144,7 +142,8 @@ function backdrop_command_pm_download() {
         // Get the HTTP/1.1 response to check against.
         $response = get_headers($download_url);
 
-        // If the http response is 404 gracefully bow out; offer user the dev version?
+        // If the http response is 404 gracefully bow out; offer user the dev
+        // version?
         if (strpos($response[0], '404') !== FALSE) {
           drush_print_r(
             dt("\n\t\e[31mError\e[0m: There is no release located at $download_url." .
@@ -193,7 +192,9 @@ function backdrop_pm_get_from_github($url) {
 
 /**
  * Helper function for --select option for download command.
- * Gets the tags for a project.
+ *
+ * @param string $url
+ *   Path to tags file.
  */
 function backdrop_pm_get_tags($url) {
   $xml = simplexml_load_file($url);
@@ -201,13 +202,13 @@ function backdrop_pm_get_tags($url) {
 }
 
 /**
- * Get the path to where to store the module, theme, or layout
- * determine project_type from the $tags xml object.
- * @param $tags
+ * Get the path to where to store the module, theme, or layout.
+ *
+ * @param Object $tags
  *   xml object.
  */
 function backdrop_pm_get_path($tags) {
-  $type = (string)$tags->type;
+  $type = (string) $tags->type;
   if ($type == 'project_module') {
     if (file_exists(BACKDROP_ROOT . '/modules/contrib')) {
       $project_path = BACKDROP_ROOT . '/modules/contrib';
@@ -226,13 +227,13 @@ function backdrop_pm_get_path($tags) {
 }
 
 /**
- * Determine success or failure of drush dl command and give the user some
- * relevent feedback.
+ * Determine success or failure of drush dl command.
+ *
  * @param string $module_install_location
- *  String directory path where module should end up.
+ *   String directory path where module should end up.
  *
  * @param string $project
- *  Project name.
+ *   Project name.
  */
 function backdrop_pm_dl_outcome($module_install_location, $project) {
   if (file_exists($module_install_location)) {
@@ -277,12 +278,12 @@ function backdrop_command_pm_update() {
   require_once 'core/includes/transliteration.inc';
 
   $projects = func_get_args();
-  foreach($projects as $project) {
+  foreach ($projects as $project) {
     $project = strtolower($project);
     $project = rtrim($project, '/');
     $backdrop_root = BACKDROP_ROOT;
     if ($project === 'backdrop' || $project == 'core') {
-      // get current Backdrop version info.
+      // Get current Backdrop version info.
       $current_version = BACKDROP_VERSION;
       $parse_version = explode('.', $current_version);
       $current_version_major = $parse_version[0];
@@ -367,7 +368,7 @@ function backdrop_command_pm_update() {
       else {
         drush_print_r("\n\tNo Backdrop core updates available. Your Backdrop is up to date!\n");
       }
-    } // end of drush up backdrop.
+    }
     elseif (!empty($project)) {
       if (file_exists("$backdrop_root/modules/contrib")) {
         $module_path = "$backdrop_root/modules/contrib";
@@ -378,7 +379,7 @@ function backdrop_command_pm_update() {
       $ls = scandir($module_path);
       if (in_array($project, $ls)) {
         $info = file("$module_path/$project/$project.info", FILE_IGNORE_NEW_LINES);
-        foreach($info as $i) {
+        foreach ($info as $i) {
           if (strpos($i, 'version =') !== FALSE) {
             $module_version_raw = $i;
           }
@@ -395,7 +396,7 @@ function backdrop_command_pm_update() {
           $module_core_compat = trim($module_sem_version_arr[0]);
         }
         else {
-           $module_sem_version = $module_full_version;
+          $module_sem_version = $module_full_version;
         }
         $module_sem_version_parts = explode('.', $module_sem_version);
         $module_version_major = $module_sem_version_parts[0];
@@ -480,7 +481,7 @@ function backdrop_command_pm_update() {
         drush_print_r("\n\t\e[33mWARNING\033[0m: There is no project \e[1m$project\033[0m installed on your backdrop site.");
         drush_print_r("\tNo action taken.\n");
       }
-    } // end of drush up $project
+    }
     else {
       drush_print_r("\n\tYou must specify a project to update. For example:\n");
       drush_print_r("\t\tdrush up project_name");

@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Boot class for Backdrop Drush Extension.
+ */
 
 namespace Drush\Boot;
 
@@ -31,9 +35,9 @@ class BackdropBoot extends BaseBoot {
   /**
    * Load the settings from the Backdrop settings.php file.
    *
-   * This phase is analogous to the BACKDROP_BOOTSTRAP_CONFIGURATIONURATION bootstrap
-   * phase in Backdrop itself, and this is also the first step where Backdrop-
-   * specific code is included.
+   * This phase is analogous to the BACKDROP_BOOTSTRAP_CONFIGURATIONURATION
+   * bootstrap phase in Backdrop itself, and this is also the first step where
+   * Backdrop- specific code is included.
    *
    * This phase is commonly used for code that interacts with the Backdrop
    * install API, as both install.php and update.php start at this phase.
@@ -80,6 +84,7 @@ class BackdropBoot extends BaseBoot {
    */
   const BOOTSTRAP_LOGIN = 6;
 
+  // @codingStandardsIgnoreLine
   function valid_root($path) {
     if (!empty($path) && is_dir($path) && file_exists($path . '/index.php')) {
       if (file_exists($path . '/core/includes/bootstrap.inc') && file_exists($path . '/core/misc/backdrop.js')) {
@@ -89,6 +94,7 @@ class BackdropBoot extends BaseBoot {
     return FALSE;
   }
 
+  // @codingStandardsIgnoreLine
   function get_version($root) {
     $path = $root . '/core/includes/bootstrap.inc';
     if (is_file($path)) {
@@ -99,17 +105,20 @@ class BackdropBoot extends BaseBoot {
     }
   }
 
+  // @codingStandardsIgnoreLine
   function get_profile() {
     return backdrop_get_profile();
   }
 
+  // @codingStandardsIgnoreLine
   function conf_path($require_settings = TRUE, $reset = FALSE) {
     return conf_path($require_settings = TRUE, $reset = FALSE);
   }
 
-
   /**
-   * Bootstrap phases used with Backdrop:
+   * Bootstrap phases used with Backdrop.
+   *
+   * Phases:
    *
    *     DRUSH_BOOTSTRAP_DRUSH   = Only Backdrop.
    *     BOOTSTRAP_ROOT          = Find a valid Drupal root.
@@ -124,6 +133,7 @@ class BackdropBoot extends BaseBoot {
    * method is called, if defined.  The validate method name is the
    * bootstrap method name with "_validate" appended.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_phases() {
     return array(
       BackdropBoot::BOOTSTRAP_ROOT          => 'bootstrap_backdrop_root',
@@ -140,15 +150,17 @@ class BackdropBoot extends BaseBoot {
    * For Backdrop, we try at these bootstrap phases:
    *
    *   - Drush preflight: to find commandfiles in any system location,
-   *     out of a Backdrop installation.
-   *   - Backdrop root: to find commandfiles based on Backdrop core version.
-   *   - Backdrop full: to find commandfiles defined within a Backdrop directory.
+   *     out of a Backdrop installation
+   *   - Backdrop root: to find commandfiles based on Backdrop core version
+   *   - Backdrop full: to find commandfiles defined within a Backdrop directory
    *
    * Once a command is found, Drush will ensure a bootstrap to the phase
    * declared by the command.
    *
-   * @return array of PHASE indexes.
+   * @return array
+   *   An array of PHASE indexes.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_init_phases() {
     return array(BackdropBoot::BOOTSTRAP_ROOT, BackdropBoot::BOOTSTRAP_FULL);
   }
@@ -156,6 +168,7 @@ class BackdropBoot extends BaseBoot {
   /**
    * Validate the BackdropBoot::BOOTSTRAP_ROOT phase.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_root_validate() {
     $backdrop_root = drush_get_option('root');
     if (!isset($backdrop_root)) {
@@ -191,6 +204,7 @@ class BackdropBoot extends BaseBoot {
    * We can now include files from the Backdrop directory, and figure
    * out more context about the platform, such as the version of Backdrop.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_root() {
     // Load the config options the installation's /drush directory.
     drush_load_config('backdrop');
@@ -212,9 +226,12 @@ class BackdropBoot extends BaseBoot {
 
 
   /**
+   * Boot core.
+   *
    * @param $backdrop_root
    * @return string
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_core($backdrop_root) {
     define('BACKDROP_ROOT', $backdrop_root);
     $core = $backdrop_root . '/core';
@@ -234,6 +251,7 @@ class BackdropBoot extends BaseBoot {
    * to allow us to use conf_path() to determine what Backdrop will load
    * as a configuration file.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_site_validate() {
     // Define the selected conf path as soon as we have identified that
     // we have selected a Backdrop site.
@@ -263,6 +281,7 @@ class BackdropBoot extends BaseBoot {
    * We now set various contexts that we determined and confirmed to be valid.
    * Additionally we load an optional drushrc.php file in the site directory.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_site() {
     drush_load_config('site');
 
@@ -280,6 +299,7 @@ class BackdropBoot extends BaseBoot {
   /**
    * Validate the BackdropBoot::BOOTSTRAP_CONFIGURATION phase.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_configuration_validate() {
     // No validation yet.
     return TRUE;
@@ -291,6 +311,7 @@ class BackdropBoot extends BaseBoot {
    * Load in the settings.php file an initialize the database information,
    * config directories, and $settings variable.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_configuration() {
     backdrop_bootstrap(BACKDROP_BOOTSTRAP_CONFIGURATION);
 
@@ -322,6 +343,7 @@ class BackdropBoot extends BaseBoot {
   /**
    * Execute the BackdropBoot::BOOTSTRAP_DATABASE phase.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_database_validate() {
     require_once BACKDROP_ROOT . '/core/includes/database/database.inc';
     return db_table_exists('system');
@@ -330,6 +352,7 @@ class BackdropBoot extends BaseBoot {
   /**
    * Execute the BackdropBoot::BOOTSTRAP_DATABASE phase.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_database() {
     backdrop_bootstrap(BACKDROP_BOOTSTRAP_DATABASE);
   }
@@ -337,6 +360,7 @@ class BackdropBoot extends BaseBoot {
   /**
    * Execute the BackdropBoot::BOOTSTRAP_FULL phase.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_full() {
     if (!drush_get_context('DRUSH_QUIET', FALSE)) {
       ob_start();
@@ -352,6 +376,7 @@ class BackdropBoot extends BaseBoot {
    *
    * Log into the bootstrapped Backdrop site with a specific user name or ID.
    */
+  // @codingStandardsIgnoreLine
   function bootstrap_backdrop_login() {
     $uid_or_name = drush_set_context('DRUSH_USER', drush_get_option('user', 0));
 
@@ -365,7 +390,7 @@ class BackdropBoot extends BaseBoot {
     if ($account) {
       $GLOBALS['user'] = $account;
       // @todo: Convert Backdrop messages to drush output.
-      //_drush_log_drupal_messages();
+      // _drush_log_drupal_messages();
     }
     else {
       if (is_numeric($uid_or_name)) {
@@ -387,6 +412,7 @@ class BackdropBoot extends BaseBoot {
    *
    * @see \Drush\Boot\DrupalBoot::bootstrap_drupal_site_setup_server_global()
    */
+  // @codingStandardsIgnoreLine
   protected function setup_server_globals($drush_uri) {
     // Fake the necessary HTTP headers that Drupal needs:
     if ($drush_uri) {
@@ -399,9 +425,9 @@ class BackdropBoot extends BaseBoot {
       }
       // Fill in defaults.
       $backdrop_base_url += array(
-          'path' => '',
-          'host' => NULL,
-          'port' => NULL,
+        'path' => '',
+        'host' => NULL,
+        'port' => NULL,
       );
       $_SERVER['HTTP_HOST'] = $backdrop_base_url['host'];
 
@@ -423,16 +449,19 @@ class BackdropBoot extends BaseBoot {
 
     $_SERVER['PHP_SELF'] = $_SERVER['REQUEST_URI'] . 'index.php';
     $_SERVER['SCRIPT_NAME'] = $_SERVER['PHP_SELF'];
+    // @codingStandardsIgnoreLine
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
     $_SERVER['REQUEST_METHOD']  = NULL;
 
     $_SERVER['SERVER_SOFTWARE'] = NULL;
     $_SERVER['HTTP_USER_AGENT'] = NULL;
     $_SERVER['SCRIPT_FILENAME'] = BACKDROP_ROOT . '/index.php';
-    
-    // Allows the user to drop in db connection info by setting BACKDROP_SETTINGS in the environment
-    // This is helpful when backdrops database connection is not specified in settings.php such as on Pantheon or Kalabox
-    if (getenv('BACKDROP_SETTINGS') !== false) {
+
+    // Allows the user to drop in db connection info by setting
+    // BACKDROP_SETTINGS in the environment. This is helpful when backdrops
+    // database connection is not specified in settings.php such as on Pantheon
+    // or Lando.
+    if (getenv('BACKDROP_SETTINGS') !== FALSE) {
       $_SERVER['BACKDROP_SETTINGS'] = getenv('BACKDROP_SETTINGS');
     }
   }
@@ -446,6 +475,7 @@ class BackdropBoot extends BaseBoot {
    *   should be populated with an array of error messages if the command is not
    *   valid.
    */
+  // @codingStandardsIgnoreLine
   function enforce_requirement(&$command) {
     drush_enforce_requirement_bootstrap_phase($command);
     drush_enforce_requirement_core($command);
@@ -458,25 +488,28 @@ class BackdropBoot extends BaseBoot {
     return empty($command['bootstrap_errors']);
   }
 
+  // @codingStandardsIgnoreLine
   function report_command_error($command) {
     // If we reach this point, command doesn't fit requirements or we have not
     // found either a valid or matching command.
 
     // If no command was found check if it belongs to a disabled module.
     // @todo: Implement checking if desired for Backdrop.
-    //if (!$command) {
-    //  $command = $this->drush_command_belongs_to_disabled_module();
-    //}
+    // if (!$command) {
+    // $command = $this->drush_command_belongs_to_disabled_module();
+    // }
     parent::report_command_error($command);
   }
 
+  // @codingStandardsIgnoreLine
   function command_defaults() {
     return array(
-        'backdrop dependencies' => array(),
-        'bootstrap' => BackdropBoot::BOOTSTRAP_FULL,
+      'backdrop dependencies' => array(),
+      'bootstrap' => BackdropBoot::BOOTSTRAP_FULL,
     );
   }
 
+  // @codingStandardsIgnoreLine
   function contrib_modules_paths() {
     $paths = array();
     if (conf_path() !== '.') {
@@ -486,6 +519,7 @@ class BackdropBoot extends BaseBoot {
     return $paths;
   }
 
+  // @codingStandardsIgnoreLine
   function contrib_themes_paths() {
     $paths = array();
     if (conf_path() !== '.') {
@@ -495,6 +529,7 @@ class BackdropBoot extends BaseBoot {
     return $paths;
   }
 
+  // @codingStandardsIgnoreLine
   function commandfile_searchpaths($phase, $phase_max = FALSE) {
     if (!$phase_max) {
       $phase_max = $phase;
@@ -511,6 +546,7 @@ class BackdropBoot extends BaseBoot {
         // Add the drupalboot.drush.inc commandfile.
         // $searchpath[] = __DIR__;
         break;
+
       case BackdropBoot::BOOTSTRAP_SITE:
         // If we are going to stop bootstrapping at the site, then
         // we will quickly add all commandfiles that we can find for
@@ -541,9 +577,11 @@ class BackdropBoot extends BaseBoot {
           $searchpath = array_merge($searchpath, $this->contrib_themes_paths());
         }
         break;
+
       case BackdropBoot::BOOTSTRAP_CONFIGURATION:
         // Nothing to do here anymore. Left for documentation.
         break;
+
       case BackdropBoot::BOOTSTRAP_FULL:
         // Add enabled module paths, excluding the install profile. Since we are
         // bootstrapped we can use the Backdrop API.
@@ -562,6 +600,7 @@ class BackdropBoot extends BaseBoot {
         $searchpath[] = backdrop_get_path('theme', config_get('system.core', 'theme_default'));
         $searchpath[] = backdrop_get_path('theme', config_get('system.core', 'theme_admin'));
         break;
+
     }
 
     return $searchpath;
@@ -572,6 +611,7 @@ class BackdropBoot extends BaseBoot {
    *
    * This is a simplified version of core's module_list().
    */
+  // @codingStandardsIgnoreLine
   protected function module_list() {
     $enabled = array();
     $rsc = drush_db_select('system', 'name', 'type=:type AND status=:status', array(':type' => 'module', ':status' => 1));
@@ -587,6 +627,7 @@ class BackdropBoot extends BaseBoot {
    *
    * @see drush_cid_install_profile().
    */
+  // @codingStandardsIgnoreLine
   protected function install_profile_cid() {
     drush_get_cid('install_profile', array(), array(drush_get_context('DRUSH_SELECTED_BACKDROP_SITE_CONF_PATH')));
   }
@@ -599,8 +640,9 @@ class BackdropBoot extends BaseBoot {
    *
    * @see _drush_bootstrap_selected_uri()
    */
+  // @codingStandardsIgnoreLine
   protected function get_selected_uri() {
-   $uri = drush_get_context('DRUSH_SELECTED_URI');
+    $uri = drush_get_context('DRUSH_SELECTED_URI');
     if (empty($uri)) {
       $site_path = $this->site_path();
       $elements = explode('/', $site_path);
@@ -608,7 +650,7 @@ class BackdropBoot extends BaseBoot {
       if (!$current) {
         $current = 'default';
       }
-      $uri = 'http://'. $current;
+      $uri = 'http://' . $current;
       $uri = drush_set_context('DRUSH_SELECTED_URI', $uri);
       $this->create_self_alias();
     }
@@ -630,6 +672,7 @@ class BackdropBoot extends BaseBoot {
    * @return
    *   Current site path (folder containing settings.php) or FALSE if not found.
    */
+  // @codingStandardsIgnoreLine
   protected function site_path($path = NULL) {
     $site_path = FALSE;
 
@@ -653,14 +696,14 @@ class BackdropBoot extends BaseBoot {
     if (file_exists($site_root . '/sites/sites.php')) {
       $sites = array();
       // This will overwrite $sites with the desired mappings.
-      include($site_root . '/sites/sites.php');
+      include $site_root . '/sites/sites.php';
       // We do a reverse lookup here to determine the URL given the site key.
       if ($match = array_search($site_path, $sites)) {
         $site_path = $match;
       }
     }
 
-    // Last resort: try from site root
+    // Last resort: try from site root.
     if (!$site_path) {
       if ($site_root) {
         if (file_exists($site_root . '/settings.php')) {
@@ -678,6 +721,7 @@ class BackdropBoot extends BaseBoot {
    *
    * @see drush_sitealias_create_self_alias()
    */
+  // @codingStandardsIgnoreLine
   protected function create_self_alias() {
     $self_record = drush_sitealias_get_record('@self');
     if (!array_key_exists('root', $self_record) && !array_key_exists('remote-host', $self_record)) {
