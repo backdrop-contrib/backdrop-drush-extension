@@ -114,7 +114,13 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     );
 
     // Check if the database exists and create it if not.
-    _create_database($url['user'], $url['pass'], $options['database']);
+    _create_database(
+      $url['host'],
+      $url['port'],
+      $url['user'],
+      $url['pass'],
+      $options['database']
+    );
   }
   else {
     $url = parse_url($options['db-url']);
@@ -140,7 +146,13 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     );
 
     // Check if the database exists and create it if not.
-    _create_database($url->user, $url->pass, substr($url->path, 1));
+    _create_database(
+      $url->host,
+      $url->port,
+      $url->user,
+      $url->pass,
+      substr($url->path, 1)
+    );
   }
 
   $settings = array(
@@ -205,17 +217,26 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
 /**
  * Helper function to create the database if it does not exist.
  *
+ * @param string $host
+ *   The mysql host to connect to.
+ * @param int $port
+ *   The mysql port to connect to.
  * @param string $user
  *   The mysql username to execute the create command as.
- *
  * @param string $pass
  *   The password of the mysql user.
- *
  * @param string $database
  *   The name of the database to create.
  */
-function _create_database($user, $pass, $database) {
-  exec(
-    "mysql -u$user -p$pass -e \"create database if not exists $database;\""
+function _create_database($host, $port, $user, $pass, $database) {
+  $command = sprintf(
+    'mysql -h%s -P%s -u%s -p%s -e"CREATE DATABASE IF NOT EXISTS %s;"',
+    $host,
+    $port,
+    $user,
+    $pass,
+    $database
   );
+
+  exec($command);
 }
