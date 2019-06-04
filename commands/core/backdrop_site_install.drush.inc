@@ -114,7 +114,13 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     );
 
     // Check if the database exists and create it if not.
-    _create_database($url['user'], $url['pass'], $options['database']);
+    _create_database(
+      $url['host'],
+      $url['port'],
+      $url['user'],
+      $url['pass'],
+      $options['database']
+    );
   }
   else {
     $url = parse_url($options['db-url']);
@@ -140,7 +146,13 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
     );
 
     // Check if the database exists and create it if not.
-    _create_database($url->user, $url->pass, substr($url->path, 1));
+    _create_database(
+      $url->host,
+      $url->port,
+      $url->user,
+      $url->pass,
+      substr($url->path, 1)
+    );
   }
 
   $settings = array(
@@ -205,17 +217,52 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
 /**
  * Helper function to create the database if it does not exist.
  *
+ * @param string $host
+ *   The mysql host to connect to.
+ * @param int $port
+ *   The mysql port to connect to.
  * @param string $user
  *   The mysql username to execute the create command as.
- *
  * @param string $pass
  *   The password of the mysql user.
- *
  * @param string $database
  *   The name of the database to create.
+ *
+ * @return string
+ *   The last line from the result of the command.
  */
-function _create_database($user, $pass, $database) {
-  exec(
-    "mysql -u$user -p$pass -e \"create database if not exists $database;\""
+function _create_database($host, $port, $user, $pass, $database) {
+  // If one of the parameter $host, $port, $use, $pass is empty,
+  // then it's corresponding flag should not be in the command line output.
+  // E.g. When the password is blank, it should not contains -P or else mysql
+  // will prompt for a password.
+  $arguments = array_filter(
+    array_combine(
+      array('-h', '-P', '-u', '-p'),
+      array($host, $port, $user, $pass)
+    )
   );
+
+  $callback = function($as, $a) use ($arguments) {
+    $as[] = sprintf('%s%s', $a, $arguments[$a]);
+
+    return $as;
+  };
+
+  $arguments = implode(
+    ' ',
+    array_reduce(
+      array_keys($arguments),
+      $callback,
+      array()
+    )
+  );
+
+  $command = sprintf(
+    'mysql %s -e"CREATE DATABASE IF NOT EXISTS %s;"',
+    $arguments,
+    $database
+  );
+
+  return exec($command);
 }
