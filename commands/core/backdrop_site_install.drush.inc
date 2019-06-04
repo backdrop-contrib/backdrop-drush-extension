@@ -227,16 +227,40 @@ function backdrop_site_install_drush_callback($arguments = 'standard', $options 
  *   The password of the mysql user.
  * @param string $database
  *   The name of the database to create.
+ *
+ * @return string
+ *   The last line from the result of the command.
  */
 function _create_database($host, $port, $user, $pass, $database) {
+  // If one of the parameter $host, $port, $use, $pass is empty,
+  // then it's corresponding flag should not be in the command line output.
+  // E.g. When the password is blank, it should not contains -P or else mysql
+  // will prompt for a password.
+  $arguments = array_filter(
+    array_combine(
+      array('-h', '-P', '-u', '-p'),
+      array($host, $port, $user, $pass)
+    )
+  );
+
+  $arguments = implode(
+    ' ',
+    array_reduce(
+      array_keys($arguments),
+      function($as, $a) use ($arguments) {
+        $as[] = sprintf('%s%s', $a, $arguments[$a]);
+
+        return $as;
+      },
+      array()
+    )
+  );
+
   $command = sprintf(
-    'mysql -h%s -P%s -u%s -p%s -e"CREATE DATABASE IF NOT EXISTS %s;"',
-    $host,
-    $port,
-    $user,
-    $pass,
+    'mysql %s -e"CREATE DATABASE IF NOT EXISTS %s;"',
+    $arguments,
     $database
   );
 
-  exec($command);
+  return exec($command);
 }
