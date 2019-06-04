@@ -243,15 +243,17 @@ function _create_database($host, $port, $user, $pass, $database) {
     )
   );
 
+  $callback = function($as, $a) use ($arguments) {
+    $as[] = sprintf('%s%s', $a, $arguments[$a]);
+
+    return $as;
+  };
+
   $arguments = implode(
     ' ',
     array_reduce(
       array_keys($arguments),
-      function($as, $a) use ($arguments) {
-        $as[] = sprintf('%s%s', $a, $arguments[$a]);
-
-        return $as;
-      },
+      $callback,
       array()
     )
   );
