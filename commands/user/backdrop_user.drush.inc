@@ -1,11 +1,11 @@
 <?php
 /**
- *  @file
- *  Drush user management for Backdrop
+ * @file
+ * Drush user management for Backdrop
  */
 
 /**
- *  Implements hook_drush_command().
+ * Implements hook_drush_command().
  */
 function backdrop_user_drush_command() {
   $items = array();
@@ -35,13 +35,12 @@ function backdrop_user_drush_command() {
 
 /**
  * Command callback for user-login.
- * Displays a one time login link for the given user.
  *
  * @param string $user
- *  Optional $user to login defaults to uid = 1.
+ *   Optional $user to login defaults to uid = 1.
  *
  * @param string $path
- *  Optional $path redirects user to $path once logged in.
+ *   Optional $path redirects user to $path once logged in.
  */
 function backdrop_command_user_login($user = NULL, $path = NULL) {
   // Fix up arguments based on our assumptions.
@@ -67,23 +66,36 @@ function backdrop_command_user_login($user = NULL, $path = NULL) {
       return FALSE;
     }
 
-    if (drush_get_option('uid', FALSE) || drush_get_option('name', FALSE) || drush_get_option('mail', FALSE)) {
+    // Get the options.
+    $uid = drush_get_option('uid', FALSE);
+    $name = drush_get_option('name', FALSE);
+    $mail = drush_get_option('mail', FALSE);
+    if ($uid || $name || $mail) {
       // A user option was passed, prefer that to the user argument.
       $user = NULL;
-      // If we only have a single argument and one of the user options is passed,
-      // then we assume the argument is the path to open.
+      // If we only have a single argument and one of the user options is
+      // passed, then we assume the argument is the path to open.
       if (count($args) == 1) {
         $path = $args[0];
       }
     }
-    else if (empty($user)) {
+    elseif (empty($user)) {
       // No user option or argument was passed, so we default to uid 1.
       $uid = 1;
     }
 
     // Try to load a user from provided options and arguments.
-    if ($uid || $uid = reset(_drush_user_get_users_from_options_and_arguments($user))) {
-      if ($user_object = user_load($uid)) {
+    if ($uid || $name || $mail) {
+      if ($uid) {
+        $user_object = user_load($uid);
+      }
+      elseif ($name) {
+        $user_object = user_load_by_name($name);
+      }
+      elseif ($mail) {
+        $user_object = user_load_by_mail($mail);
+      }
+      if ($user_object) {
         if ($user_object->status) {
           $options = array();
           if ($path) {
@@ -100,7 +112,7 @@ function backdrop_command_user_login($user = NULL, $path = NULL) {
       }
     }
     else {
-      return FALSE; // An error has already been logged.
+      return FALSE;
     }
   }
 

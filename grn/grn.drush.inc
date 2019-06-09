@@ -35,8 +35,8 @@ function grn_drush_help($section) {
  */
 function grn_drush_command() {
   $items = array();
-  
-  // The 'release-notes' command
+
+  // The 'release-notes' command.
   $items['release-notes'] = array(
     'description' => 'Generate release notes using all commits between two tags',
     'arguments' => array(
@@ -77,8 +77,10 @@ function grn_drush_command() {
       'drush rn 6.x-1.0 6.x-1.x --reverse' => 'Generate release notes from the commits between the two tags in reverse order',
     ),
     'aliases' => array('rn', 'relnotes'),
-    'deprecated-aliases' => array('grn'), // I keep typing it, but not intuitive for others
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH, // No bootstrap needed
+    // I keep typing it, but not intuitive for others.
+    'deprecated-aliases' => array('grn'),
+    // No bootstrap needed.
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
   );
   return $items;
 }
@@ -88,7 +90,8 @@ function grn_drush_command() {
  */
 function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
   $git = drush_get_option('git', 'git');
-  drush_shell_exec('chdir ' . drush_cwd()); // Make sure we are in the working directory started.
+  // Make sure we are in the working directory started.
+  drush_shell_exec('chdir ' . drush_cwd());
   if (!is_dir(".git")) {
     drush_log("This must be run from the root directory of your Git project.");
   }
@@ -149,7 +152,7 @@ function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
 
   $items = _drush_grn_get_items_array($changes, $commit_path);
   if (drush_get_option('changelog', FALSE)) {
-    //$formatted_items = _drush_grn_format_changelog($items, $tag2n);
+    // $formatted_items = _drush_grn_format_changelog($items, $tag2n);
   }
   elseif (drush_get_option('md', FALSE)) {
     $formatted_items = _drush_grn_format_md($items, $tag1n, $tag1[0], $tag2[0], $git);
@@ -167,7 +170,7 @@ function drush_grn_release_notes($tag1n = NULL, $tag2n = NULL) {
   return TRUE;
 }
 
-// Other functions
+// Other functions.
 
 /**
  * Generates the output.
@@ -210,7 +213,7 @@ function _drush_grn_format_changelog($items, $tag) {
   if ($infos = glob('*.info')) {
     foreach ($infos as $info) {
       $ini_array = parse_ini_file($info);
-      $name = trim($ini_array['name']," \t\n\r\0\x0B\"");
+      $name = trim($ini_array['name'], " \t\n\r\0\x0B\"");
     }
   }
   drush_shell_exec("git show -s --pretty=format:%ad --date=short $tag");
@@ -232,12 +235,13 @@ function _drush_grn_format_changelog($items, $tag) {
 }
 
 /**
- * Discover the URL to the 'origin' repository viewer on drupalcode.org
+ * Discover the URL to the 'origin' repository viewer on drupalcode.org.
  *
  * @param string $git
- *        the actual git command we are going to use.
+ *   the actual git command we are going to use.
+ *
  * @return string
- *        The URL to the repository viewer.
+ *   The URL to the repository viewer.
  */
 function _drush_grn_get_commit_path($git) {
   // Execute the git config --get remote.origin.url
@@ -246,11 +250,11 @@ function _drush_grn_get_commit_path($git) {
   }
   // Get the output of the above command.
   $output = drush_shell_exec_output();
-  // Check to see if this is a drupal.org project
+  // Check to see if this is a drupal.org project.
   if (!strpos($output[0], 'drupal.org')) {
     return drush_set_error('DRUSH_COMMIT_URL_UNKNOWN_ERROR', 'The commits url is not in drupal.org.');
   }
-  // Check to see if this is a sandbox project
+  // Check to see if this is a sandbox project.
   $regexp = (strpos($output[0], '@git.drupal.org:')) ? '/(\w+?@git\.drupal\.org:project\/)/s' : '/http:\/\/git\.drupal\.org\//s';
 
   // Format the URL of the project's repository.
@@ -260,7 +264,7 @@ function _drush_grn_get_commit_path($git) {
   if ($count <= 0) {
     return drush_set_error('DRUSH_COMMIT_URL_UNKNOWN_ERROR', 'The commits url could not be discovered.');
   }
-  // Done
+  // Done.
   return $return . '/commit/';
 }
 
@@ -273,7 +277,8 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
   $reverse = drush_get_option('reverse', FALSE) ? '--reverse' : '';
   $pretty = drush_get_option('pretty', FALSE);
   if (is_bool($pretty)) {
-    $pretty = '%s';  // Default pretty format
+    // Default pretty format.
+    $pretty = '%s';
   }
   $pretty = '%h ' . $pretty;
 
@@ -294,6 +299,14 @@ function _drush_grn_get_changes($tag1, $tag2, $git) {
   return $changes;
 }
 
+/**
+ * Get the items array.
+ *
+ * @param array $issues
+ *   Array of issues.
+ * @param string $commit_path
+ *   The path to the commit.
+ */
 function _drush_grn_get_items_array($issues, $commit_path) {
   $baseurl = drush_get_option('baseurl', 'https://github.com/backdrop/backdrop-issues/issues/');
   if (strpos($baseurl, '%s') == FALSE) {
@@ -302,21 +315,26 @@ function _drush_grn_get_items_array($issues, $commit_path) {
 
   $items = array();
   foreach ($issues as $hash => $line) {
-    // Pattern is "Issue #[issue number] by [comma-separated usernames]: [Short summary of the change]."
+    // Pattern is:
+    // "Issue #[issue number] by [comma-separated usernames]: \
+    // [Short summary of the change]."
     // Clean up commit log.
     $raw = preg_replace('/^(Patch |- |Issue ){0,3}/', '', $line);
     // Add issue links.
     $item = (drush_get_option('md', FALSE)) ? preg_replace('/#(\d+)/S', '[#$1](' . str_replace('%s', '$1', $baseurl) . ')', $raw) :
       preg_replace('/#(\d+)/S', '<a href="' . str_replace('%s', '$1', $baseurl) . '">#$1</a>', $raw);
-    // Replace usernames with link to user page
+    // Replace usernames with link to user page.
     if (drush_get_option('nouser', FALSE) === FALSE) {
-      // Anything between by and ':' is a comma-separated list of usernames
-      $item = preg_replace_callback('/by ([^:]+):/S',
+      // Anything between by and ':' is a comma-separated list of usernames.
+      $item = preg_replace_callback(
+        '/by ([^:]+):/S',
+        // @codingStandardsIgnoreStart
         function($matches) {
           $out = array();
-          // Separate the different usernames
+          // Separate the different usernames.
           foreach (explode(',', $matches[1]) as $user) {
-            // Trim spaces, convert to lowercase, and spaces in middle are replaced with dashes
+            // Trim spaces, convert to lowercase, and spaces in middle are
+            // replaced with dashes
             $ualias = str_replace(' ', '-', strtolower(trim($user)));
             $out[] = (drush_get_option('md', FALSE)) ? "[$ualias](/u/$ualias)" :
               ("<a href='/u/$ualias'>" . trim($user) . '</a>');
@@ -324,9 +342,11 @@ function _drush_grn_get_items_array($issues, $commit_path) {
 
           return 'by ' . implode(', ', $out) . ':';
         },
-        $item);
+        $item
+      );
+      // @codingStandardsIgnoreEnd
     }
-    // If the command was invoked with the --commit-links option
+    // If the command was invoked with the --commit-links option.
     if (!empty($commit_path)) {
       $item .= ' (<a href="' . $commit_path . $hash . '" title="View commit">#</a>)';
     }

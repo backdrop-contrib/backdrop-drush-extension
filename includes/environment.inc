@@ -1,18 +1,19 @@
 <?php
 /**
  * @file
- *   Specific functions for a backdrop 7 environment.
- *   drush_include_engine() magically includes either this file
- *   or environment_X.inc depending on which version of backdrop drush
- *   is called from.
+ * Specific functions for a backdrop 7 environment.
+ * drush_include_engine() magically includes either this file
+ * or environment_X.inc depending on which version of backdrop drush
+ * is called from.
  */
 
 /**
  * Get complete information for all available modules.
  *
- * @param $include_hidden
+ * @param bool $include_hidden
  *   Boolean to indicate whether hidden modules should be excluded or not.
- * @return
+ *
+ * @return array
  *   An array containing module info for all available modules.
  */
 function drush_get_modules($include_hidden = TRUE) {
@@ -29,7 +30,9 @@ function drush_get_modules($include_hidden = TRUE) {
 }
 
 /**
- * Returns backdrop required modules, including modules declared as required dynamically.
+ * Returns backdrop required modules.
+ *
+ * Including modules declared as required dynamically.
  */
 function _drush_backdrop_required_modules($module_info) {
   $required = backdrop_required_modules();
@@ -44,11 +47,12 @@ function _drush_backdrop_required_modules($module_info) {
 /**
  * Return dependencies and its status for modules.
  *
- * @param $modules
+ * @param array $modules
  *   Array of module names
- * @param $module_info
+ * @param array $module_info
  *   Backdrop 'files' array for modules as returned by drush_get_modules().
- * @return
+ *
+ * @return array
  *   Array with dependencies and status for $modules
  */
 function drush_check_module_dependencies($modules, $module_info) {
@@ -58,12 +62,17 @@ function drush_check_module_dependencies($modules, $module_info) {
     $unmet_dependencies = array_diff(array_keys($dependencies), array_keys($module_info));
     if (!empty($unmet_dependencies)) {
       $status[$key]['error'] = array(
-          'code' => 'DRUSH_PM_ENABLE_DEPENDENCY_NOT_FOUND',
-          'message' => dt('Module !module cannot be enabled because it depends on the following modules which could not be found: !unmet_dependencies', array('!module' => $module, '!unmet_dependencies' => implode(',', $unmet_dependencies)))
+        'code' => 'DRUSH_PM_ENABLE_DEPENDENCY_NOT_FOUND',
+        'message' => dt('Module !module cannot be enabled because it depends on the following modules which could not be found: !unmet_dependencies',
+          array(
+            '!module' => $module,
+            '!unmet_dependencies' => implode(',', $unmet_dependencies),
+          )
+        ),
       );
     }
     else {
-      // check for version incompatibility
+      // Check for version incompatibility.
       foreach ($dependencies as $dependency_name => $v) {
         $current_version = $module_info[$dependency_name]->info['version'];
         $current_version = str_replace(drush_get_backdrop_core_compatibility() . '-', '', $current_version);
@@ -71,7 +80,14 @@ function drush_check_module_dependencies($modules, $module_info) {
         if (isset($incompatibility)) {
           $status[$key]['error'] = array(
             'code' => 'DRUSH_PM_ENABLE_DEPENDENCY_VERSION_MISMATCH',
-            'message' => dt('Module !module cannot be enabled because it depends on !dependency !required_version but !current_version is available', array('!module' => $module, '!dependency' => $dependency_name, '!required_version' => $incompatibility, '!current_version' => $current_version))
+            'message' => dt('Module !module cannot be enabled because it depends on !dependency !required_version but !current_version is available',
+              array(
+                '!module' => $module,
+                '!dependency' => $dependency_name,
+                '!required_version' => $incompatibility,
+                '!current_version' => $current_version,
+              ),
+            ),
           );
         }
       }
@@ -86,11 +102,12 @@ function drush_check_module_dependencies($modules, $module_info) {
 /**
  * Return dependents of modules.
  *
- * @param $modules
+ * @param array $modules
  *   Array of module names
- * @param $module_info
+ * @param array $module_info
  *   Backdrop 'files' array for modules as returned by drush_get_modules().
- * @return
+ *
+ * @return array
  *   Array with dependents for each one of $modules
  */
 function drush_module_dependents($modules, $module_info) {
@@ -119,6 +136,7 @@ function drush_module_list() {
 
 /**
  * Return a list of extensions from a list of named extensions.
+ *
  * Both enabled and disabled/uninstalled extensions are returned.
  */
 function drush_get_named_extensions_list($extensions) {
@@ -131,9 +149,11 @@ function drush_get_named_extensions_list($extensions) {
 }
 
 /**
- * Enable a list of modules. It is assumed the list contains all the dependencies not already enabled.
+ * Enable a list of modules.
  *
- * @param $modules
+ * It is assumed the list contains all the dependencies not already enabled.
+ *
+ * @param array $modules
  *   Array of module names
  */
 function drush_module_enable($modules) {
@@ -146,9 +166,11 @@ function drush_module_enable($modules) {
 }
 
 /**
- * Disable a list of modules. It is assumed the list contains all dependents not already disabled.
+ * Disable a list of modules.
  *
- * @param $modules
+ * It is assumed the list contains all dependents not already disabled.
+ *
+ * @param array $modules
  *   Array of module names
  */
 function drush_module_disable($modules) {
@@ -163,7 +185,7 @@ function drush_module_disable($modules) {
 /**
  * Uninstall a list of modules.
  *
- * @param $modules
+ * @param array $modules
  *   Array of module names
  */
 function drush_module_uninstall($modules) {
@@ -174,8 +196,7 @@ function drush_module_uninstall($modules) {
 /**
  * Checks that a given module exists and is enabled.
  *
- * @see module_exists().
- *
+ * @see module_exists()
  */
 function drush_module_exists($module) {
   return module_exists($module);
@@ -183,7 +204,6 @@ function drush_module_exists($module) {
 
 /**
  * Determines which modules are implementing a hook.
- *
  */
 function drush_module_implements($hook, $sort = FALSE, $reset = FALSE) {
   return module_implements($hook, $sort, $reset);
@@ -191,16 +211,14 @@ function drush_module_implements($hook, $sort = FALSE, $reset = FALSE) {
 
 /**
  * Invokes a hook in a particular module.
- *
  */
 function drush_module_invoke($module, $hook) {
   $args = func_get_args();
-  return call_user_func_array('module_invoke', $args);  
+  return call_user_func_array('module_invoke', $args);
 }
 
 /**
  * Invokes a hook in all enabled modules that implement it.
- *
  */
 function drush_module_invoke_all($hook) {
   $args = func_get_args();
@@ -210,9 +228,10 @@ function drush_module_invoke_all($hook) {
 /**
  * Get complete information for all available themes.
  *
- * @param $include_hidden
+ * @param bool $include_hidden
  *   Boolean to indicate whether hidden themes should be excluded or not.
- * @return
+ *
+ * @return array
  *   An array containing theme info for all available themes.
  */
 function drush_get_themes($include_hidden = TRUE) {
@@ -231,8 +250,8 @@ function drush_get_themes($include_hidden = TRUE) {
 /**
  * Enable a list of themes.
  *
- * @param $themes
- *  Array of theme names.
+ * @param array $themes
+ *   Array of theme names.
  */
 function drush_theme_enable($themes) {
   theme_enable($themes);
@@ -241,8 +260,8 @@ function drush_theme_enable($themes) {
 /**
  * Disable a list of themes.
  *
- * @param $themes
- *  Array of theme names.
+ * @param array $themes
+ *   Array of theme names.
  */
 function drush_theme_disable($themes) {
   theme_disable($themes);
@@ -255,44 +274,56 @@ function drush_theme_disable($themes) {
  *
  * Severity levels, as defined in RFC 3164: http://www.ietf.org/rfc/rfc3164.txt.
  *
- * @return
+ * @return array
  *   Array of watchdog severity levels.
  */
 function drush_watchdog_severity_levels() {
   return array(
-    WATCHDOG_EMERGENCY=> 'emergency',
-    WATCHDOG_ALERT    => 'alert',
-    WATCHDOG_CRITICAL => 'critical',
-    WATCHDOG_ERROR    => 'error',
-    WATCHDOG_WARNING  => 'warning',
-    WATCHDOG_NOTICE   => 'notice',
-    WATCHDOG_INFO     => 'info',
-    WATCHDOG_DEBUG    => 'debug',
+    WATCHDOG_EMERGENCY => 'emergency',
+    WATCHDOG_ALERT     => 'alert',
+    WATCHDOG_CRITICAL  => 'critical',
+    WATCHDOG_ERROR     => 'error',
+    WATCHDOG_WARNING   => 'warning',
+    WATCHDOG_NOTICE    => 'notice',
+    WATCHDOG_INFO      => 'info',
+    WATCHDOG_DEBUG     => 'debug',
   );
 }
 
 /**
  * Helper function to obtain the message types based on backdrop version.
  *
- * @return
+ * @return array
  *   Array of watchdog message types.
  */
 function drush_watchdog_message_types() {
   return backdrop_map_assoc(_dblog_get_message_types());
 }
 
+/**
+ * Helper fucntion to get default theme.
+ */
 function _drush_theme_default() {
   return variable_get('theme_default', 'garland');
 }
 
+/**
+ * Helper function to get the admin theme.
+ */
 function _drush_theme_admin() {
   return variable_get('admin_theme', drush_theme_get_default());
 }
 
+/**
+ * Helper function to get the public file path.
+ */
 function _drush_file_public_path() {
   return variable_get('file_public_path', conf_path() . '/files');
 }
 
+/**
+ * Helper function to get the private files path.
+ */
 function _drush_file_private_path() {
   return variable_get('file_private_path', FALSE);
 }
@@ -300,8 +331,9 @@ function _drush_file_private_path() {
 /**
  * Gets the extension name.
  *
- * @param $info
+ * @param array $info
  *   The extension info.
+ *
  * @return string
  *   The extension name.
  */
@@ -312,8 +344,9 @@ function _drush_extension_get_name($info) {
 /**
  * Gets the extension type.
  *
- * @param $info
+ * @param Object $info
  *   The extension info.
+ *
  * @return string
  *   The extension type.
  */
@@ -324,8 +357,9 @@ function _drush_extension_get_type($info) {
 /**
  * Gets the extension path.
  *
- * @param $info
+ * @param Ojbect $info
  *   The extension info.
+ *
  * @return string
  *   The extension path.
  */
@@ -333,14 +367,14 @@ function _drush_extension_get_path($info) {
   return dirname($info->filename);
 }
 
-/*
+/**
  * Wrapper for CSRF token generation.
  */
 function drush_get_token($value = NULL) {
   return backdrop_get_token($value);
 }
 
-/*
+/**
  * Wrapper for _url().
  */
 function drush_url($path = NULL, array $options = array()) {

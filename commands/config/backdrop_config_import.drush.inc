@@ -11,19 +11,19 @@ use Drush\Log\LogLevel;
  * Implements hook_drush_command().
  */
 function backdrop_config_import_drush_command() {
-   $items = array();
-   $items['backdrop-config-import'] = array(
-     'description' => 'Import Backdrop site configuration.',
-     'callback' => 'backdrop_config_import',
-     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
-     'aliases' => array('bcim'),
-     'examples' => array(
-       'drush bcim' => 'Imports the configuration for the current site from the staging config directory to the active config directory.',
-     ),
-   );
+  $items = array();
+  $items['backdrop-config-import'] = array(
+    'description' => 'Import Backdrop site configuration.',
+    'callback' => 'backdrop_config_import',
+    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
+    'aliases' => array('bcim'),
+    'examples' => array(
+      'drush bcim' => 'Imports the configuration for the current site from the staging config directory to the active config directory.',
+    ),
+  );
 
-   return $items;
- }
+  return $items;
+}
 
 /**
  * Command callback for backdrop-config-import.
@@ -37,7 +37,7 @@ function backdrop_config_import() {
   $config_statuses = config_get_statuses();
 
   // Prepare the table of config changes to show the user.
-  foreach($config_statuses as $key => $config_status) {
+  foreach ($config_statuses as $key => $config_status) {
     if ($config_status == 'update') {
       $rows[] = array("\t", $key, "\033[33mupdate\033[0m");
     }
@@ -59,7 +59,7 @@ function backdrop_config_import() {
     return;
   }
 
-  if(!drush_confirm(dt('Do you really want to continue?'))) {
+  if (!drush_confirm(dt('Do you really want to continue?'))) {
     return drush_user_abort();
   }
   try {

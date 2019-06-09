@@ -1,0 +1,18 @@
+{
+    "name": "backdrop/drush",
+    "description": "This project allows you to use Drush with Backdrop CMS. Drush is a command-line tool for manipulating content management systems.",
+    "license": "GPL-2.0+",
+    "authors": [
+        {
+            "name": "Nate Lampton",
+            "email": "nate@quicksketch.org"
+        },
+        {
+            "name": "Geoff St. Pierre",
+            "email": "serundeputy@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "backdrop/coder": "^1.0"
+    }
+}

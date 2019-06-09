@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @file
  * Make a working Backdrop CMS profile with drush bmake.
@@ -50,7 +49,7 @@ function bmake() {
   // Change into the Backdrop project directory.
   chdir($project_path);
 
-  // We need to install Backdrop in order to use drush to dl modules .. idk 
+  // We need to install Backdrop in order to use drush to dl modules .. idk.
   $db_url = drush_get_option('db-url', '');
   if (!empty($db_url)) {
     passthru(
@@ -60,7 +59,7 @@ function bmake() {
   else {
     passthru("drush si");
   }
-  
+
   // Download the modules specified by the make file.
   if (!empty($make['modules'])) {
     foreach ($make['modules'] as $key => $module) {
@@ -85,7 +84,7 @@ function bmake() {
     }
   }
 
-    // Download the layouts specified by the make file.
+  // Download the layouts specified by the make file.
   if (!empty($make['layouts'])) {
     foreach ($make['layouts'] as $key => $layout) {
       if ($layout == 'latest') {

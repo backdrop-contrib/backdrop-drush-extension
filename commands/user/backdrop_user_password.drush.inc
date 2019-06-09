@@ -1,12 +1,11 @@
 <?php
-
-use Drush\Log\LogLevel;
-
 /**
  * @file
  * Drush user-password command
  * Reset the password for user(s).
  */
+
+use Drush\Log\LogLevel;
 
 /**
  * Implements hook_drush_command().
@@ -17,7 +16,7 @@ function backdrop_user_password_drush_command() {
     'callback' => 'backdrop_user_password',
     'aliases' => array('upwd'),
     'arguments' => array(
-      'name' => 'The name of the account to modify.'
+      'name' => 'The name of the account to modify.',
     ),
     'required-arguments' => TRUE,
     'options' => array(
@@ -29,7 +28,7 @@ function backdrop_user_password_drush_command() {
     ),
     'examples' => array(
       'drush user-password someuser --password="correct horse battery staple"' =>
-        'Set the password for the username someuser. @see xkcd.com/936',
+      'Set the password for the username someuser. @see xkcd.com/936',
     ),
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
   );
@@ -38,7 +37,7 @@ function backdrop_user_password_drush_command() {
 
 
 /**
- * Sets the password for the account with the given username
+ * Sets the password for the account with the given username.
  */
 function backdrop_user_password() {
   $inputs = func_get_args();
