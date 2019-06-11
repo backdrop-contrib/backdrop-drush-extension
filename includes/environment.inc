@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- *   Specific functions for a Backdrop 1 environment.
+ * Specific functions for a Backdrop 1 environment.
  *   drush_include_engine() magically includes either this file
  *   or environment_X.inc depending on which version of backdrop drush
  *   is called from.
