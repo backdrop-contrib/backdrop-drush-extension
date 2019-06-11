@@ -1,12 +1,12 @@
 <?php
-
 /**
- *
+ * @file
+ * Drush pm-list command.
  */
 
- /**
-  * Implementation of hook_drush_command().
-  */
+/**
+ * Implements hook_drush_command().
+ */
 function backdrop_pm_list_drush_command() {
   $items['backdrop-pm-list'] = array(
     'description' => 'Show a list of available extensions (modules and themes).',
@@ -28,7 +28,13 @@ function backdrop_pm_list_drush_command() {
     'outputformat' => array(
       'default' => 'table',
       'pipe-format' => 'list',
-      'field-labels' => array('package' => 'Package', 'name' => 'Name', 'type' => 'Type', 'status' => 'Status', 'version' => 'Version'),
+      'field-labels' => array(
+        'package' => 'Package',
+        'name' => 'Name',
+        'type' => 'Type',
+        'status' => 'Status',
+        'version' => 'Version',
+      ),
       'output-data-type' => 'format-table',
     ),
     'aliases' => array('pml'),
@@ -38,17 +44,21 @@ function backdrop_pm_list_drush_command() {
 }
 
 /**
- * pm-list callback. Display list of modules, themes and layouts.
+ * Drush pm-list callback. Display list of modules, themes and layouts.
  *
  * @param array $arguments
+ *   Arguments for pml
  * @param array $options
+ *   Options for pml
+ *
  * @return array
+ *   The list of projects
  */
-function modules_list_callback($arguments, $options){
-  if(!isset($options['type']) or $options['type'] != 'layout') {
-    //Rescan for new modules.
+function modules_list_callback($arguments, $options) {
+  if (!isset($options['type']) or $options['type'] != 'layout') {
+    // Rescan for new modules.
     system_rebuild_module_data();
-    //Rescan for new themes.
+    // Rescan for new themes.
     system_rebuild_theme_data();
     $query = db_select('system', 's')
       ->fields('s');
@@ -57,7 +67,7 @@ function modules_list_callback($arguments, $options){
     }
     $projects = $query->execute()->fetchAll();
     $rows = array();
-    foreach($projects as $project) {
+    foreach ($projects as $project) {
       $project->info = unserialize($project->info);
       if (isset($project->info['hidden']) && $project->info['hidden']) {
         continue;
@@ -70,9 +80,9 @@ function modules_list_callback($arguments, $options){
         $status = 'disabled';
       }
       $name = array(
-          'data' => $project->name,
-          '#color' => 'bold_blue',
-        );
+        'data' => $project->name,
+        '#color' => 'bold_blue',
+      );
       $rows[] = array(
         $name,
         $project->info['name'],
@@ -84,38 +94,6 @@ function modules_list_callback($arguments, $options){
   }
 
   // TODO: add support for layouts.
-  // if (!isset($options['type']) or $options['type'] == 'layout') {
-  //   $used_layouts = layout_load_all();
-  //   $layouts = layout_get_layout_template_info();
-    // foreach($layouts as $layout) {
-    //   $name = array(
-    //     'data' => $layout['name'],
-    //     '#color' => 'bold_blue',
-    //   );
-    //   $status = FALSE;
-    //   foreach($used_layouts as $used_layout) {
-    //     if($used_layout->layout_template == $layout['name']) {
-    //       $status = array(
-    //         'data' => '  [v]  ',
-    //         '#color' => 'green',
-    //       );
-    //     }
-    //   }
-    //   if (!$status) {
-    //     $status = array(
-    //       'data' => '  [ ]  ',
-    //       '#color' => 'bold_gray',
-    //     );
-    //   }
-    //   $rows[] = array(
-    //     $name,
-    //     $layout['title'],
-    //     'layout',
-    //     $status,
-    //     $layout['version'],
-    //   );
-    // }
-  //}
 
   $header = array(
     "\t" . 'Project',

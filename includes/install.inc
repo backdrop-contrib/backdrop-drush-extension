@@ -1,7 +1,11 @@
 <?php
+/**
+ * @file
+ * Install Backdrop CMS
+ */
 
 /**
- * Install Backdrop CMS
+ * Install Backdrop.
  */
 function drush_core_site_install_version($profile, array $additional_form_options = array()) {
   require_once DRUSH_BACKDROP_CORE . '/includes/install.core.inc';

@@ -1,6 +1,7 @@
 <?php
 /**
- * @file backdrop_config_export.drush.inc
+ * @file
+ * Configuration export command for Backdrop.
  *
  * Export Backdrop site configuration with drush.
  */
@@ -30,7 +31,7 @@ function backdrop_config_export_drush_command() {
 }
 
 /**
- * Command callback for config-export
+ * Command callback for config-export.
  */
 function backdrop_config_export() {
   try {

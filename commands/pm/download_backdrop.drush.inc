@@ -10,20 +10,20 @@
 function download_backdrop_drush_command() {
   $items = array();
   $items['download-backdrop'] = array(
-  'description' => 'Download Backdrop CMS.',
-  'callback' => 'backdrop_download_backdrop',
-  'hidden' => TRUE,
-  'arguments' => array(
-    'module-name' => array('The name of the module(s) you would like to download.'),
-  ),
-  'options' => array(
-    'select' => 'Select the version of the module.',
-    'path' => "Specify a path to download backdrop source code to.",
-  ),
-  'required-arguments' => TRUE,
-  'help' => "Download Backdrop CMS source code.",
-  'aliases' => array('dlb', 'dl-backdrop'),
-  'bootstrap' => DRUSH_BOOTSTRAP_NONE,
+    'description' => 'Download Backdrop CMS.',
+    'callback' => 'backdrop_download_backdrop',
+    'hidden' => TRUE,
+    'arguments' => array(
+      'module-name' => array('The name of the module(s) you would like to download.'),
+    ),
+    'options' => array(
+      'select' => 'Select the version of the module.',
+      'path' => "Specify a path to download backdrop source code to.",
+    ),
+    'required-arguments' => TRUE,
+    'help' => "Download Backdrop CMS source code.",
+    'aliases' => array('dlb', 'dl-backdrop'),
+    'bootstrap' => DRUSH_BOOTSTRAP_NONE,
   );
 
   return $items;
@@ -31,9 +31,6 @@ function download_backdrop_drush_command() {
 
 /**
  * Command callback. Download a Backdrop CMS.
- *
- * @param $projects
- *  Array of Backdrop CMS contrib projects to download.
  */
 function backdrop_download_backdrop() {
   $package_handler = backdrop_download_backdrop_validate();
@@ -47,31 +44,31 @@ function backdrop_download_backdrop() {
 
   if (!empty($options)) {
     drush_print_r("\t\033[32mChoose one of the available releases for $projects[0] \033[0m\n");
-    // get available releases.
+    // Get available releases.
     $tags = backdrop_pm_get_tags(
       "https://updates.backdropcms.org/release-history/$projects[0]/1.x"
     );
 
     $project_path = $download_location;
 
-    for($i = 0; $i < count($tags->releases->release); $i++) {
+    for ($i = 0; $i < count($tags->releases->release); $i++) {
       $version = (string) $tags->releases->release[$i]->version;
       drush_print_r("\t\t [$i] \t:\t " . $version);
     }
-    // get users's menu selection
-    $handle = fopen ("php://stdin","r");
-    print("\n\tSelect one [0]: ");
-    print("\033[0m");
+    // Get users's menu selection.
+    $handle = fopen("php://stdin", "r");
+    print ("\n\tSelect one [0]: ");
+    print ("\033[0m");
     $selection = fgets($handle);
     $selection = trim($selection);
-    // default to latest release if user just hits enter.
+    // Default to latest release if user just hits enter.
     if (empty($selection)) {
       $selection = 0;
     }
 
     $sel_url = $tags->releases->release[(int) $selection]->download_link;
 
-    // download verssion of the project user selected.
+    // Download verssion of the project user selected.
     exec(
       "wget --quiet -O $project_path/$projects[0].zip $sel_url"
     );
@@ -88,9 +85,9 @@ function backdrop_download_backdrop() {
   else {
     // Downloading backdrop itself is a special case.
     // TODO: Downloading backdrop itself does not currently work since
-    //   the backdrop drush command hooks are only picked up once a valid
-    //   backdrop installation is detected, so we have a chicken and the egg
-    //   problem here.
+    // the backdrop drush command hooks are only picked up once a valid
+    // backdrop installation is detected, so we have a chicken and the egg
+    // problem here.
     $html = backdrop_download_backdrop_from_github(
       "https://github.com/backdrop/backdrop/releases/latest"
     );
@@ -145,7 +142,6 @@ function backdrop_download_backdrop_from_github($url) {
 
 /**
  * Helper function for --select option for download command.
- * Gets the tags for a project.
  */
 function backdrop_download_backdrop_get_tags($url) {
   $xml = simplexml_load_file($url);
@@ -153,20 +149,20 @@ function backdrop_download_backdrop_get_tags($url) {
 }
 
 /**
- * Determine success or failure of drush dl command and give the user some
- * relevent feedback.
+ * Determine success or failure of drush dlb command.
+ *
  * @param string $module_install_location
- *  String directory path where module should end up.
+ *   String directory path where module should end up.
  *
  * @param string $project
- *  Project name.
+ *   Project name.
  */
 function backdrop_download_backdrop_dl_outcome($module_install_location, $project) {
   if (file_exists($module_install_location)) {
-    print "\n\t\033[32m Success: \033[0m Project $project downloaded to $module_install_location.\n\n";
+    print "\n\t\033[32mSuccess: \033[0m Project $project downloaded to $module_install_location.\n\n";
   }
   else {
-    print "\n\t\033[31m Error: \033[0m Project $project could not be found.\n\n";
+    print "\n\t\033[31mError: \033[0m Project $project could not be found.\n\n";
   }
 }
 

@@ -1,11 +1,12 @@
 <?php
-
 /**
+ * @file
  * Fix permissions Drush commands for Backdrop.
  * Based on fix-permissions.sh script.
  *
  * Example:
- * drush fix-permissions --backdrop_path=/path/to/the/bacdrop/installation --backdrop_user=your-user --httpd_group=_www
+ * drush fix-permissions --backdrop_path=/path/to/the/backdrop/installation \
+ * --backdrop_user=your-user --httpd_group=_www
  */
 
 /**
@@ -26,7 +27,7 @@ function backdrop_fix_permissions_drush_command() {
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_SITE,
     'examples' => array(
       'Example' => 'drush fix-permissions --backdrop_path=/path/to/the/backdrop/install --backdrop_user=geoff --httpd_group=_www',
-    )
+    ),
   );
   return $items;
 }
