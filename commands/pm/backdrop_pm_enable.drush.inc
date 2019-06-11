@@ -19,7 +19,7 @@ function backdrop_pm_enable_drush_command() {
       'module-name' => array('The name of the module(s) you would like to enable.'),
     ),
     'required-arguments' => TRUE,
-    'aliases' => array('en',),
+    'aliases' => array('en'),
     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
   );
 
@@ -29,7 +29,7 @@ function backdrop_pm_enable_drush_command() {
 /**
  * Command callback enable modules.
  *
- * @see _enable_project().
+ * @see _enable_project()
  */
 function backdrop_command_pm_enable() {
   $projects = func_get_args();
@@ -43,12 +43,12 @@ function backdrop_command_pm_enable() {
   $module_list = system_rebuild_module_data();
 
   // Loop through projects to handle dependencies.
-  foreach($projects as $project) {
+  foreach ($projects as $project) {
     // Check if requested module depends on other modules.
     $dependencies = $module_list[$project]->info['dependencies'];
     if (!empty($dependencies)) {
       foreach ($dependencies as $dependency) {
-        // Prepend dependency to projects list
+        // Prepend dependency to projects list.
         if (!module_exists($dependency) && !in_array($dependency, $projects)) {
           array_unshift($projects, $dependency);
         }
@@ -85,12 +85,13 @@ function backdrop_command_pm_enable() {
  * Internal function to enable module or theme.
  *
  * @param string $project
- *  The project machine name to be enabled.
+ *   The project machine name to be enabled.
  *
  * @param array $module_list
- *  List of modules that exist in the file system.
+ *   List of modules that exist in the file system.
  *
  * @return bool
+ *   TRUE if the module is enabled; FALSE otherwise.
  *
  * @see backdrop_command_pm_enable_validate()
  */
@@ -111,7 +112,7 @@ function _enable_project($project, $module_list) {
 
   if ($module['status']) {
     drush_print_r(
-      "\n\t\e[31m Failed\e[0m to enable module " . $module['name']. ": it is already enabled.\n"
+      "\n\t\e[31m Failed\e[0m to enable module " . $module['name'] . ": it is already enabled.\n"
     );
     return FALSE;
   }
