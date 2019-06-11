@@ -13,17 +13,17 @@ use Drush\Log\LogLevel;
 function backdrop_pm_disable_drush_command() {
   $items = array();
   $items['backdrop-pm-disable'] = array(
-     'description' => 'Disable backdrop modules.',
-     'callback' => 'backdrop_command_pm_disable',
-     'arguments' => array(
-       'module-name' => array('The name of the module(s) you would like to disable.'),
-     ),
-     'aliases' => array('dis',),
-     'required-arguments' => TRUE,
-     'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
-   );
+    'description' => 'Disable backdrop modules.',
+    'callback' => 'backdrop_command_pm_disable',
+    'arguments' => array(
+      'module-name' => array('The name of the module(s) you would like to disable.'),
+    ),
+    'aliases' => array('dis'),
+    'required-arguments' => TRUE,
+    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
+  );
 
-   return $items;
+  return $items;
 }
 
 /**
@@ -31,12 +31,11 @@ function backdrop_pm_disable_drush_command() {
  */
 function backdrop_command_pm_disable() {
   $projects = func_get_args();
-  //drush_print_r($projects); return;
 
   // Get modules present in files system that are possible to disable.
   $module_list = system_rebuild_module_data();
 
-  foreach($projects as $project) {
+  foreach ($projects as $project) {
     // Check if requested module is required by other modules.
     $required_bys = $module_list[$project]->required_by;
 
