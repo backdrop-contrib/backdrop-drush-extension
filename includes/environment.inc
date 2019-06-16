@@ -86,7 +86,7 @@ function drush_check_module_dependencies($modules, $module_info) {
                 '!dependency' => $dependency_name,
                 '!required_version' => $incompatibility,
                 '!current_version' => $current_version,
-              ),
+              )
             ),
           );
         }
