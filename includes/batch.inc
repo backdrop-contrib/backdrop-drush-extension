@@ -13,7 +13,8 @@
  * @param string $command
  *   The command to call to process the batch.
  */
-function _drush_backend_batch_process($args, $options, $command = 'batch-process') {
+// @codingStandardsIgnoreLine
+function _drush_backend_batch_process($command = 'batch-process', $args, $options) {
   $batch =& batch_get();
 
   if (isset($batch)) {
