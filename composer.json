@@ -1,6 +1,7 @@
 {
     "name": "backdrop/drush",
     "description": "This project allows you to use Drush with Backdrop CMS. Drush is a command-line tool for manipulating content management systems.",
+    "type": "backdrop-drush",
     "license": "GPL-2.0+",
     "authors": [
         {
