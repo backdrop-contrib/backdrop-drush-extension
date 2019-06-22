@@ -13,7 +13,7 @@ before_install:
   - git clone https://github.com/backdrop/backdrop web
   - git clone https://github.com/drush-ops/drush web/drush
   - cd web/drush && git checkout 8.x && composer install
-  - cp -a backdrop-contrib/drush web/drush/commands/backdrop
+  - cp -a $HOME/backdrop-contrib/drush $HOME/web/drush/commands/backdrop
 
 script:
   # Check code standards
