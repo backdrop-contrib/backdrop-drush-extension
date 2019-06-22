@@ -14,7 +14,8 @@
         }
     ],
     "require-dev": {
-        "backdrop/coder": "^1.0"
+        "backdrop/coder": "^1.0",
+        "phpunit/phpunit": "^8.2"
     },
     "require": {
         "composer/installers": "^1.6"

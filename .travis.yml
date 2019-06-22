@@ -1,20 +1,40 @@
 language: php
 dist: xenial
 php:
-  - 5.6
   - 7.2
 cache:
   directories:
     - $HOME/.composer/cache/files
     - $HOME/.composer/cache/repo
 services:
-  - docker
+  - mysql
+addons:
+  - mariadb: '10.0'
 before_install:
   - composer install
+  - git clone https://github.com/backdrop/backdrop /home/travis/web
+  - git clone https://github.com/drush-ops/drush /home/travis/web/drush
+  - cd /home/travis/web/drush && git checkout 8.x && composer install
+  - sudo ln -s /home/travis/web/drush/drush /usr/local/bin/drush
+  - cp -a /home/travis/build/backdrop-contrib/drush /home/travis/web/drush/commands/backdrop
+  - mysql -e "create database backdrop"
+  - cd /home/travis/web
+  - drush si --db-url=mysql://root:@127.0.0.1/backdrop
 
 script:
   # Check code standards
+  - cd /home/travis/web/drush/commands/backdrop
   - vendor/bin/phpcs -n --standard=vendor/backdrop/coder/coder_sniffer/Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
+  - cd /home/travis/web
+  - drush cc drush
+  - drush st
+  - drush cc all
+  - drush dl devel
+  - drush en devel -y
+  - drush pml
+  - drush dis devel -y
+  - drush uli
+  - drush cron
 
   # Unit tests
 
