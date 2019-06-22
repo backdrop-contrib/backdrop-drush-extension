@@ -10,6 +10,10 @@ services:
   - docker
 before_install:
   - composer install
+  - git clone git@github.com:backdrop/backdrop web
+  - git clone git@github.com:drush-ops/drush web/drush
+  - cd web/drush && git checkout 8.x && composer install
+  - cp -a backdrop-contrib/drush web/drush/commands/backdrop
 
 script:
   # Check code standards
