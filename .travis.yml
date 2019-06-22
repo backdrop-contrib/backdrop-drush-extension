@@ -13,10 +13,10 @@ addons:
 before_install:
   - pwd
   - composer install
-  - git clone https://github.com/backdrop/backdrop web
-  - git clone https://github.com/drush-ops/drush web/drush
-  - cd web/drush && git checkout 8.x && composer install
-  - cp -a /home/travis/build/backdrop-contrib/drush /home/travis/build/backdrop-contrib/drush/web/drush/commands/backdrop
+  - git clone https://github.com/backdrop/backdrop /home/travis/web
+  - git clone https://github.com/drush-ops/drush /home/travis/web/drush
+  - cd /home/travis/web/drush && git checkout 8.x && composer install
+  - cp -a /home/travis/build/backdrop-contrib/drush /home/travis/web/drush/commands/backdrop
   - mysql -utravis -e "create database backdrop"
   - drush si --db-url=mysql://travis:@localhost/backdrop
 
