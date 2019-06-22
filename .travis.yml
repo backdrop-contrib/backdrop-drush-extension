@@ -26,8 +26,15 @@ script:
   - cd /home/travis/web/drush/commands/backdrop
   - vendor/bin/phpcs -n --standard=vendor/backdrop/coder/coder_sniffer/Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
   - cd /home/travis/web
+  - drush cc drush
   - drush st
   - drush cc all
+  - drush dl devel
+  - drush en devel -y
+  - drush pml
+  - drush dis devel -y
+  - drush uli
+  - drush cron
 
   # Unit tests
 
