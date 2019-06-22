@@ -11,12 +11,11 @@ services:
 addons:
   - mariadb: '10.0'
 before_install:
-  - pwd
   - composer install
   - git clone https://github.com/backdrop/backdrop /home/travis/web
   - git clone https://github.com/drush-ops/drush /home/travis/web/drush
   - cd /home/travis/web/drush && git checkout 8.x && composer install
-  - ln -s /home/travis/web/drush/drush /usr/local/bin/drush
+  - sudo ln -s /home/travis/web/drush/drush /usr/local/bin/drush
   - cp -a /home/travis/build/backdrop-contrib/drush /home/travis/web/drush/commands/backdrop
   - mysql -e "create database backdrop"
   - cd /home/travis/web
