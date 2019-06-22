@@ -7,7 +7,7 @@ cache:
     - $HOME/.composer/cache/files
     - $HOME/.composer/cache/repo
 services:
-  - docker
+  - mysql
 addons:
   - mariadb: '10.0'
 before_install:
