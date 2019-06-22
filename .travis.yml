@@ -8,7 +8,10 @@ cache:
     - $HOME/.composer/cache/repo
 services:
   - docker
+addons:
+  - mariadb: '10.0'
 before_install:
+  - pwd
   - composer install
   - git clone https://github.com/backdrop/backdrop web
   - git clone https://github.com/drush-ops/drush web/drush
