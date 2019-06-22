@@ -23,7 +23,11 @@ before_install:
 
 script:
   # Check code standards
+  - cd /home/travis/web/drush/commands/backdrop
   - vendor/bin/phpcs -n --standard=vendor/backdrop/coder/coder_sniffer/Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
+  - cd /home/travis/web
+  - drush st
+  - drush cc all
 
   # Unit tests
 
