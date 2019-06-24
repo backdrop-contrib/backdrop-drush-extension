@@ -110,6 +110,7 @@ function backdrop_drush_command_alter(&$command) {
     'cache-get',
     'cache-set',
     'core-exec',
+    'core-rsync',
     'help',
     'helpsingle',
     'topic',
