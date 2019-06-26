@@ -58,6 +58,10 @@ function backdrop_drush_command_alter(&$command) {
       $backdrop_command = 'backdrop-user-login';
       break;
 
+    case 'user-create':
+      $backdrop_command = 'backdrop-user-create';
+      break;
+
     case 'core-status':
       $backdrop_command = 'backdrop-core-status';
       break;
