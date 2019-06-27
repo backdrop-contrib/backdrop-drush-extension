@@ -35,6 +35,8 @@ script:
   - drush dis devel -y
   - drush uli
   - drush cron
+  - drush updb -y
+  - drush ucrt gff --password=gff --mail=gff@gff.gov
 
   # Unit tests
 
