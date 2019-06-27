@@ -25,6 +25,8 @@ script:
   # Check code standards
   - cd /home/travis/web/drush/commands/backdrop
   - vendor/bin/phpcs -n --standard=vendor/backdrop/coder/coder_sniffer/Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
+
+  # Add some sanity checks; make sure drush commands exit 0.
   - cd /home/travis/web
   - drush cc drush
   - drush st
@@ -37,6 +39,19 @@ script:
   - drush cron
   - drush updb -y
   - drush ucrt gff --password=gff --mail=gff@gff.gov
+
+  # Make sure we can issue the same commands on D7 with backdrop/commands present.
+  - cd /home/travis
+  - drush dl --drupal-project-rename=drupal drupal-7.x
+  - msyql -e "create database drupal"
+  - cd /home/travis/drupal
+  - drush si --db-url=mysql://root:@127.0.0.1/drupal
+  - drush cc drush
+  - drush cc all
+  - drush dl devel -y
+  - drush en devel -y
+  - drush dis devel -y
+  - drush updb -y
 
   # Unit tests
 
