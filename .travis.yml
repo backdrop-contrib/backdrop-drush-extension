@@ -43,7 +43,7 @@ script:
   # Make sure we can issue the same commands on D7 with backdrop/commands present.
   - cd /home/travis
   - drush dl --drupal-project-rename=drupal drupal-7.x
-  - msyql -e "create database drupal"
+  - mysql -e "create database drupal"
   - cd /home/travis/drupal
   - drush si --db-url=mysql://root:@127.0.0.1/drupal
   - drush cc drush
