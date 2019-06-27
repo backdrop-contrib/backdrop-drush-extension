@@ -1,0 +1,29 @@
+name: drush
+recipe: backdrop
+config:
+  webroot: web
+  backdrush: false
+
+services:
+  appserver:
+    run_as_me:
+      - git clone git@github.com:backdrop/backdrop web
+      - git clone git@github.com:drush-ops/drush.git web/drush
+      - cd web/drush && git checkout 8.x && composer install
+      - cd $LANDO_ROOT
+      - cp -a /app/backdrop-drush /app/web/drush/commands/backdrop
+      #- cd web/drush/commands/backdrop && git fetch && git checkout 167-add-missing-parameters
+
+tooling:
+  drush:
+    service: appserver
+    cmd:
+      - /app/web/drush/drush --root=/app/web --uri=https://drush.lndo.site
+  phpcs:
+    service: appserver
+    cmd:
+      - "/app/web/drush/commands/backdrop/vendor/bin/phpcs -n --report=full --standard=/app/web/drush/commands/backdrop/vendor/backdrop/coder/coder_sniffer/Backdrop --ignore=vendor/*,README.md --extensions=install,module,php,inc,theme"
+  phpunit:
+    service: appserver
+    cmd:
+      - /app/web/drush/commands/backdrop/vendor/bin/phpunit
