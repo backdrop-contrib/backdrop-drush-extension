@@ -52,7 +52,7 @@ script:
   - drush en devel -y
   - drush dis devel -y
   - drush updb -y
-  - drush ucrt gff --pass=gff --mail=gff@gff.gov
+  - drush ucrt gff --password=gff --mail=gff@gff.gov
 
   # Unit tests
 
