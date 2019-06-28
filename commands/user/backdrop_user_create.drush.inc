@@ -26,7 +26,7 @@ function backdrop_user_create_drush_command() {
       'password' => 'The password for the new account',
       'mail' => 'The email address for the new account',
     ),
-    'outputformat' => $items['user-information']['outputformat'],
+    // 'outputformat' => $items['user-information']['outputformat'],
   );
   return $items;
 }
@@ -53,7 +53,21 @@ function backdrop_command_user_create($name) {
   if (!drush_get_context('DRUSH_SIMULATE')) {
     if ($account = entity_create('user', $new_user)) {
       $account->save();
+      $output = [
+        'User ID' => $account->uid,
+        'User name' => $account->name,
+        'User mail' => $account->mail,
+        'User roles' => $account->roles,
+        'User status' => $account->status,
+      ];
       drush_print_r("\n\t\e[32mSuccess\e[0m: user $account->name created.\n");
+      foreach ($output as $key => $property) {
+        if (is_array($property)) {
+          $property = implode($property);
+        }
+        drush_print("\t\t$key:\t$property");
+      }
+      drush_print("\n");
 
       return TRUE;
     }
