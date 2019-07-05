@@ -274,13 +274,13 @@ function _backdrop_core_site_status_table($project = '') {
         $status_table['db-name'] = isset($db_spec['database']) ? $db_spec['database'] : NULL;
         $status_table['db-port'] = isset($db_spec['port']) ? $db_spec['port'] : NULL;
 
-        if ($phase > BackdropBoot::BOOTSTRAP_CONFIGURATION) {//DRUSH_BOOTSTRAP_BACKDROP_CONFIGURATION) {
+        if ($phase > BackdropBoot::BOOTSTRAP_CONFIGURATION) {
           $status_table['install-profile'] = $boot_object->get_profile();
           if ($phase > BackdropBoot::BOOTSTRAP_FULL) {
             $status_table['bootstrap'] = dt('Successful');
             if ($phase == BackdropBoot::BOOTSTRAP_LOGIN) {
               // @TODO: figure out how to really load a user;
-              //   add a BackdropUser class?
+              // add a BackdropUser class?
               // This doesn't really load a user, but it is better than
               // blowing up the commands, i.e. it is usable.
               global $user;
