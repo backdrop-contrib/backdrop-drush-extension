@@ -6,7 +6,7 @@
 
 use \Drush\Boot\BackdropBoot;
 
-define('BACKDROP_DRUSH_VERSION', '1.x-0.x');
+define('BACKDROP_DRUSH_VERSION', '1.0.0');
 
 /**
  * Implements hook_drush_command().
