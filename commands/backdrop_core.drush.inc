@@ -64,7 +64,6 @@ function backdrop_core_drush_command() {
   $items['backdrop-core-status'] = array(
     'description' => 'Provides a birds-eye view of the current Backdrop installation, if any.',
     'callback' => 'backdrop_command_core_status',
-    'bootstrap' => DRUSH_BOOTSTRAP_MAX,
     'aliases' => array('status', 'st'),
     'examples' => array(
       'drush core-status version' => 'Show all status lines that contain version information.',
@@ -97,7 +96,7 @@ function backdrop_core_drush_command() {
         'db-name' => 'Database name',
         'db-status' => 'Database',
         'bootstrap' => 'Backdrop bootstrap',
-        'user' => 'Drupal user',
+        'user' => 'Backdrop user',
         'theme' => 'Default theme',
         'admin-theme' => 'Administration theme',
         'php-bin' => 'PHP executable',
@@ -275,12 +274,17 @@ function _backdrop_core_site_status_table($project = '') {
         $status_table['db-name'] = isset($db_spec['database']) ? $db_spec['database'] : NULL;
         $status_table['db-port'] = isset($db_spec['port']) ? $db_spec['port'] : NULL;
 
-        if ($phase > DRUSH_BOOTSTRAP_BACKDROP_CONFIGURATION) {
+        if ($phase > BackdropBoot::BOOTSTRAP_CONFIGURATION) {//DRUSH_BOOTSTRAP_BACKDROP_CONFIGURATION) {
           $status_table['install-profile'] = $boot_object->get_profile();
-          if ($phase > DRUSH_BOOTSTRAP_BACKDROP_FULL) {
+          if ($phase > BackdropBoot::BOOTSTRAP_FULL) {
             $status_table['bootstrap'] = dt('Successful');
-            if ($phase == DRUSH_BOOTSTRAP_BACKDROP_LOGIN) {
-              $status_table['user'] = drush_user_get_class()->getCurrentUserAsSingle()->getUsername();
+            if ($phase == BackdropBoot::BOOTSTRAP_LOGIN) {
+              // @TODO: figure out how to really load a user;
+              //   add a BackdropUser class?
+              // This doesn't really load a user, but it is better than
+              // blowing up the commands, i.e. it is usable.
+              global $user;
+              $status_table['user'] = $user->name;
             }
           }
         }
