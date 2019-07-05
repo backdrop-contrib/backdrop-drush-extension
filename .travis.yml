@@ -31,10 +31,11 @@ script:
   - drush cc drush
   - drush st
   - drush cc all
-  - drush dl devel
-  - drush en devel -y
+  - drush dl devel headless
+  - drush en devel_generate headless-y
   - drush pml
-  - drush dis devel -y
+  - drush dis devel headless -y
+  - drush pmu devel headless -y
   - drush uli
   - drush cron
   - drush updb -y
@@ -51,6 +52,7 @@ script:
   - drush dl devel -y
   - drush en devel -y
   - drush dis devel -y
+  - drush pmu devel -y
   - drush updb -y
   - drush ucrt gff --password=gff --mail=gff@gff.gov
 

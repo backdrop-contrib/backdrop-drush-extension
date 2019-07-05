@@ -82,6 +82,10 @@ function backdrop_drush_command_alter(&$command) {
       $backdrop_command = 'backdrop-pm-disable';
       break;
 
+    case 'pm-uninstall':
+      $backdrop_command = 'backdrop-pm-uninstall';
+      break;
+
     case 'user-password':
       $backdrop_command = 'backdrop-user-password';
       break;
