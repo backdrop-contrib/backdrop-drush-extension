@@ -32,7 +32,7 @@ script:
   - drush st
   - drush cc all
   - drush dl devel headless
-  - drush en devel_generate headless-y
+  - drush en devel_generate headless -y
   - drush pml
   - drush dis devel headless -y
   - drush pmu devel headless -y
