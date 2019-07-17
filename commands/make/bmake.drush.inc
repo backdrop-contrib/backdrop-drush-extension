@@ -62,37 +62,48 @@ function bmake() {
 
   // Download the modules specified by the make file.
   if (!empty($make['modules'])) {
-    foreach ($make['modules'] as $key => $module) {
-      if ($module == 'latest') {
-        passthru("drush dl $key");
-      }
-      else {
-        passthru("drush dl $key --version=$module");
-      }
-    }
+    bmake_parse_projects($make, 'modules');
   }
 
   // Download the themes specified by the make file.
   if (!empty($make['themes'])) {
-    foreach ($make['themes'] as $key => $theme) {
-      if ($theme == 'latest') {
-        passthru("drush dl $key");
-      }
-      else {
-        passthru("drush dl $key --version=$theme");
-      }
-    }
+    bmake_parse_projects($make, 'themes');
   }
 
   // Download the layouts specified by the make file.
   if (!empty($make['layouts'])) {
-    foreach ($make['layouts'] as $key => $layout) {
-      if ($layout == 'latest') {
-        passthru("drush dl $key");
+    bmake_parse_projects($make, 'layouts');
+  }
+}
+
+/**
+ * Parse a section of the makefile and download projects accordingly.
+ */
+function bmake_parse_projects($make, $section) {
+  foreach ($make[$section] as $project => $details) {
+    if (!is_array($details)) {
+
+      // $details is a version string.
+      if ($details == 'latest') {
+        passthru("drush dl $project");
       }
       else {
-        passthru("drush dl $key --version=$layout");
+        passthru("drush dl $project --version=$details");
       }
+
+    }
+    else {
+
+      // $details is an array.
+      if (!empty($details['git'])) {
+        // Clone a git repository.
+        $tags = (object) array(
+          'type' => 'project_' . rtrim($section, 's'),
+        );
+        $path = backdrop_pm_get_path($tags);
+        passthru("git clone $details[git] $path/$project");
+      }
+
     }
   }
 }
