@@ -128,6 +128,7 @@ function bmake_validate($test) {
       $error = drush_set_error('DRUSH_SHELL_COMMAND_NOT_FOUND',
         dt("\n\033[1mgit\033[0m executable not found. Cloning repositories depends on git. Consider installing git on your system.\n"));
       break;
+
     default:
       $success = TRUE;
   }
