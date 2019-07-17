@@ -44,20 +44,28 @@ function bmake() {
   $project_path = $args[1];
 
   // Get Backdrop and put it in the project_path.
-  passthru("drush dlb backdrop --path=$project_path");
+  if (!empty($make['core']['core'])) {
+    passthru("drush dlb backdrop --path=$project_path");
+  }
 
   // Change into the Backdrop project directory.
+  if (!is_dir($project_path)) {
+    drush_log(dt("The 'build path' does not exist and 'core' was not specified."), 'error');
+    return;
+  }
   chdir($project_path);
 
   // We need to install Backdrop in order to use drush to dl modules .. idk.
-  $db_url = drush_get_option('db-url', '');
-  if (!empty($db_url)) {
-    passthru(
-      "drush si --db-url=$db_url"
-    );
-  }
-  else {
-    passthru("drush si");
+  if (!empty($make['core']['core'])) {
+    $db_url = drush_get_option('db-url', '');
+    if (!empty($db_url)) {
+      passthru(
+        "drush si --db-url=$db_url"
+      );
+    }
+    else {
+      passthru("drush si");
+    }
   }
 
   // Download the modules specified by the make file.
