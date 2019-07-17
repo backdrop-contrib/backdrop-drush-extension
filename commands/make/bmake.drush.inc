@@ -96,6 +96,11 @@ function bmake_parse_projects($make, $section) {
 
       // $details is an array.
       if (!empty($details['git'])) {
+        $valid = bmake_validate('git');
+        if (!$valid) {
+          return;
+        }
+
         // Clone a git repository.
         $tags = (object) array(
           'type' => 'project_' . rtrim($section, 's'),
@@ -106,4 +111,33 @@ function bmake_parse_projects($make, $section) {
 
     }
   }
+}
+
+/**
+ * Validate bmake commands.
+ */
+function bmake_validate($test) {
+  // Disable possible output during testing.
+  $debug = drush_get_context('DRUSH_DEBUG');
+  drush_set_context('DRUSH_DEBUG', FALSE);
+
+  // Run validation.
+  switch ($test) {
+    case 'git':
+      $success = drush_shell_exec('git --version');
+      $error = drush_set_error('DRUSH_SHELL_COMMAND_NOT_FOUND',
+        dt("\n\033[1mgit\033[0m executable not found. Cloning repositories depends on git. Consider installing git on your system.\n"));
+      break;
+    default:
+      $success = TRUE;
+  }
+
+  // Reset debugging.
+  drush_set_context('DRUSH_DEBUG', $debug);
+
+  // Display any error messages.
+  if (!$success) {
+    return $error;
+  }
+  return TRUE;
 }
