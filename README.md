@@ -21,6 +21,10 @@ for use with Backdrop. Although some commands may have worked through Backdrop's
 compatibility layer, for now any untested (and possibly dangerous) commands are
 not allowed to be run within a Backdrop installation.
 
+As an alternative to Drush, you may like to consider using
+[Backdrop Console](https://github.com/backdrop-contrib/b), which has been built
+from the ground-up specifically for Backdrop.
+
 Installation
 ------------
 
@@ -121,7 +125,8 @@ custom Drush commands such as this is in your user's home directory.
 - Clear the drush cache
   -- `drush cc drush`
 
-Now switch to a Backdrop site's directory and try a command! `drush cron` works well.
+Now switch to a Backdrop site's directory and try a command! `drush cron` works
+well.
 
 Usage
 -----
