@@ -118,26 +118,19 @@ function backdrop_command_pm_download() {
   else {
     foreach ($projects as $project) {
       if ($project != 'backdrop') {
-        $html = backdrop_pm_get_from_github(
-          "https://github.com/backdrop-contrib/$project/releases/latest"
-        );
 
-        // Get the release info from backdropcms.org.
         $tags = backdrop_pm_get_tags(
           "https://updates.backdropcms.org/release-history/$project/1.x"
         );
-
         $project_path = backdrop_pm_get_path($tags);
-        $html = explode("\"", $html);
-        $url = $html[1];
-        $latest = explode('/', $url);
-        $latest = array_reverse($latest);
+
+        $latest = `curl -s "https://api.github.com/repos/backdrop-contrib/$project/releases/latest" | awk -F '"' '/tag_name/{print $4}'`;
+        $latest = trim($latest);
 
         // Build the path to location to download the module.
         $module_install_location = $project_path . '/' . $project;
 
-        // Build the download URL.
-        $download_url = "https://github.com/backdrop-contrib/$project/releases/download/$latest[0]/$project.zip";
+        $download_url = "https://github.com/backdrop-contrib/$project/releases/download/$latest/$project.zip";
 
         // Get the HTTP/1.1 response to check against.
         $response = get_headers($download_url);
@@ -173,21 +166,6 @@ function backdrop_command_pm_download() {
       }
     }
   }
-}
-
-/**
- * Helper function for backdrop_command_pm_download().
- *
- * Gets the url for the github repo of the contrib module.
- */
-function backdrop_pm_get_from_github($url) {
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_URL, $url);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-  curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-  $content = curl_exec($ch);
-  curl_close($ch);
-  return $content;
 }
 
 /**
