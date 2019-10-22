@@ -26,6 +26,9 @@ script:
   - cd /home/travis/web/drush/commands/backdrop
   - vendor/bin/phpcs -n --standard=vendor/backdrop/coder/coder_sniffer/Backdrop --ignore="vendor/*,README.md" --extensions=install,module,php,inc,theme .
 
+  # Unit tests
+  - $TRAVIS_BUILD_DIR/vendor/bin/phpunit -c $TRAVIS_BUILD_DIR/tests
+
   # Add some sanity checks; make sure drush commands exit 0.
   - cd /home/travis/web
   - drush cc drush
@@ -56,5 +59,3 @@ script:
   - drush updb -y
   - drush ucrt gff --password=gff --mail=gff@gff.gov
 
-  # Unit tests
-  - $TRAVIS_BUILD_DIR/vendor/bin/phpunit -c $TRAVIS_BUILD_DIR/tests 
