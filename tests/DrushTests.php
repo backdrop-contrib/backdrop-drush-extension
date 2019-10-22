@@ -20,23 +20,11 @@ class DrushTests extends TestCase {
    * Test drush st command.
    */
   public function testDrushSt() {
-    exec('drush st', $output);
-    $this->assertStringContainsString('Backdrop version', $output[0]);
-    $this->assertStringContainsString('Backdrop bootstrap', $output[7]);
-    $this->assertStringContainsString('Successful', $output[7]);
-    $this->assertStringContainsString('PHP OS', $output[10]);
-    $this->assertStringContainsString('Backdrop Settings File', $output[18]);
-  }
-
-  /**
-   * Test drush dl devel command.
-   */
-  public function testPmDownload() {
-    exec("drush dl devel -n", $output);
-    $this->assertStringContainsString('Success:', $output[1]);
-    $this->assertStringContainsString('devel', $output[1]);
-    $this->assertDirectoryExists('/app/web/modules/devel');
-    // Clean up.
-    exec('rm -rf /app/web/modules/devel');
+    $output = shell_exec('drush st');
+    $this->assertStringContainsString('Backdrop version', $output);
+    $this->assertStringContainsString('Backdrop bootstrap', $output);
+    $this->assertStringContainsString('Successful', $output);
+    $this->assertStringContainsString('PHP OS', $output);
+    $this->assertStringContainsString('Backdrop Settings File', $output);
   }
 }
