@@ -57,4 +57,4 @@ script:
   - drush ucrt gff --password=gff --mail=gff@gff.gov
 
   # Unit tests
-
+  - $TRAVIS_BUILD_DIR/vendor/bin/phpunit -c $TRAVIS_BUILD_DIR/tests 
