@@ -48,7 +48,7 @@ function backdrop_content_type_list($type = NULL) {
     }
     drush_print_r("\n");
   }
-  elseif($field_opt) {
+  elseif ($field_opt) {
     $field = field_info_instance('node', $field_opt, $type);
     print_r($field);
   }
