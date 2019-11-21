@@ -24,8 +24,8 @@ function backdrop_content_drush_command() {
     'examples' => array(
       'drush ctl' => 'Lists all the content types on the site.',
       'drush ctl page' => 'Lists the details of the page content type.',
+      'drush ctl page --fields' => 'List the fields of the page content type.',
       'drush ctl page --field=body' => 'Get the details of the body field on page content type.',
-      'drush clt page --fields' => 'List the fields of the page content type.',
     ),
   );
 
