@@ -1,7 +1,7 @@
 <?php
 /**
  * @file
- * Contains command callback for drush bakdrop-config-import.
+ * Contains command callback for drush backdrop-config-import.
  */
 
 use \Drush\Boot\BackdropBoot;
