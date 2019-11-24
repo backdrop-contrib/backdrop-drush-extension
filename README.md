@@ -18,6 +18,10 @@ This integration is currently capable of executing the following commands:
 - `drush uli`: Generate a one-time login link.
 - `drush upwd`: Update the password for a selected user.
 
+To see a full list of available drush commands:
+
+- `drush help`
+
 There are many more commands that Drush may execute, but they need to be updated
 for use with Backdrop. Although some commands may have worked through Backdrop's
 compatibility layer, for now any untested (and possibly dangerous) commands are
