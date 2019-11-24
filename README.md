@@ -15,6 +15,8 @@ This integration is currently capable of executing the following commands:
 - `drush scr`: Execute scripts with the Backdrop API.
 - `drush st` : Check the status of a Backdrop site; bootstrap, database
   connection etc.
+- `drush uli`: Generate a one-time login link.
+- `drush upwd`: Update the password for a selected user.
 
 There are many more commands that Drush may execute, but they need to be updated
 for use with Backdrop. Although some commands may have worked through Backdrop's
