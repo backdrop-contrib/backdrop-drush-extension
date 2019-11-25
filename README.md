@@ -23,6 +23,7 @@ This integration is currently capable of executing the following commands:
 - `drush bp`: Generate boilerplate code for developers; *.info and *.module files.
 - `drush sql-*`: MySQL connection commands, such as `sql-cli` or `sql-conf`.
 - `drush scr`: Execute scripts with the Backdrop API.
+- `drush ctl`: List the content types available on the site. (only for backdrush >= 1.1.0)
 
 To see a full list of available drush commands (not all of which will 
 necessarily work with Backdrop CMS):
