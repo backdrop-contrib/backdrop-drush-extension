@@ -7,18 +7,31 @@ manipulating content management systems.
 
 This integration is currently capable of executing the following commands:
 
+- `drush dlb`: Download Backdrop CMS.
+
 - `drush cc`: Clear individual or all caches in Backdrop.
-- `drush dl`: Download and unpack contrib modules, themes, and layouts.
-- `drush updb`: Run database updates through the Backdrop update.php script.
-- `drush sql-*`: MySQL connection commands, such as `sql-cli` or `sql-conf`.
-- `drush cron`: Run the regular interval commands in hook_cron().
-- `drush scr`: Execute scripts with the Backdrop API.
-- `drush st` : Check the status of a Backdrop site; bootstrap, database
-  connection etc.
 - `drush uli`: Generate a one-time login link.
 - `drush upwd`: Update the password for a selected user.
+- `drush st` : Check the status of a Backdrop site; bootstrap, database
+  connection etc.
+- `drush cron`: Run the regular interval commands in hook_cron().
+- `drush updb`: Run database updates through the Backdrop update.php script.
 
-To see a full list of available drush commands:
+- `drush pml`: Show a list of available extensions (modules and themes).
+- `drush dl`: Download and unpack contrib modules, themes, and layouts.
+- `drush en`: Enable one or more extensions (modules or themes). 
+   Enable dependant extensions as well.
+- `drush dis`: Disable one or more extensions (modules or themes). 
+   Disable dependant extensions as well.
+
+- `drush bcex`: Export a Backdrop site configuration.
+- `drush bcim`: Import Backdrop site configuration.
+- `drush bp`: Generate boilerplate code for developers; *.info and *.module files.
+- `drush sql-*`: MySQL connection commands, such as `sql-cli` or `sql-conf`.
+- `drush scr`: Execute scripts with the Backdrop API.
+
+To see a full list of available drush commands (not all of which will 
+necessarily work with Backdrop CMS):
 
 - `drush help`
 
