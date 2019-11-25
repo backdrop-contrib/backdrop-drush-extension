@@ -33,6 +33,10 @@ necessarily work with Backdrop CMS):
 
 * `drush help`
 
+To get additional information about a specific command
+
+* `drush help <command>`
+
 There are many more commands that Drush may execute, but they need to be updated
 for use with Backdrop. Although some commands may have worked through Backdrop's
 compatibility layer, for now any untested (and possibly dangerous) commands are
