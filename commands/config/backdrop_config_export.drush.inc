@@ -41,10 +41,10 @@ function backdrop_config_export() {
     $destination = drush_get_option('destination', '');
     // Determine where to export the config.
     if (empty($destination)) {
-      $config_export = BACKDROP_ROOT . "/" . $config_directories['staging'];
+      $config_export = $config_directories['staging'];
     }
     else {
-      $config_export = BACKDROP_ROOT . "/$destination";
+      $config_export = $destination;
       drush_print_r("\n\n\t\tmade it to destination: $config_export\n\n");
     }
 
