@@ -27,4 +27,33 @@ class DrushTests extends TestCase {
     $this->assertStringContainsString('PHP OS', $output);
     $this->assertStringContainsString('Backdrop Settings File', $output);
   }
+
+  /**
+   * Test drush config-get command.
+   */
+  public function testDrushConfigGet() {
+    $output = shell_exec('drush config-get system.core');
+    $this->assertStringContainsString('user_admin_role', $output);
+  }
+
+  /**
+   * Test drush config-set command.
+   */
+  public function testDrushConfigSet() {
+    $output = shell_exec(
+      'drush config-set system.core site_name blunderbus'
+    );
+    $this->assertStringContainsString('blunderbus', $output);
+  }
+
+  /**
+   * Test drush state-set command.
+   */
+  public function testDrushStateSet() {
+    $output = shell_exec(
+      'drush state-set maintenance_mode 0'
+    );
+    $this->assertStringContainsString('0', $output);
+    $this->assertStringContainsString('maintenance_mode', $output);
+  }
 }
