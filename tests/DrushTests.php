@@ -35,4 +35,14 @@ class DrushTests extends TestCase {
     $output = shell_exec('drush config-get system.core');
     $this->assertStringContainsString('user_admin_role', $output);
   }
+  
+  /**
+   * Test drush config-set command.
+   */
+  public function testDrushConfigSet() {
+    $output = shell_exec(
+      'drush config-set system.core site_name blunderbus'
+    );
+    $this->assertStringContainsString('blunderbus', $output);
+  }
 }
