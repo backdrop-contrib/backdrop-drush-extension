@@ -35,7 +35,7 @@ class DrushTests extends TestCase {
     $output = shell_exec('drush config-get system.core');
     $this->assertStringContainsString('user_admin_role', $output);
   }
-  
+
   /**
    * Test drush config-set command.
    */
@@ -45,7 +45,7 @@ class DrushTests extends TestCase {
     );
     $this->assertStringContainsString('blunderbus', $output);
   }
-  
+
   /**
    * Test drush state-set command.
    */
