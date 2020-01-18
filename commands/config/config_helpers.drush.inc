@@ -55,6 +55,20 @@ function config_helpers_drush_command() {
       'drush state-get maintenance_mode' => 'Print the value of the state maintenance_mode.',
     ),
   );
+  $items['backdrop-state-set'] = array(
+    'description' => 'Set a state value.',
+    'callback' => 'backdrop_state_set',
+    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
+    'aliases' => array('state-set'),
+    'arguments' => array(
+      'name' => 'State name to set.',
+      'value' => 'The value to set.',
+    ),
+    'required-arguments' => TRUE,
+    'examples' => array(
+      'drush state-set maintenance_mode 1' => 'Sets the value of maintenance_mode to 1.',
+    ),
+  );
 
   return $items;
 }
@@ -109,4 +123,27 @@ function backdrop_state_get() {
   }
   drush_print_r($state);
 
+}
+
+
+/**
+ * Command callback for state-set.
+ */
+function backdrop_state_set() {
+  require_once BACKDROP_ROOT . '/core/includes/bootstrap.inc';
+  $args = drush_get_arguments();
+  $name = $args[1];
+  $value = $args[2];
+  try {
+    state_set($name, $value);
+  }
+  catch (Exception $e) {
+    drush_print_r("There was a problem setting the $name state: $e");
+  }
+  drush_print_r(
+    dt(
+      "\n\t\033[32mSuccess\033[0m 
+        The $name state has been set to $value."
+    )
+  );
 }
