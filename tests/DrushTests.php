@@ -27,4 +27,12 @@ class DrushTests extends TestCase {
     $this->assertStringContainsString('PHP OS', $output);
     $this->assertStringContainsString('Backdrop Settings File', $output);
   }
+
+  /**
+   * Test drush config-get command.
+   */
+  public function testDrushConfigGet() {
+    $output = shell_exec('drush config-get system.core');
+    $this->assertStringContainsString('user_admin_role', $output);
+  }
 }
