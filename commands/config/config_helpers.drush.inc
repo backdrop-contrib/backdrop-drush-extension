@@ -43,6 +43,18 @@ function config_helpers_drush_command() {
       'drush cset system.core site_name "MySite"' => 'Sets the value of site_name to "My Site" in system.core.json.',
     ),
   );
+  $items['backdrop-state-get'] = array(
+    'description' => 'Get and print a state value.',
+    'callback' => 'backdrop_state_get',
+    'bootstrap' => \Drush\Boot\BackdropBoot::BOOTSTRAP_FULL,
+    'aliases' => array('state-get'),
+    'arguments' => array(
+      'name' => 'Name of state of which to get the value.',
+    ),
+    'examples' => array(
+      'drush state-get maintenance_mode' => 'Print the value of the state maintenance_mode.',
+    ),
+  );
 
   return $items;
 }
@@ -80,4 +92,21 @@ function backdrop_config_set() {
         The $setting has been set to $value in the $file.json file"
     )
   );
+}
+
+/**
+ * Command callback for state-get.
+ */
+function backdrop_state_get() {
+  require_once BACKDROP_ROOT . '/core/includes/bootstrap.inc';
+  $args = drush_get_arguments();
+  $name = $args[1];
+  try {
+    $state = state_get($name);
+  }
+  catch (Exception $e) {
+    drush_print_r("There was a problem getting the $name state: $e");
+  }
+  drush_print_r($state);
+
 }
