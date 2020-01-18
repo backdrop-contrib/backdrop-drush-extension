@@ -142,8 +142,7 @@ function backdrop_state_set() {
   }
   drush_print_r(
     dt(
-      "\n\t\033[32mSuccess\033[0m 
-        The $name state has been set to $value."
+      "\n\t\033[32mSuccess\033[0m The $name state has been set to $value."
     )
   );
 }

@@ -45,4 +45,15 @@ class DrushTests extends TestCase {
     );
     $this->assertStringContainsString('blunderbus', $output);
   }
+  
+  /**
+   * Test drush state-set command.
+   */
+  public function testDrushStateSet() {
+    $output = shell_exec(
+      'drush state-set maintenance_mode 0'
+    );
+    $this->assertStringContainsString('0', $output);
+    $this->assertStringContainsString('maintenance_mode', $output);
+  }
 }
