@@ -56,4 +56,15 @@ class DrushTests extends TestCase {
     $this->assertStringContainsString('0', $output);
     $this->assertStringContainsString('maintenance_mode', $output);
   }
+
+  /**
+   * Test drush version command.
+   */
+  public function testDrushVersion() {
+    $output = shell_exec(
+      'drush version'
+    );
+    $this->assertStringContainsString('proper version', $output);
+    $this->assertStringContainsString('Extension version', $output);
+  }
 }
