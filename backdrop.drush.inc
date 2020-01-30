@@ -110,6 +110,10 @@ function backdrop_drush_command_alter(&$command) {
     case 'pm-list':
       $backdrop_command = 'backdrop-pm-list';
       break;
+    
+    case 'watchdog-show':
+      $backdrop_command = 'watchdog-show';
+      break;
 
   }
 
