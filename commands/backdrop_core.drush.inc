@@ -134,6 +134,14 @@ function backdrop_core_drush_command() {
     'topics' => array('docs-readme'),
   );
 
+  $items['backdrop-drush-version'] = array(
+    'description' => 'Print out the Drush proper version and the Backdrop Drush Extension version.',
+    'callback' => 'backdrop_command_drush_version',
+    'aliases' => array('version'),
+    'examples' => array(
+      'drush version' => 'Drush proper version: 8; Backdrop Drush Extension Version: 1',
+    ),
+  );
   $items['backdrop-unsupported'] = array(
     'description' => 'Fallback command if the provided command is not supported in Backdrop.',
     'callback' => 'backdrop_command_unsupported',
@@ -359,6 +367,16 @@ function backdrop_command_core_status() {
     }
   }
   return $status_table;
+}
+
+/**
+ * Command callback for: drush version or drush --version.
+ */
+function backdrop_command_drush_version() {
+  $drush_proper = dt('Drush proper version: ' . DRUSH_VERSION);
+  $backdrop_drush = dt('Backdrop Drush Extension version: ' . BACKDROP_DRUSH_VERSION);
+
+  return "$drush_proper\n$backdrop_drush";
 }
 
 /**
