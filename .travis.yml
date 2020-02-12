@@ -17,6 +17,7 @@ before_install:
   - cd /home/travis/web/drush && git checkout 8.x && composer install
   - sudo ln -s /home/travis/web/drush/drush /usr/local/bin/drush
   - cp -a /home/travis/build/backdrop-contrib/drush /home/travis/web/drush/commands/backdrop
+  - mysql -e "drop database if exists backdrop"
   - mysql -e "create database backdrop"
   - cd /home/travis/web
   - drush si --db-url=mysql://root:@127.0.0.1/backdrop
