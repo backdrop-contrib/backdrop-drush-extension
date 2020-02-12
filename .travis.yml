@@ -9,7 +9,7 @@ cache:
 services:
   - mysql
 addons:
-  - mariadb: '10.0'
+  - mariadb: '10.3'
 before_install:
   - composer install
   - git clone https://github.com/backdrop/backdrop /home/travis/web
