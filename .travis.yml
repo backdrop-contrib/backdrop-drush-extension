@@ -43,6 +43,7 @@ script:
   - drush cron
   - drush updb -y
   - drush ucrt gff --password=gff --mail=gff@gff.gov
+  - drush ws
 
   # Make sure we can issue the same commands on D7 with backdrop/commands present.
   - cd /home/travis
@@ -58,4 +59,5 @@ script:
   - drush pmu devel -y
   - drush updb -y
   - drush ucrt gff --password=gff --mail=gff@gff.gov
+  - drush ws
 

@@ -67,16 +67,4 @@ class DrushTests extends TestCase {
     $this->assertStringContainsString('proper version', $output);
     $this->assertStringContainsString('Extension version', $output);
   }
-
-  /**
-   * Test drush ws command.
-   */
-  public function testDrushWatchdogShow() {
-    $output = shell_exec(
-      'drush ws'
-    );
-    $this->assertStringContainsString('ID', $output);
-    $this->assertStringContainsString('Date', $output);
-    $this->assertStringContainsString('Type', $output);
-  }
 }
