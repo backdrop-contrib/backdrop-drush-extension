@@ -177,3 +177,14 @@ Thanks to all the Drush maintainers for their project, in particular:
 for their help in making Drush for Backdrop possible.
 
 ![Drush Logo](backdrop-drush-extension-logopn.png)
+
+Releasing Versions
+------------------
+
+We are using [`release-it`](https://github.com/release-it/release-it) to manage releases.  When you are ready for a release:
+
+```bash
+node_modules/.bin/release-it
+```
+
+* NOTE that you need to set your `GITHUB_TOKEN` in your environment in order to push and cut releases on GitHub.
