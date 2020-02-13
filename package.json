@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "release-it": "^12.4.3"
+  }
+}
