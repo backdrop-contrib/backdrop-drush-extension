@@ -1,6 +1,8 @@
 Drush Integration for Backdrop CMS
 ==================================
 
+[![Build Status](https://travis-ci.org/backdrop-contrib/drush.svg?branch=1.x-1.x)](https://travis-ci.org/backdrop-contrib/drush)
+
 This project allows you to use [Drush](https://github.com/drush-ops/drush) with
 [Backdrop CMS](https://backdropcms.org). Drush is a command-line tool for
 manipulating content management systems.
