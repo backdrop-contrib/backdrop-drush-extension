@@ -9,7 +9,7 @@ manipulating content management systems.
 
 This integration is currently capable of executing the following commands:
 
-* `drush dlb`: Download Backdrop CMS.
+* `drush dlb backdrop`: Download Backdrop CMS.
 * `drush cc`: Clear individual or all caches in Backdrop.
 * `drush uli`: Generate a one-time login link.
 * `drush upwd`: Update the password for a selected user.
