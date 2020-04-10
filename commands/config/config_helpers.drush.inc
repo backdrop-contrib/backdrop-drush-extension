@@ -100,10 +100,14 @@ function backdrop_config_set() {
   catch (Exception $e) {
     drush_print_r("There was a problem setting the $setting setting: $e");
   }
+  // Pretty terminal font colors for the printed variables.
+  $print_file = "\033[96m" . $file . ".json" . "\033[0m";
+  $print_setting = "\033[96m" . $setting . "\033[0m";
+  $print_value = "\033[96m" . $value . "\033[0m";
   drush_print_r(
     dt(
       "\n\t\033[32mSuccess\033[0m 
-        The $setting has been set to $value in the $file.json file"
+        The $print_setting setting has been set to $print_value in the $print_file file."
     )
   );
 }
