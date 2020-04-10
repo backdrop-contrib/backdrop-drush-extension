@@ -101,7 +101,7 @@ function backdrop_config_set() {
     drush_print_r("There was a problem setting the $setting setting: $e");
   }
   // Pretty terminal font colors for the printed variables.
-  $print_file = "\033[96m" . $file . ".json" . "\033[0m";
+  $print_file = "\033[96m" . $file . ".json\033[0m";
   $print_setting = "\033[96m" . $setting . "\033[0m";
   $print_value = "\033[96m" . $value . "\033[0m";
   drush_print_r(
