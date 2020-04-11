@@ -99,6 +99,7 @@ class BackdropBoot extends BaseBoot {
     $path = $root . '/core/includes/bootstrap.inc';
     if (is_file($path)) {
       require_once $path;
+      require_once 'includes/output.inc';
       if (defined('BACKDROP_VERSION')) {
         return BACKDROP_VERSION;
       }
