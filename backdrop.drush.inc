@@ -213,4 +213,3 @@ function drush_chalk(string $output, string $color) {
 
   return $output;
 }
-
