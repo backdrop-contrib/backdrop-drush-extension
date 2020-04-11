@@ -57,14 +57,16 @@ function backdrop_command_pm_enable() {
   }
 
   $projects_list = implode(', ', $projects);
+  $projects_list = drush_chalk($projects_list, '1m');
   $proceed = drush_confirm(
     "The following projects will be enabled: $projects_list.
     Do you want to enable the projects?"
   );
 
   if (!$proceed) {
+    $cancelled = drush_chalk('Cancelled', '33m');
     drush_print_r(
-      dt("\n\t\e[033mCancelled\e[0m $projects_list not enabled.\n")
+      dt("\n\t$cancelled: $projects_list not enabled.\n")
     );
   }
   else {
@@ -100,7 +102,9 @@ function _enable_project($project, $module_list) {
   $project_exists = backdrop_command_pm_enable_validate($project, $module_list);
   // If the $project directory does not exist then gracefully fail.
   if (!$project_exists) {
-    drush_print_r("\n\t\e[031mError\e[0m $project does not exist in your Backdrop installation.");
+    $error = drush_chalk('Error', '31m');
+    $project = drush_chalk($project, '1m');
+    drush_print_r("\n\t$error $project does not exist in your Backdrop installation.");
     drush_print_r("\tTry downloading $project first with the command: drush dl $project\n");
     return FALSE;
   }
@@ -111,17 +115,23 @@ function _enable_project($project, $module_list) {
   $module = $query->execute()->fetchAssoc();
 
   if ($module['status']) {
+    $failed = drush_chalk('Failed', '31m');
+    $module_name = drush_chalk($module['name'], '1m');
     drush_print_r(
-      "\n\t\e[31m Failed\e[0m to enable module " . $module['name'] . ": it is already enabled.\n"
+      "\n\t$failed to enable module $module_name: it is already enabled.\n"
     );
     return FALSE;
   }
 
   if (module_enable(array($project), FALSE)) {
-    drush_print_r("\n\t\e[32mSuccess\e[0m: module $project enabled.\n");
+    $success = drush_chalk('Sucess', '32m');
+    $project = drush_chalk($project, '1m');
+    drush_print_r("\n\t$success: module $project enabled.\n");
     return TRUE;
   }
-  drush_print_r("\n\t\e[31mFailed\e[0m to enable module " . $project);
+  $failed = drush_chalk('Failed', '31m');
+  $project = drush_chalk($project, '1m');
+  drush_print_r("\n\t$failed: to enable module " . $project);
   return FALSE;
 }
 
