@@ -1,7 +1,7 @@
 Drush Integration for Backdrop CMS
 ==================================
 
-[![Build Status](https://travis-ci.org/backdrop-contrib/drush.svg?branch=1.x-1.x)](https://travis-ci.org/backdrop-contrib/drush)
+[![Build Status](https://travis-ci.org/backdrop-contrib/backdrop-drush-extension.svg?branch=1.x-1.x)](https://travis-ci.org/backdrop-contrib/backdrop-drush-extension)
 
 This project allows you to use [Drush](https://github.com/drush-ops/drush) with
 [Backdrop CMS](https://backdropcms.org). Drush is a command-line tool for
@@ -80,7 +80,7 @@ By default Lando will install the latest stable release of the Backdrop Drush
 extension, but you can point it at any git tag or commit hash. If you wish to
 live on the bleeding edge and run the Backdrop Drush extension from source you
 can use this example
-[.lando.yml](https://github.com/backdrop-contrib/drush/wiki/Contributing-code-to-the-Backdrop-drush-extension.)
+[.lando.yml](https://github.com/backdrop-contrib/backdrop-drush-extension/wiki/Contributing-code-to-the-Backdrop-drush-extension.)
 file.
 
 Install as Site Local
@@ -142,8 +142,8 @@ custom Drush commands such as this is in your user's home directory.
 - `mkdir ~/.drush/commands` (This may already exist, if so continue.)
 - `cd ~/.drush/commands`
   -- Get either the latest head or the latest stable:
-    --- Latest HEAD: `wget https://github.com/backdrop-contrib/drush/archive/1.x-0.x.zip`
-    --- Latest Stable: `https://github.com/backdrop-contrib/drush/releases/latest`
+    --- Latest HEAD: `wget https://github.com/backdrop-contrib/backdrop-drush-extension/archive/1.x-0.x.zip`
+    --- Latest Stable: `https://github.com/backdrop-contrib/backdrop-drush-extension/releases/latest`
 - `unzip master.zip -d backdrop`
 - Clear the drush cache
   -- `drush cc drush`
