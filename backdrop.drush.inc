@@ -89,6 +89,7 @@ function backdrop_drush_command_alter(&$command) {
     case 'backdrop-subtheme-basis':
       $backdrop_command = 'backdrop-subtheme-basis';
       break;
+
     case 'user-password':
       $backdrop_command = 'backdrop-user-password';
       break;
