@@ -67,4 +67,15 @@ class DrushTests extends TestCase {
     $this->assertStringContainsString('proper version', $output);
     $this->assertStringContainsString('Extension version', $output);
   }
+
+  /**
+   * Test drush backdrop-subtheme-basis command.
+   */
+  public function testDrushSubthemeBasis() {
+    $output = shell_exec(
+      'drush sb --name=mesb'
+    );
+    $this->assertStringContainsString('mesb', $output);
+    $this->assertFileExists('../../../themes/mesb/mesb.info');
+  }
 }
