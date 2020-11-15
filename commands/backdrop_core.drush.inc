@@ -138,6 +138,7 @@ function backdrop_core_drush_command() {
     'description' => 'Print out the Drush proper version and the Backdrop Drush Extension version.',
     'callback' => 'backdrop_command_drush_version',
     'aliases' => array('version'),
+    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
     'examples' => array(
       'drush version' => 'Drush proper version: 8; Backdrop Drush Extension Version: 1',
     ),
