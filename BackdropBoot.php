@@ -121,7 +121,7 @@ class BackdropBoot extends BaseBoot {
    *
    * Phases:
    *
-   *     DRUSH_BOOTSTRAP_DRUSH   = Only Backdrop.
+   *     DRUSH_BOOTSTRAP_NONE    = Only Drush.
    *     BOOTSTRAP_ROOT          = Find a valid Drupal root.
    *     BOOTSTRAP_SITE          = Find a valid Drupal site.
    *     BOOTSTRAP_CONFIGURATION = Load the site's settings.

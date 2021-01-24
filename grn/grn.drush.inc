@@ -80,7 +80,7 @@ function grn_drush_command() {
     // I keep typing it, but not intuitive for others.
     'deprecated-aliases' => array('grn'),
     // No bootstrap needed.
-    'bootstrap' => DRUSH_BOOTSTRAP_DRUSH,
+    'bootstrap' => DRUSH_BOOTSTRAP_NONE,
   );
   return $items;
 }
