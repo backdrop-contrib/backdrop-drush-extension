@@ -124,7 +124,7 @@ function _enable_project($project, $module_list) {
   }
 
   if (module_enable(array($project), FALSE)) {
-    $success = drush_chalk('Sucess', '32m');
+    $success = drush_chalk('Success', '32m');
     $project = drush_chalk($project, '1m');
     drush_print_r("\n\t$success: module $project enabled.\n");
     return TRUE;
