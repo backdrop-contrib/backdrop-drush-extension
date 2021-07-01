@@ -11,6 +11,7 @@ services:
 addons:
   - mariadb: '10.3'
 before_install:
+  - composer self-update --1
   - composer install
   - git clone https://github.com/backdrop/backdrop /home/travis/web
   - git clone https://github.com/drush-ops/drush /home/travis/web/drush
