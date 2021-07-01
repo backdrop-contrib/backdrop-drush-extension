@@ -14,7 +14,7 @@ function download_backdrop_drush_command() {
     'callback' => 'backdrop_download_backdrop',
     'hidden' => TRUE,
     'arguments' => array(
-      'module-name' => array('The name of the module(s) you would like to download.'),
+      'module-name' => array('description' => 'The name of the module(s) you would like to download.'),
     ),
     'options' => array(
       'select' => 'Select the version of the module.',

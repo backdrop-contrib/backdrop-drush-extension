@@ -14,7 +14,7 @@ function backdrop_pm_uninstall_drush_command() {
     'description' => 'Uninstall backdrop modules.',
     'callback' => 'backdrop_command_pm_uninstall',
     'arguments' => array(
-      'module-name' => array('The name of the module(s) you would like to uninstall.'),
+      'module-name' => array('description' => 'The name of the module(s) you would like to uninstall.'),
     ),
     'aliases' => array('pmu'),
     'required-arguments' => TRUE,

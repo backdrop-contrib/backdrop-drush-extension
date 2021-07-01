@@ -16,7 +16,9 @@ function backdrop_pm_enable_drush_command() {
     'callback' => 'backdrop_command_pm_enable',
     'hidden' => TRUE,
     'arguments' => array(
-      'module-name' => array('The name of the module(s) you would like to enable.'),
+      'module-name' => array(
+        'description' =>  'The name of the module(s) you would like to enable.',
+      ),
     ),
     'required-arguments' => TRUE,
     'aliases' => array('en'),
