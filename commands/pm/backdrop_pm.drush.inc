@@ -14,7 +14,7 @@ function backdrop_pm_drush_command() {
     'callback' => 'backdrop_command_pm_download',
     'hidden' => TRUE,
     'arguments' => array(
-      'module-name' => array('The name of the module(s) you would like to download.'),
+      'module-name' => array('description' => 'The name of the module(s) you would like to download.'),
     ),
     'options' => array(
       'select' => 'Select the version of the module.',
@@ -27,7 +27,9 @@ function backdrop_pm_drush_command() {
     'description' => 'Update Backdrop core or contrib modules.',
     'callback' => 'backdrop_command_pm_update',
     'arguments' => array(
-      'module-name' => array('The name of the module(s) you would like to update.'),
+      'module-name' => array(
+        'description' => 'The name of the module(s) you would like to update.',
+      ),
     ),
     // TODO: show available updates and allow for selection of which to apply.
     // 'options' => array(

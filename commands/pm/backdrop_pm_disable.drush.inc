@@ -16,7 +16,9 @@ function backdrop_pm_disable_drush_command() {
     'description' => 'Disable backdrop modules.',
     'callback' => 'backdrop_command_pm_disable',
     'arguments' => array(
-      'module-name' => array('The name of the module(s) you would like to disable.'),
+      'module-name' => array(
+        'description' => 'The name of the module(s) you would like to disable.',
+      ),
     ),
     'aliases' => array('dis'),
     'required-arguments' => TRUE,
