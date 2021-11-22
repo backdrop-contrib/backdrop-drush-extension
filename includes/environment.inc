@@ -126,7 +126,7 @@ function drush_module_dependents($modules, $module_info) {
  */
 function drush_module_list() {
   $enabled = array();
-  $rsc = drush_db_select('system', 'name', 'type=:type AND status=:status', array(':type' => 'module', ':status' => 1));
+  $rsc = drush_db_select('system', 'name', 'type = \'module\' AND status = 1', []);
   while ($row = drush_db_result($rsc)) {
     $enabled[$row] = $row;
   }
@@ -141,7 +141,7 @@ function drush_module_list() {
  */
 function drush_get_named_extensions_list($extensions) {
   $result = array();
-  $rsc = drush_db_select('system', array('name', 'status'), 'name IN (:extensions)', array(':extensions' => $extensions));
+  $rsc = drush_db_select('system', array('name', 'status'), 'name IN (\'' . implode("', '", $extensions) .  '\')', []);
   while ($row = drush_db_fetch_object($rsc)) {
     $result[$row->name] = $row;
   }
