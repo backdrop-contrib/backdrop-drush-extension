@@ -142,9 +142,9 @@ custom Drush commands such as this is in your user's home directory.
 - `mkdir ~/.drush/commands` (This may already exist, if so continue.)
 - `cd ~/.drush/commands`
   -- Get either the latest head or the latest stable:
-    --- Latest HEAD: `wget https://github.com/backdrop-contrib/backdrop-drush-extension/archive/1.x-0.x.zip`
+    --- Latest HEAD: `wget https://github.com/backdrop-contrib/backdrop-drush-extension/archive/1.x-1.x.zip`
     --- Latest Stable: `https://github.com/backdrop-contrib/backdrop-drush-extension/releases/latest`
-- `unzip master.zip -d backdrop`
+- `unzip 1.x-1.x.zip -d backdrop`
 - Clear the drush cache
   -- `drush cc drush`
 
