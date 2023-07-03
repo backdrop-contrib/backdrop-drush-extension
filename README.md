@@ -65,7 +65,7 @@ it can effect how drush operates on Drupal sites (sometimes breaking some
 commands). We try our best to prevent that, but it has been known to happen.
 
 The main advantage to site local installs is that you will not break your Drupal
-sites or other Backdrop sites. The main disadvantage is you need to isntall
+sites or other Backdrop sites. The main disadvantage is you need to install
 drush proper and backdrop drush once per site.
 
 Install with Lando
