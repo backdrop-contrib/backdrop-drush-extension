@@ -88,12 +88,10 @@ function backdrop_download_backdrop() {
     // the backdrop drush command hooks are only picked up once a valid
     // backdrop installation is detected, so we have a chicken and the egg
     // problem here.
-    $html = backdrop_download_backdrop_from_github(
+    $url = backdrop_download_backdrop_from_github(
       "https://github.com/backdrop/backdrop/releases/latest"
     );
 
-    $html = explode("\"", $html);
-    $url = $html[1];
     $latest = explode('/', $url);
     $latest = array_reverse($latest);
 
@@ -128,16 +126,23 @@ function backdrop_download_backdrop() {
 /**
  * Helper function for backdrop_command_pm_download().
  *
- * Gets the url for the github repo of the contrib module.
+ * Gets the url that the input redirects to.
+ * This should contain the number of the latest version.
+ * For example:
+ * https://github.com/backdrop/backdrop/releases/latest
+ * picks up a version like:
+ * https://github.com/backdrop/backdrop/releases/tag/1.25.1
  */
 function backdrop_download_backdrop_from_github($url) {
   $ch = curl_init();
   curl_setopt($ch, CURLOPT_URL, $url);
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
   curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
-  $content = curl_exec($ch);
+  curl_exec($ch);
+  $curl_info = curl_getinfo($ch);
+  $redirect_url = "$curl_info[redirect_url]";
   curl_close($ch);
-  return $content;
+  return $redirect_url;
 }
 
 /**
